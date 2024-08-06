@@ -10,6 +10,11 @@ const cors = require("cors");
 
 //var
 var indexRouter = require("./routes/index");
+var institutionsRouter = require("./routes/institutions");
+var accessRouter = require("./routes/access");
+var announcementsRouter = require("./routes/announcements");
+var studentindexRouter = require("./routes/studentindex");
+var loginRouter = require("./routes/login");
 
 
 var app = express();
@@ -33,7 +38,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //app.use
 app.use("/", indexRouter);
-
+app.use("/institutions", institutionsRouter);
+app.use("/access", accessRouter);
+app.use("/announcements", announcementsRouter);
+app.use("/studentindex", studentindexRouter);
+app.use("/login", loginRouter);
 
 
 // catch 404 and forward to error handler

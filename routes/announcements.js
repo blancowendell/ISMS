@@ -6,8 +6,8 @@ var router = express.Router();
 //const currentDate = moment();
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
-  res.render("indexlayout");
-});
-
-module.exports = router;
+router.get('/', function(req, res, next) {
+    res.render('announcementslayout', { title: 'Express' });
+  });
+  
+  module.exports = router;

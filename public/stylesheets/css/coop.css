@@ -187,12 +187,12 @@ body{
 
 .collapse .collapse-item {
     font-weight: 600;
-    color: white !important;
+    color: rgb(7, 7, 7) !important;
 }
 
 .collapse .collapse-item:hover {
   background-color: white !important;
-  color: black !important;
+  color: rgb(44, 3, 3) !important;
 }
 
 #brandtext-sidebar {
@@ -271,13 +271,13 @@ body{
     font-weight: 600;
 }
 #modal-footer {
-  background-color: #7a1818 !important ;
+  background-color: #feffaa !important ;
   height: 60px;
   padding: 5px;
 }
 #modal-header {
-    background-color: #7a1818 !important ;
-    color: white !important;
+    background-color: #feffaa !important ;
+    color: rgb(5, 5, 5) !important;
     height: 80px;
 }
 .modal-footer .btn-submit {
@@ -432,7 +432,7 @@ tr:hover {
 .modal-title {
   text-transform: uppercase;
   font-size: 16px !important;
-  font-weight: bold;
+  font-weight: bolder;
   letter-spacing: 1px;
 }
 
@@ -523,7 +523,7 @@ tr:hover {
 }
 
 .ch-coop {
-  background-color: #7a1818 !important;
+  background-color: #feffaa !important;
   height: 250% !important;
   color: white !important;
 }
@@ -732,15 +732,15 @@ tr:hover {
   margin-left: 65%;
 }
 .bx-x {
-  color: white !important;
+  color: rgb(7, 7, 7) !important;
   font-size: 25px;
   background-color: transparent;
 }
 .bx-x:hover {
-  border: 1px solid white !important;
+  border: 1px solid rgb(0, 0, 0) !important;
   border-radius: 8px;
   background-color: red !important;
-  color: white !important;
+  color: rgb(219, 215, 215) !important;
 }
 
 .db-card {
@@ -1156,7 +1156,7 @@ tr:hover {
 }
 
 .navbar {
-  background-color: #8b2525 !important;
+  background-color: #feffaa !important;
   position: fixed !important;
   margin-left: 6.4rem;
   width: 75%;
@@ -3170,9 +3170,10 @@ div.drp-buttons {
 } */
 
 .title-card-table {
-  font-family: 'Times New Roman';
-  color: white !important;
+  font-family: Arial, Helvetica, sans-serif;
+  color: black !important;
   margin-bottom: 2% !important;
+  font-weight: bold;
 }
 
 .text-gray-500#viewbtn {
