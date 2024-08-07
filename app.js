@@ -15,6 +15,7 @@ var accessRouter = require("./routes/access");
 var announcementsRouter = require("./routes/announcements");
 var studentindexRouter = require("./routes/studentindex");
 var loginRouter = require("./routes/login");
+var landingpageRouter = require("./routes/landingpage");
 
 
 var app = express();
@@ -42,7 +43,8 @@ app.use("/institutions", institutionsRouter);
 app.use("/access", accessRouter);
 app.use("/announcements", announcementsRouter);
 app.use("/studentindex", studentindexRouter);
-app.use("/login", loginRouter);
+app.use("/login", loginRouter);+
+app.use("/landingpage", landingpageRouter);
 
 
 // catch 404 and forward to error handler

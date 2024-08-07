@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include("./components/landingheader.ejs")%>
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <%- include("./components/landingtopbar.ejs")%>
+  </header>
+
+  <main class="main">
+    <%- include("./page/landingpage/landingpage.ejs")%>
+  </main>
+
+  <footer id="footer" class="footer">
+    <%- include("./components/landingfooter.ejs")%>
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+  <%- include("./components/landingscript.ejs")%> 
+  <%- include("./components/landingscript.ejs")%>
+</body>
+
+</html>
