@@ -16,6 +16,7 @@ var announcementsRouter = require("./routes/announcements");
 var studentindexRouter = require("./routes/studentindex");
 var loginRouter = require("./routes/login");
 var landingpageRouter = require("./routes/landingpage");
+var createuserRouter = require("./routes/createuser");
 
 
 var app = express();
@@ -45,6 +46,7 @@ app.use("/announcements", announcementsRouter);
 app.use("/studentindex", studentindexRouter);
 app.use("/login", loginRouter);+
 app.use("/landingpage", landingpageRouter);
+app.use("/createuser", createuserRouter);
 
 
 // catch 404 and forward to error handler
