@@ -1,0 +1,129 @@
+<script>
+    $(document).ready(function () {
+      LoadAccess();
+      // const loginUrlDropdown = document.getElementById("loginUrl");
+  
+      // loginUrlDropdown.addEventListener("change", (e) => {
+      //   const selectedUrl = e.target.value;
+      //   if (selectedUrl) {
+      //     window.location.href = selectedUrl;
+      //   }
+      // });
+  
+      function LoadAccess() {
+        $.ajax({
+          type: "GET",
+          url: "/access/load",
+          success: function (result) {
+            var data = result.data;
+  
+            $.each(data, function (key, item) {
+              var options = new Option(item.accessid, item.accessid);
+              $(options).html(item.accessname);
+              $("#loginUrl").append(options);
+            });
+          },
+          error: function (result) {
+            alert("error: " + result.data);
+          },
+        });
+      }
+  
+  
+      $(document).on("click", "#loginBtn", function () {
+        let username = $("#username").val();
+        let password = $("#password").val();
+        let accesstypeid = $("#loginUrl").val();
+  
+        console.log(accesstypeid,'id');
+  
+        var message = "";
+  
+        if (username === "") {
+          message += "Username ";
+        }
+  
+        if (accesstypeid === "") {
+          message += "accesstypeid ";
+        }
+  
+  
+        if (password === "") {
+          message += ". ";
+        }
+  
+        if (message !== "") {
+          showSweetAlert("Required", `Please fill up ${message}`);
+        } else {
+          $.ajax({
+            type: "POST",
+            url: "/login/login",
+            data: {
+              username: username,
+              password: password,
+              accesstypeid: accesstypeid,
+            },
+            success: function (result) {
+              if (result.msg === "success") {
+                swal(
+                  "Save Successfully",
+                  "You clicked the button!",
+                  "success"
+                ).then((results) => {
+                  if (result.data[0].accesstype === "Employee") {
+                    location.replace("/eportalindex");
+                  } else if (result.data[0].accesstype === "Team Leader") {
+                    location.replace("/teamleadindex");
+                  } else if (result.data[0].accesstype === "Super Visor") {
+                    location.replace("/teamleadindex");
+                  } else if (result.data[0].accesstype === "Department Head") {
+                    location.replace("/teamleadindex");
+                  } else if (result.data[0].accesstype === "Manager") {
+                    location.replace("/teamleadindex");
+                  } else {
+                    location.replace("/");
+                  }
+                });
+              } else if (result.msg === "inactive") {
+                showSweetAlert(
+                  "Inactive",
+                  "Your account is inactive. Please be guided accordingly.",
+                  "error",
+                  "Ok"
+                );
+              } else if (result.msg === "incorrect") {
+                showSweetAlert(
+                  "Incorrect",
+                  "Incorrect Credentials. Please try again!",
+                  "error",
+                  "AWW NO!!"
+                );
+              } else if (result.msg === "resigned") {
+                swal(
+                  "Resigned Employee",
+                  "This employee has resigned.",
+                  "warning"
+                );
+              }
+            },
+            error: function (err) {
+              swal("Error", "An error occurred while saving data.", "error");
+            },
+          });
+        }
+      });
+  
+      $(".toggle-password").on("click", function () {
+        const passwordInput = $("#password");
+        const passwordFieldType = passwordInput.attr("type");
+        if (passwordFieldType === "password") {
+          passwordInput.attr("type", "text");
+          $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+        } else {
+          passwordInput.attr("type", "password");
+          $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+        }
+      });
+    });
+  </script>
+  
