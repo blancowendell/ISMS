@@ -2119,7 +2119,7 @@ div.drp-buttons {
 }
 
 .logout-header {
-  background-color: #7a1818 !important;
+  background-color: #feffaa !important;
   color: white !important;
   height: 70px;
   font-family: 'Calibri';
@@ -2166,7 +2166,7 @@ div.drp-buttons {
 } */
 
 .logout-footer {
-  background-color: #7a1818 !important;
+  background-color: #feffaa !important;
   height: 70px;
 }
 
@@ -2175,7 +2175,7 @@ div.drp-buttons {
 }
 
 .settings-header {
-  background-color: #7a1818 !important;
+  background-color: #feffaa !important;
 }
 
 .settings-acc, .settings-pw {

@@ -17,6 +17,8 @@ var studentindexRouter = require("./routes/studentindex");
 var loginRouter = require("./routes/login");
 var landingpageRouter = require("./routes/landingpage");
 var createuserRouter = require("./routes/createuser");
+var adminloginRouter = require("./routes/adminlogin");
+var adminusersRouter = require("./routes/adminusers");
 
 
 var app = express();
@@ -44,9 +46,12 @@ app.use("/institutions", institutionsRouter);
 app.use("/access", accessRouter);
 app.use("/announcements", announcementsRouter);
 app.use("/studentindex", studentindexRouter);
-app.use("/login", loginRouter);+
+app.use("/login", loginRouter);
 app.use("/landingpage", landingpageRouter);
 app.use("/createuser", createuserRouter);
+app.use("/adminlogin", adminloginRouter);
+app.use("/adminusers", adminusersRouter);
+
 
 
 // catch 404 and forward to error handler

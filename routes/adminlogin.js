@@ -1,5 +1,5 @@
 const { Encrypter } = require("./repository/crytography");
-const { UserLogin } = require("./repository/helper");
+const { UserLogin, AdminLogin } = require("./repository/helper");
 const mysql = require("./repository/ismsdb");
 //const moment = require('moment');
 var express = require("express");
@@ -9,7 +9,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('loginlayout', { title: 'Express' });
+    res.render('adminloginlayout', { title: 'Express' });
   });
   
 module.exports = router;
@@ -17,42 +17,38 @@ module.exports = router;
 
 router.post("/login", (req, res) => {
   try {
-    const { username, password } = req.body;
-
-    console.log(req.body);
+    const { username, password, accesstypeid } = req.body;
     
 
     Encrypter(password, (err, encrypted) => {
       if (err) console.error("Error: ", err);
-      let sql = `SELECT
-      mu_studentid AS studentid,
-      CONCAT(ms_last_name,' ',ms_first_name) AS fullname,
-      ma_accessname AS accesstype,
-      ms_status AS status,
-      ms_image AS image
-      FROM master_user
-      INNER JOIN master_students ON master_user.mu_studentid = ms_studentid
-      INNER JOIN master_access ON master_user.mu_accesstypeid = ma_accessid
-      WHERE mu_username = '${username}'
-      AND mu_password = '${encrypted}'`;
 
-      console.log(sql);
-      
+      let sql = `SELECT
+      au_userid AS userid,
+      au_fullname AS fullname,
+      ma_accessname AS accesstype,
+      au_status AS status,
+      au_image AS image
+      FROM admin_user
+      INNER JOIN master_access ON admin_user.au_accesstype = ma_accessid
+      WHERE au_username = '${username}'
+      AND au_password = '${encrypted}'
+      AND au_accesstype = '${accesstypeid}'`;
 
       mysql.mysqlQueryPromise(sql)
         .then((result) => {
           if (result.length !== 0) {
             const user = result[0];
 
-            console.log(result,'result');
+            console.log(result);
             
 
             if (
-              user.status === "UnVerified" || user.status === "Verified"
+              user.status === "Active"
             ) {
-              let data = UserLogin(result);
+              let data = AdminLogin(result);
                 data.forEach((user) => {
-                  req.session.studentid = user.studentid;
+                  req.session.userid = user.userid;
                   req.session.fullname = user.fullname;
                   req.session.accesstype = user.accesstype;
                   req.session.status = user.status;
@@ -65,7 +61,7 @@ router.post("/login", (req, res) => {
                 });
             } else {
               return res.json({
-                msg: "graduated",
+                msg: "inactive",
               });
             }
           } else {

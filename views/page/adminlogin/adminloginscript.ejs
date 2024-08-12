@@ -1,7 +1,7 @@
 <script>
     $(document).ready(function () {
       console.log("Initialize");
-      
+        
       LoadAccess();
       // const loginUrlDropdown = document.getElementById("loginUrl");
   
@@ -35,12 +35,18 @@
       $(document).on("click", "#loginBtn", function () {
         let username = $("#username").val();
         let password = $("#password").val();
+        let accesstypeid = $("#loginUrl").val();
   
+        console.log(accesstypeid,'id');
   
         var message = "";
   
         if (username === "") {
           message += "Username ";
+        }
+  
+        if (accesstypeid === "") {
+          message += "accesstypeid ";
         }
   
   
@@ -53,10 +59,11 @@
         } else {
           $.ajax({
             type: "POST",
-            url: "/login/login",
+            url: "/adminlogin/login",
             data: {
               username: username,
               password: password,
+              accesstypeid: accesstypeid,
             },
             success: function (result) {
               if (result.msg === "success") {
@@ -65,15 +72,11 @@
                   "You clicked the button!",
                   "success"
                 ).then((results) => {
-                  if (result.data[0]) {
-                    location.replace("/studentindex");
-                  } else {
                     location.replace("/");
-                  }
                 });
-              } else if (result.msg === "graduated") {
+              } else if (result.msg === "inactive") {
                 showSweetAlert(
-                  "Graduated",
+                  "Inactive",
                   "Your account is inactive. Please be guided accordingly.",
                   "error",
                   "Ok"

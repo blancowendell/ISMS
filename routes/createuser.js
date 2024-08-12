@@ -33,17 +33,17 @@ router.post("/save", async (req, res) => {
       } else {
         let sql = InsertStatement("master_user", "mu", [
           "studentid",
+          "accesstypeid",
           "username",
           "password",
-          "accesstype",
           "createdate",
           "status",
         ]);
 
-        let data = [[studentid, username, encrypted, accesstype, createdate, status]];
+        let data = [[studentid, accesstype, username, encrypted, createdate, status]];
         let checkStatement = SelectStatement(
-          "select * from master_user where mu_studentid=? and mu_accesstype=?",
-          [studentid, accesstype]
+          "select * from master_user where mu_studentid=?",
+          [studentid]
         );
         Check(checkStatement)
         .then((result) => {

@@ -128,27 +128,6 @@
           },
         });
       });
-  
-      $(document).on("click", "#logoutBtn", function () {
-        $.ajax({
-          type: "POST",
-          url: "/adminlogin/logout",
-          success: function (result) {
-            swal({
-              title: "Ba Bye!!!",
-              text: "Log out Successfully",
-              icon: "success",
-              button: "Ba bye!!",
-            }).then((results) => {
-              window.location.reload();
-              location.replace("/");
-            });
-          },
-          error: function (err) {
-            errormsg(err);
-          },
-        });
-      });
     });
   </script>
   

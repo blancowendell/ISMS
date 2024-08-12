@@ -115,17 +115,10 @@ exports.UserLogin = (result, callback) => {
 
     result.forEach((row) => {
       userData.push({
-        employeeid: row.employeeid,
+        studentid: row.studentid,
         fullname: row.fullname,
         accesstype: row.accesstype,
-        departmentid: row.departmentid,
-        isgeofence: row.isgeofence,
-        departmentname: row.departmentname,
-        position: row.position,
-        jobstatus: row.jobstatus,
-        geofenceid: row.geofenceid,
-        accesstypeid: row.accesstypeid,
-        subgroupid: row.subgroupid,
+        status: row.status,
         image: row.image,
       });
     });
@@ -137,49 +130,21 @@ exports.UserLogin = (result, callback) => {
   }
 };
 
-// exports.TeamLeadLogin = (result, callback) => {
-//   try {
-//     const tlData = [];
-
-//     result.forEach((row) => {
-//       tlData.push({
-//         image: row.image,
-//         employeeid: row.employeeid,
-//         fullname: row.fullname,
-//         accesstype: row.accesstype,
-//         departmentid: row.departmentid,
-//         departmentname: row.departmentname,
-//         position: row.position,
-//         jobstatus: row.jobstatus,
-//         geofenceid: row.geofenceid,
-//         subgroupid: row.subgroupid,
-//         accesstypeid: row.accesstypeid,
-//       });
-//     });
-
-//     return tlData;
-//   } catch (error) {
-//     console.log(error);
-//     callback(error);
-//   }
-// };
-
-exports.OjtLogin = (result, callback) => {
+exports.AdminLogin = (result, callback) => {
   try {
-    const ojtData = [];
+    const AdminData = [];
 
     result.forEach((row) => {
-      ojtData.push({
-        image: row.image,
-        ojtid: row.ojtid,
+      AdminData.push({
+        userid: row.userid,
         fullname: row.fullname,
         accesstype: row.accesstype,
-        departmentid: row.departmentid,
         status: row.status,
+        image: row.image,
       });
     });
 
-    return ojtData;
+    return AdminData;
   } catch (error) {
     console.log(error);
     callback(error);

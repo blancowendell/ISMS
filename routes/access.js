@@ -15,14 +15,14 @@ const {
   UpdateStatement,
 } = require("./repository/customhelper");
 const { DataModeling } = require("./model/ismsdb");
-//const { Validator } = require("./controller/middleware");
+const { Validator } = require("./controller/middleware");
 var router = express.Router();
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-    res.render('accesslayout', { title: 'Express' });
-  });
+router.get("/", function (req, res, next) {
+  Validator(req, res, "accesslayout");
+});
   
 module.exports = router;
 
