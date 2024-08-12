@@ -1,9 +1,99 @@
+<div class="card bank-card">
+    <div class="card-header" id="modal-header">
+      <h3 class="title-card-table">Add Courses</h3>
+    </div>
+    <div class="card-body bank-body">
+      <div class="row">
+        <div class="col-sm-12 col-lg-6 col-xl-6">
+          <div class="input-group mb-3">
+            <label class="input-group-text bank-btn" for="employee">Employee</label>
+            <select class="form-select border-form-modal" id="employee">
+              <option selected>--Select Employee--</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-12 col-lg-6 col-xl-6">
+          <div class="input-group mb-3">
+            <label class="input-group-text bank-btn" for="bank">Bank</label>
+            <select class="form-select border-form-modal" id="bank">
+              <option selected>--Select Bank--</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-lg-6 col-xl-6">
+          <div class="input-group mb-3">
+            <span class="input-group-text bank-btn" id="basic-addon1">Account Number</span>
+            <input
+              id="accountnumber"
+              name="accountnumber"
+              type="text"
+              class="form-control border-form-modal"
+              placeholder="Account Number"
+              aria-label="Account Number"
+              aria-describedby="basic-addon1"
+            />
+          </div>
+        </div>
+        <div class="col-sm-12 col-lg-6 col-xl-6">
+          <div class="input-group mb-3">
+            <span class="input-group-text bank-btn" id="basic-addon1">Card Number</span>
+            <input
+              id="cardnumber"
+              name="cardnumber"
+              type="text"
+              class="form-control border-form-modal"
+              placeholder="Card Number"
+              aria-label="Card Number"
+              aria-describedby="basic-addon1"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-sm-12 col-lg-6 col-xl-6">
+          <div class="input-group mb-3">
+            <span class="input-group-text bank-btn" id="basic-addon1">Expiration Date</span>
+            <input
+              id="expirationdate"
+              name="expirationdate"
+              type="date"
+              class="form-control border-form-modal"
+              aria-describedby="basic-addon1"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-end">
+        <div class="col-sm-1 col-add">
+          <button
+            id="addBtn"
+            name="addBtn"
+            class="btn btn-add-color"
+            type="button"><b>+ Add</b></button>
+        </div>
+      </div>
+      <div class="row justify-content-end mt-3">
+        <div class="col-sm-1 col-add">
+          <button
+            id="uploadBtn"
+            name="uploadBtn"
+            class="btn btn-export-color"
+            type="button"
+            data-bs-toggle="modal"
+            data-bs-target="#uploadModal"><b>Upload</b></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <br>
 
 <!-- Table -->
 <div class="card" id="tablecard">
     <div class="card-header ch-coop">
-      <h3 class="title-card-table">List Of Institutions</h3>
+      <h3 class="title-card-table">List Of Courses</h3>
       <div class="row g-2">
         <div class="col">
           <input id='myInput' type='text' placeholder="  Search....">
@@ -17,15 +107,15 @@
     </div>
     <div class="card-body">
         <div class="table-responsive"  id="table-responsive-id">
-            <table class="table table-light table-bordered " id="dataTableInstitutions">
+            <table class="table table-light table-bordered " id="dataTableCourses">
                 <thead>
                     <tr>
-                        <th>Image</th>
                         <th class="col-sm-1">ID</th>
+                        <th>Course Code</th>
+                        <th>Course Description</th>
                         <th>Institution Name</th>
-                        <th>Institution Address</th>
-                        <th>Institution Phone</th>
-                        <th>Institution Email</th>
+                        <th>Course Type</th>
+                        <th>Course Term</th>
                         <th class="col-sm-1">Action</th>
                     </tr>
                 </thead>

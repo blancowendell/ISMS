@@ -3218,8 +3218,8 @@ span#viewbtn {
 }
 
 .bank-card-title {
-  font-family: 'Times New Roman';
-  color: white !important;
+  font-family: 'Arial, Helvetica, sans-serif';
+  color: black !important;
   margin-bottom: 1%;
   margin-top: 1%;
 }
@@ -3229,8 +3229,8 @@ span#viewbtn {
 }
 
 .bank-btn {
-  background-color: #7a1818 !important;
-  color:  white !important;
+  background-color: #feffaa !important;
+  color:  black !important;
 }
 
 

@@ -11,9 +11,12 @@ var roleacess = [
       {
         layout: "adminuserslayout",
       },
-      // {
-      //   layout: "ojtprofilelayout",
-      // },
+      {
+        layout: "institutionslayout",
+      },
+      {
+        layout: "courseslayout",
+      },
     ],
   },
   {

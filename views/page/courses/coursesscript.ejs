@@ -1,0 +1,396 @@
+<script>
+    let course_id = "";
+    let base64String = "";
+  
+    $(document).ready(function () {
+      LoadTable();
+      searchTable();
+  
+      $(document).on("keyup", "#myInput", function () {
+        searchTable();
+      });
+  
+      function LoadTable() {
+        $("#dataTableCourses").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: true,
+          paging: false,
+          searching: false,
+          info: false,
+          scrollY: 600,
+          scrollCollapse: true,
+          serverMethod: "GET",
+          ajax: {
+            url: "/courses/loadcourses",
+            dataSrc: (json) => {
+              var finalData = [];
+              var data = json.data;
+  
+              $.each(data, (key, item) => {
+                var action = "";
+                var status = item.status;
+  
+                action = `
+                        <button id="editBtn" class="btn text-primary" name="editBtn" data-bs-toggle="modal" data-bs-target="#editinstitutionsmodal"><i class="fas fa-fw fa-pen"></i></button>
+                       `;
+  
+                finalData.push({
+                  course_id: item.course_id,
+                  name_code: item.name_code,
+                  description: item.description,
+                  institute_name: item.institute_name,
+                  type: item.type,
+                  term: item.term,
+                  action: action,
+                });
+              });
+  
+              return finalData;
+            },
+          },
+          columnDefs: [
+            {
+              targets: 1,
+              className: "td-indent",
+            },
+          ],
+          columns: [
+            { data: "course_id" },
+            { data: "name_code" },
+            { data: "description" },
+            { data: "institute_name" },
+            { data: "type" },
+            { data: "term" },
+            { data: "action" },
+          ],
+          createdRow: function (row, data, dataIndex) {
+            $("td", row).each(function (index) {
+              this.style.textAlign = "center";
+              this.style.verticalAlign = "middle";
+            });
+          },
+  
+          initComplete: function () {},
+        });
+      }
+  
+      $("#instphone").inputmask({
+        mask: "+63 999 9999 9999",
+        placeholder: " ",
+        showMaskOnHover: false,
+        showMaskOnFocus: true,
+        definitions: {
+          9: {
+            validator: "[0-9]",
+            cardinality: 1,
+            casing: "lower",
+          },
+        },
+        onBeforePaste: function (pastedValue, opts) {
+          if (pastedValue.startsWith("09")) {
+            return pastedValue.substring(1);
+          }
+          return pastedValue;
+        },
+        oncomplete: function () {
+          let inputValue = $("#instphone").val();
+          if (inputValue.includes("09")) {
+            $("#instphone").val(inputValue.replace("09", "9"));
+          }
+        },
+      });
+  
+      $(document).on("click", "#institutionsSaveBtn", function () {
+        let institutionsname = $("#instname").val();
+        let institutionsaddress = $("#instaddress").val();
+        let institutionsphone = $("#instphone").val().replace(/\s+/g, "");
+        let institutionsemail = $("#instemail").val();
+        let image = base64String;
+  
+        var message = "";
+  
+        if (institutionsname == "") {
+          message += "Institutions name is required. ";
+        }
+  
+        if (institutionsaddress == "") {
+          message += "Institutions address is required. ";
+        }
+  
+        if (
+          institutionsphone == "" ||
+          !/^(\+\d{1,3}[- ]?)?\d{10}$/.test(institutionsphone)
+        ) {
+          message += "Valid institutions phone is required. ";
+        }
+  
+        if (institutionsemail == "") {
+          message += "Institutions email is required. ";
+        }
+  
+        if (image == "") {
+          message += "Image is required. ";
+        }
+  
+        if (message !== "") {
+          swal("Validation Error", message, "error");
+        } else {
+          $.ajax({
+            type: "POST",
+            url: "/institutions/save",
+            data: {
+              institutionsname: institutionsname,
+              institutionsaddress: institutionsaddress,
+              institutionsphone: institutionsphone,
+              institutionsemail: institutionsemail,
+              image: image,
+            },
+            success: function (result) {
+              if (result.msg == "success") {
+                swal({
+                  title: "Saved Successfully",
+                  text: "You clicked the button!",
+                  icon: "success",
+                  button: "OK!",
+                }).then((results) => {
+                  window.location.reload();
+                });
+                LoadTable();
+              } else {
+                swal({
+                  title: "Exist",
+                  text: "Data already exists!",
+                  icon: "warning",
+                  button: "OK!",
+                });
+              }
+            },
+            error: function (err) {
+              swal("Data already exists!", "You clicked the button!", "warning");
+            },
+          });
+        }
+      });
+  
+      $("#dataTableCourses tbody").on("click", "tr", function () {
+        var dataRow = [];
+        $(this)
+          .closest("tr")
+          .find("td")
+          .each(function () {
+            dataRow.push($(this).text());
+          });
+        institutionsid = dataRow[1];
+        console.log(dataRow);
+      });
+  
+      $(document).on("click", "#editBtn", function () {
+        $.ajax({
+          type: "POST",
+          url: "/institutions/getinstitutions",
+          data: {
+            institutionsid: institutionsid,
+          },
+          success: function (result) {
+            if (result.msg === "success") {
+              const existingData = result.data;
+  
+              $.each(existingData, (key, item) => {
+                $("#editinstname").val(item.name);
+                $("#editinstaddress").val(item.address);
+                $("#editinstphone").val(item.phone);
+                $("#editinstemail").val(item.email);
+                $("#preview").attr("src", "data:image/jpg;base64," + item.image);
+  
+                $("#editinstphone").inputmask({
+                  mask: "+63 999 999 9999", 
+                  placeholder: " ", 
+                  showMaskOnHover: false,
+                  showMaskOnFocus: true,
+                  definitions: {
+                    9: {
+                      validator: "[0-9]",
+                      cardinality: 1,
+                      casing: "lower",
+                    },
+                  },
+                  onBeforePaste: function (pastedValue, opts) {
+                    if (pastedValue.startsWith("09")) {
+                      return pastedValue.substring(1);
+                    }
+                    return pastedValue;
+                  },
+                  oncomplete: function () {
+                    let inputValue = $("#editinstphone").val();
+                    if (inputValue.includes("09")) {
+                      $("#editinstphone").val(inputValue.replace("09", "9"));
+                    }
+                  },
+                });
+              });
+            } else {
+              swal("Error fetching employee data", message, "error");
+            }
+          },
+          error: function (err) {
+            swal(
+              "An error occurred while fetching employee data",
+              message,
+              "error"
+            );
+          },
+        });
+      });
+  
+      $(document).on("click", "#editinstitutionsSaveBtn", function () {
+        let id = institutionsid;
+        let name = $("#editinstname").val();
+        let address = $("#editinstaddress").val();
+        let phone = $("#editinstphone").val();
+        let email = $("#editinstemail").val();
+        let image = base64String;
+  
+        var message = "";
+  
+        if (name === "") {
+          message += "Institutions name is required. ";
+        }
+  
+        if (address === "") {
+          message += "Institutions address is required. ";
+        }
+  
+        if (email === "") {
+          message += "Institutions email is required. ";
+        }
+  
+        if (image === "") {
+          message += "Image is required. ";
+        }
+  
+        if (message !== "") {
+          swal("Validation Error", message, "error");
+        } else {
+          $.ajax({
+            type: "PUT",
+            url: "institutions/edit",
+            data: {
+              institutionsid: institutionsid,
+              name: name,
+              address: address,
+              phone: phone,
+              email: email,
+              image: image,
+            },
+            success: function (result) {
+              if (result.msg === "success") {
+                swal({
+                  title: "Update Successfully",
+                  text: "You clicked the button!",
+                  icon: "success",
+                  button: "OK!",
+                }).then((results) => {
+                  window.location.reload();
+                });
+                LoadTable();
+              } else if (result.msg === "exist") {
+                swal({
+                  title: "Exist",
+                  text: "Data already exists!",
+                  icon: "warning",
+                  button: "OK!",
+                });
+              } else {
+                swal(
+                  "Data already exists!",
+                  "You clicked the button!",
+                  "warning"
+                );
+              }
+            },
+            error: function (err) {
+              swal("Error", "An error occurred while saving data.", "error");
+            },
+          });
+        }
+      });
+  
+      $(document).on("change", "#announcementimage", function (e) {
+        const input = document.getElementById("announcementimage");
+        const file = input.files[0];
+  
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+          const preview = document.getElementById("preview");
+          preview.src = reader.result;
+        };
+        imageUploaded();
+      });
+  
+      function imageUploaded() {
+        const input = document.getElementById("announcementimage");
+        const file = input.files[0];
+  
+        var reader = new FileReader();
+  
+        reader.onload = function () {
+          base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+  
+          imageBase64Stringsep = base64String;
+        };
+        reader.readAsDataURL(file);
+      }
+  
+      $(document).on("change", "#editannouncementimage", function (e) {
+        const input = document.getElementById("editannouncementimage");
+        const file = input.files[0];
+  
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+          const preview = document.getElementById("editpreview");
+          preview.src = reader.result;
+        };
+        editimage();
+      });
+  
+      function editimage() {
+        const input = document.getElementById("editannouncementimage");
+        const file = input.files[0];
+  
+        var reader = new FileReader();
+  
+        reader.onload = function () {
+          base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+  
+          imageBase64Stringsep = base64String;
+        };
+        reader.readAsDataURL(file);
+      }
+  
+      function searchTable() {
+        var input, filter, found, table, tr, td, i, j;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("dataTableCourses");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td");
+          for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+              found = true;
+            }
+          }
+          if (found) {
+            tr[i].style.display = "";
+            found = false;
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    });
+  </script>
+  
