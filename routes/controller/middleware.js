@@ -17,6 +17,9 @@ var roleacess = [
       {
         layout: "courseslayout",
       },
+      {
+        layout: "master_studentlayout",
+      },
     ],
   },
   {
