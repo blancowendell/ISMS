@@ -12,3 +12,44 @@ router.get("/", function (req, res, next) {
 });
 
 module.exports = router;
+
+
+router.get("/getbulletin", (req, res) => {
+  try {
+    // let bulletinid = req.body.bulletinid;
+    let sql = `
+    SELECT
+    a_image AS image,
+    a_tittle AS title,
+    a_type as type,
+    a_targerdate as targetdate,
+    a_description AS description
+    FROM announcements
+    WHERE (a_type = 'Announcement' OR (a_type = 'Event' AND a_targerdate >= CURDATE()))`;
+
+    mysql
+      .mysqlQueryPromise(sql)
+      .then((result) => {
+        if (result.length > 0) {
+          res.status(200).json({
+            msg: "success",
+            data: result,
+          });
+        } else {
+          res.status(404).json({
+            msg: "Department not found",
+          });
+        }
+      })
+      .catch((error) => {
+        res.status(500).json({
+          msg: "Error fetching department data",
+          error: error,
+        });
+      });
+  } catch (error) {
+    res.json({
+      msg: error,
+    });
+  }
+});

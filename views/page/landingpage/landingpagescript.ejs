@@ -1,302 +1,368 @@
 <script>
-    let userid = "";
+  let userid = "";
 
-    $(document).ready(function () {
-        console.log('Initializing');
+  $(document).ready(function () {
+    console.log("Initializing");
 
-        LoadInstitutions(); // Load institutions on page load
+    LoadInstitutions();
+    loadAnnouncements();
 
-        // Trigger LoadCourses when an institution is selected
-        $("#school").change(function () {
-            var institutionId = $(this).val(); // Get the selected institution ID
-            if (institutionId) {
-                LoadCourses(institutionId);
-            }
-        });
+    function loadAnnouncements() {
+        $.ajax({
+            type: "GET",
+            url: "studentindex/getbulletin",
+            success: function (result) {
+                var data = result.data;
 
-        function LoadInstitutions() {
-            $.ajax({
-                type: "GET",
-                url: "/institutions/loadinstitutions",
-                success: function (result) {
-                    var data = result.data;
+                // Clear previous content
+                $('#announcement-container').empty();
 
-                    $.each(data, function (key, item) {
-                        var options = new Option(item.institutionsid, item.institutionsid);
-                        $(options).html(item.name);
-                        $("#school").append(options);
-                    });
-                },
-                error: function (result) {
-                    alert("error: " + result.data);
-                },
-            });
-        }
+                // Iterate over each announcement and dynamically create the content
+                $.each(data, function (key, item) {
+                    // Create a row to hold both image and details
+                    var rowContainer = $('<div/>', {
+                        'class': 'row gy-5',
+                        'data-aos': 'fade-up',
+                        'data-aos-delay': 100 * (key + 1)
+                    }).appendTo('#announcement-container');
 
-        function LoadCourses(institutionId) {
-            $.ajax({
-                type: "POST",
-                url: "/institutions/loadcourses",
-                data: { institutionsid: institutionId },
-                success: function (result) {
-                    var data = result.data;
-                    $("#course").empty();
+                    // Create a div to hold the announcement image
+                    var imageContainer = $('<div/>', {
+                        'class': 'col-xl-5 d-flex align-items-center'
+                    }).appendTo(rowContainer);
 
-                    $.each(data, function (key, item) {
-                        var options = new Option(item.course_id, item.course_id);
-                        $(options).html(item.name_code);
-                        $("#course").append(options);
-                    });
-                },
-                error: function (result) {
-                    alert("error: " + result.data);
-                },
-            });
-        }
+                    // Create an image element for the announcement
+                    $('<img/>', {
+                        'id': 'announcement-image-' + key,
+                        'src': 'data:image/jpg;base64,' + item.image,
+                        'class': 'img-fluid',
+                        'alt': item.title
+                    }).appendTo(imageContainer);
 
+                    // Create a container for the announcement details
+                    var detailContainer = $('<div/>', {
+                        'class': 'col-xl-7 d-flex align-items-center'
+                    }).appendTo(rowContainer);
 
-        $(document).on("click", "#signupBtn", function () {
-            let firstname = $("#firstname").val();
-            let middlename = $("#middlename").val();
-            let lastname = $("#lastname").val();
-            let date_of_birth = $("#birthday").val();
-            let email = $("#email").val();
-            let gender = $("#gender").val();
-            let phone = $("#phoneno").val();
-            let institutionid = $("#school").val();
-            let courseid = $("#course").val();
-            let academic_status = $("#academic_status").val();
-            let yearlevel = $("#yearlevel").val();
-            let birthplace = $("#birthplace").val();
-            let age = $("#age").val();
-            let fathers_name = $("#fathersname").val();
-            let fathers_occupation = $("#fatheroccupation").val();
-            let fathers_salary = $("#fathersalaryincome").val();
-            let mothers_name = $("#mothersname").val();
-            let mothers_occupation = $("#mothersoccupation").val();
-            let mothers_salary = $("#mothersalaryincome").val();
-            let registerdate = $("#registerdate").val();
-            // let certifyInfo = $("#usersname").val();
-            // let agreeTerms = $("#usersname").val();
+                    // Create a div to hold the announcement title and description
+                    var announcementDetail = $('<div/>', {
+                        'class': 'row align-self-center gy-5'
+                    }).appendTo(detailContainer);
 
-            console.log(firstname, 'FIRSTNAME');
+                    $('<h4/>', {
+                        'text': item.title
+                    }).appendTo(announcementDetail);
 
-
-            var message = "";
-
-            if (firstname == "") {
-                message += "First Name ";
-            }
-
-            if (middlename == "") {
-                message += "Middle Name ";
-            }
-
-            if (lastname == "") {
-                message += "Last Name ";
-            }
-
-            if (date_of_birth == "") {
-                message += "Date of Birth ";
-            }
-
-            if (email == "") {
-                message += "Email ";
-            }
-
-            if (gender == "") {
-                message += "Gender ";
-            }
-
-            if (phone == "") {
-                message += "Phone ";
-            }
-
-            if (institutionid == "") {
-                message += "Institution ";
-            }
-
-            if (courseid == "") {
-                message += "Course ";
-            }
-
-            if (academic_status == "") {
-                message += "Academic Status ";
-            }
-
-            if (yearlevel == "") {
-                message += "Year Level ";
-            }
-
-            if (birthplace == "") {
-                message += "Birth Place ";
-            }
-
-            if (age == "") {
-                message += "Age ";
-
-            }
-
-            if (fathers_name == "") {
-                message += "Father's Name ";
-
-            }
-
-            if (fathers_occupation == "") {
-                message += "Father's Occupation ";
-
-            }
-
-            if (fathers_salary == "") {
-                message += "Father's Salary Income ";
-
-            }
-
-            if (mothers_name == "") {
-                message += "Mother's Name ";
-
-            }
-
-            if (mothers_occupation == "") {
-                message += "Mother's Occupation ";
-
-            }
-
-            if (mothers_salary == "") {
-                message += "Mother's Salary Income ";
-
-            }
-            // if (certifyInfo == "") {
-            //     message += "Certification ";
-            // }
-
-            // if (agreeTerms == "") {
-            //     message += "Agree Terms ";
-            // }
-
-            if (message !== "") {
-                swal("Validation Error", message, "error");
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: "/landingpage/save",
-                    data: {
-                        firstname: firstname,
-                        middlename: middlename,
-                        lastname: lastname,
-                        date_of_birth: date_of_birth,
-                        email: email,
-                        gender: gender,
-                        phone: phone,
-                        institutionid: institutionid,
-                        courseid: courseid,
-                        academic_status: academic_status,
-                        yearlevel: yearlevel,
-                        birthplace: birthplace,
-                        age: age,
-                        fathers_name: fathers_name,
-                        fathers_occupation: fathers_occupation,
-                        fathers_salary: fathers_salary,
-                        mothers_name: mothers_name,
-                        mothers_occupation: mothers_occupation,
-                        mothers_salary: mothers_salary,
-                        registerdate: registerdate,
-                        // certifyInfo: certifyInfo, 
-                        // agreeTerms: agreeTerms,
-                        // certifyInfo: certifyInfo,
-                        // agreeTerms: agreeTerms,    
-                    },
-                    success: function (result) {
-                        if (result.msg === "success") {
-                            function promptOTP() {
-                                return swal({
-                                    text: 'Enter the OTP sent to your email',
-                                    content: {
-                                        element: "input",
-                                        attributes: {
-                                            placeholder: "Enter OTP",
-                                            type: "text",
-                                        },
-                                    },
-                                    buttons: {
-                                        cancel: {
-                                            text: "Cancel",
-                                            value: "cancel",
-                                            visible: true,
-                                            closeModal: false,
-                                        },
-                                        confirm: {
-                                            text: "Verify",
-                                            closeModal: false,
-                                        },
-                                    },
-                                }).then((otp) => {
-                                    if (otp === "cancel") {
-                                        return swal({
-                                            title: "Are you sure?",
-                                            text: "Do you really want to cancel the OTP verification?",
-                                            icon: "warning",
-                                            buttons: {
-                                                cancel: "No",
-                                                confirm: "Yes",
-                                            },
-                                            dangerMode: true,
-                                        }).then((willCancel) => {
-                                            if (willCancel) {
-                                                swal.close(); // Close the dialog
-                                                return Promise.reject("Cancelled");
-                                            } else {
-                                                return promptOTP(); // Reopen the OTP input dialog
-                                            }
-                                        });
-                                    }
-
-                                    if (!otp) {
-                                        return swal("No OTP entered", "Please enter the OTP sent to your email.", "error")
-                                            .then(() => promptOTP()); // Reopen the OTP input dialog
-                                    }
-
-                                    return $.ajax({
-                                        type: "POST",
-                                        url: "/landingpage/verify-otp",
-                                        data: { email: $("#email").val(), otp: otp },
-                                    });
-                                }).then((response) => {
-                                    if (response && response.msg === "success") {
-                                        return swal({
-                                            title: "OTP Verified!",
-                                            text: "Check your email for creating your username and password.",
-                                            icon: "success",
-                                        }).then(() => {
-                                            // Send email with link to create username/password
-                                            return $.ajax({
-                                                type: "POST",
-                                                url: "/landingpage/send-create-account-link",
-                                                data: { email: $("#email").val() },
-                                            });
-                                        });
-                                    } else {
-                                        return swal("Invalid OTP", "The OTP you entered is incorrect. Please try again.", "warning")
-                                            .then(() => promptOTP()); // Reopen the OTP input dialog
-                                    }
-                                }).catch((err) => {
-                                    if (err !== "Cancelled") { // Handle error if not cancelled
-                                        swal("Error", "Something went wrong. Please try again later.", "error")
-                                            .then(() => promptOTP()); // Reopen the OTP input dialog
-                                    }
-                                });
-                            }
-
-                            promptOTP(); // Initial call to prompt for OTP
-                        } else {
-                            swal("Looks like you already have an account", "Check your email for the OTP or Provide a new email", "warning");
-                        }
-                    },
-                    error: function (err) {
-                        swal("Data already exists!", "You clicked the button!", "warning");
-                    }
+                    $('<p/>', {
+                        'text': item.description
+                    }).appendTo(announcementDetail);
                 });
+            },
+            error: function (result) {
+                alert("Error fetching announcements: " + result.msg);
             }
         });
+    }
+
+    // Trigger LoadCourses when an institution is selected
+    $("#school").change(function () {
+      var institutionId = $(this).val(); // Get the selected institution ID
+      if (institutionId) {
+        LoadCourses(institutionId);
+      }
     });
+
+    function LoadInstitutions() {
+      $.ajax({
+        type: "GET",
+        url: "/institutions/loadinstitutions",
+        success: function (result) {
+          var data = result.data;
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.institutionsid, item.institutionsid);
+            $(options).html(item.name);
+            $("#school").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+    function LoadCourses(institutionId) {
+      $.ajax({
+        type: "POST",
+        url: "/institutions/loadcourses",
+        data: { institutionsid: institutionId },
+        success: function (result) {
+          var data = result.data;
+          $("#course").empty();
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.course_id, item.course_id);
+            $(options).html(item.name_code);
+            $("#course").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+    $(document).on("click", "#signupBtn", function () {
+      let firstname = $("#firstname").val();
+      let middlename = $("#middlename").val();
+      let lastname = $("#lastname").val();
+      let date_of_birth = $("#birthday").val();
+      let email = $("#email").val();
+      let gender = $("#gender").val();
+      let phone = $("#phoneno").val();
+      let institutionid = $("#school").val();
+      let courseid = $("#course").val();
+      let academic_status = $("#academic_status").val();
+      let yearlevel = $("#yearlevel").val();
+      let birthplace = $("#birthplace").val();
+      let age = $("#age").val();
+      let fathers_name = $("#fathersname").val();
+      let fathers_occupation = $("#fatheroccupation").val();
+      let fathers_salary = $("#fathersalaryincome").val();
+      let mothers_name = $("#mothersname").val();
+      let mothers_occupation = $("#mothersoccupation").val();
+      let mothers_salary = $("#mothersalaryincome").val();
+      let registerdate = $("#registerdate").val();
+      // let certifyInfo = $("#usersname").val();
+      // let agreeTerms = $("#usersname").val();
+
+      console.log(firstname, "FIRSTNAME");
+
+      var message = "";
+
+      if (firstname == "") {
+        message += "First Name ";
+      }
+
+      if (middlename == "") {
+        message += "Middle Name ";
+      }
+
+      if (lastname == "") {
+        message += "Last Name ";
+      }
+
+      if (date_of_birth == "") {
+        message += "Date of Birth ";
+      }
+
+      if (email == "") {
+        message += "Email ";
+      }
+
+      if (gender == "") {
+        message += "Gender ";
+      }
+
+      if (phone == "") {
+        message += "Phone ";
+      }
+
+      if (institutionid == "") {
+        message += "Institution ";
+      }
+
+      if (courseid == "") {
+        message += "Course ";
+      }
+
+      if (academic_status == "") {
+        message += "Academic Status ";
+      }
+
+      if (yearlevel == "") {
+        message += "Year Level ";
+      }
+
+      if (birthplace == "") {
+        message += "Birth Place ";
+      }
+
+      if (age == "") {
+        message += "Age ";
+      }
+
+      if (fathers_name == "") {
+        message += "Father's Name ";
+      }
+
+      if (fathers_occupation == "") {
+        message += "Father's Occupation ";
+      }
+
+      if (fathers_salary == "") {
+        message += "Father's Salary Income ";
+      }
+
+      if (mothers_name == "") {
+        message += "Mother's Name ";
+      }
+
+      if (mothers_occupation == "") {
+        message += "Mother's Occupation ";
+      }
+
+      if (mothers_salary == "") {
+        message += "Mother's Salary Income ";
+      }
+      // if (certifyInfo == "") {
+      //     message += "Certification ";
+      // }
+
+      // if (agreeTerms == "") {
+      //     message += "Agree Terms ";
+      // }
+
+      if (message !== "") {
+        swal("Validation Error", message, "error");
+      } else {
+        $.ajax({
+          type: "POST",
+          url: "/landingpage/save",
+          data: {
+            firstname: firstname,
+            middlename: middlename,
+            lastname: lastname,
+            date_of_birth: date_of_birth,
+            email: email,
+            gender: gender,
+            phone: phone,
+            institutionid: institutionid,
+            courseid: courseid,
+            academic_status: academic_status,
+            yearlevel: yearlevel,
+            birthplace: birthplace,
+            age: age,
+            fathers_name: fathers_name,
+            fathers_occupation: fathers_occupation,
+            fathers_salary: fathers_salary,
+            mothers_name: mothers_name,
+            mothers_occupation: mothers_occupation,
+            mothers_salary: mothers_salary,
+            registerdate: registerdate,
+            // certifyInfo: certifyInfo,
+            // agreeTerms: agreeTerms,
+            // certifyInfo: certifyInfo,
+            // agreeTerms: agreeTerms,
+          },
+          success: function (result) {
+            if (result.msg === "success") {
+              function promptOTP() {
+                return swal({
+                  text: "Enter the OTP sent to your email",
+                  content: {
+                    element: "input",
+                    attributes: {
+                      placeholder: "Enter OTP",
+                      type: "text",
+                    },
+                  },
+                  buttons: {
+                    cancel: {
+                      text: "Cancel",
+                      value: "cancel",
+                      visible: true,
+                      closeModal: false,
+                    },
+                    confirm: {
+                      text: "Verify",
+                      closeModal: false,
+                    },
+                  },
+                })
+                  .then((otp) => {
+                    if (otp === "cancel") {
+                      return swal({
+                        title: "Are you sure?",
+                        text: "Do you really want to cancel the OTP verification?",
+                        icon: "warning",
+                        buttons: {
+                          cancel: "No",
+                          confirm: "Yes",
+                        },
+                        dangerMode: true,
+                      }).then((willCancel) => {
+                        if (willCancel) {
+                          swal.close(); // Close the dialog
+                          return Promise.reject("Cancelled");
+                        } else {
+                          return promptOTP(); // Reopen the OTP input dialog
+                        }
+                      });
+                    }
+
+                    if (!otp) {
+                      return swal(
+                        "No OTP entered",
+                        "Please enter the OTP sent to your email.",
+                        "error"
+                      ).then(() => promptOTP()); // Reopen the OTP input dialog
+                    }
+
+                    return $.ajax({
+                      type: "POST",
+                      url: "/landingpage/verify-otp",
+                      data: { email: $("#email").val(), otp: otp },
+                    });
+                  })
+                  .then((response) => {
+                    if (response && response.msg === "success") {
+                      return swal({
+                        title: "OTP Verified!",
+                        text: "Check your email for creating your username and password.",
+                        icon: "success",
+                      }).then(() => {
+                        // Send email with link to create username/password
+                        return $.ajax({
+                          type: "POST",
+                          url: "/landingpage/send-create-account-link",
+                          data: { email: $("#email").val() },
+                        });
+                      });
+                    } else {
+                      return swal(
+                        "Invalid OTP",
+                        "The OTP you entered is incorrect. Please try again.",
+                        "warning"
+                      ).then(() => promptOTP()); // Reopen the OTP input dialog
+                    }
+                  })
+                  .catch((err) => {
+                    if (err !== "Cancelled") {
+                      // Handle error if not cancelled
+                      swal(
+                        "Error",
+                        "Something went wrong. Please try again later.",
+                        "error"
+                      ).then(() => promptOTP()); // Reopen the OTP input dialog
+                    }
+                  });
+              }
+
+              promptOTP(); // Initial call to prompt for OTP
+            } else {
+              swal(
+                "Looks like you already have an account",
+                "Check your email for the OTP or Provide a new email",
+                "warning"
+              );
+            }
+          },
+          error: function (err) {
+            swal("Data already exists!", "You clicked the button!", "warning");
+          },
+        });
+      }
+    });
+  });
 </script>

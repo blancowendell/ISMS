@@ -6,6 +6,10 @@
   padding-bottom: 2rem; /* Adjust as needed */
 }
 
+#calendar {
+  min-height: 400px;
+}
+
 
 #autocompleteDropdown {
   display: none;
