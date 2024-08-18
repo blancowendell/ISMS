@@ -23,6 +23,9 @@ var roleacess = [
       {
         layout: "announcementslayout",
       },
+      // {
+      //   layout: "announcementslayout",
+      // },
     ],
   },
   {
@@ -30,6 +33,12 @@ var roleacess = [
     routes: [
       {
         layout: "studentindexlayout",
+      },
+      {
+        layout: "studentprofilelayout",
+      },
+      {
+        layout: "finishapplicationlayout",
       },
       // {
       //   layout: "ojtattendancelayout",

@@ -1,0 +1,264 @@
+<div class="container bootstrap snippet">
+    <div class="row mb-4">
+        <div class="col-sm-8">
+            <h1>Submit Application</h1>
+        </div>
+        <div class="col-sm-4">
+            <button class="btn btn-lg btn-success" type="submit" id="submit">
+                <i class="glyphicon glyphicon-ok-sign"></i> Submit
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-3 mb-4">
+            <div class="text-center">
+                <img id="avatar" src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="avatar img-circle img-thumbnail" alt="avatar">
+                <h6>Upload a different photo...</h6>
+                <input type="file" class="text-center center-block file-upload">
+            </div>
+            
+            <ul class="list-group mt-4">
+            <li
+                class="list-group-item d-flex justify-content-between align-items-center p-3 cell-work">
+                <div class="col-sm-6">
+                    <p class="mb-0 p-work" id="headercourse">Course/Strand</p>
+                </div>
+                <p class="mb-0 p-number" id="present"></p>
+            </li>
+            <li
+                class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
+                <div class="col-sm-6">
+                    <p class="mb-0 p-rest" id="headerschool" >School</p>
+                </div>
+                <p class="mb-0 number-rest" id="absent"></p>
+            </li>
+            </ul>
+        </div>
+        <div class="col-sm-12 col-md-9">
+            <ul class="nav nav-tabs d-flex justify-content-start mb-4" role="tablist">
+                <li class="nav-item text-center">
+                    <a class="nav-link active w-auto px-4" data-toggle="tab" href="#home" role="tab">Home</a>
+                </li>
+                <li class="nav-item text-center">
+                    <a class="nav-link w-auto px-4" data-toggle="tab" href="#upload" role="tab">Upload Documents</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="home" role="tabpanel">
+                    <form>
+                        <!-- Form fields -->
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="first_name">First name</label>
+                                <input type="text" class="form-control" name="First Name" id="first_name" placeholder="First name" title="Enter your first name if any.">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="middle_name">Middle name</label>
+                                <input type="text" class="form-control" name="Middle Name" id="middle_name" placeholder="Middle name" title="Enter your middle name if any.">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="last_name">Last name</label>
+                                <input type="text" class="form-control" name="Last Name" id="last_name" placeholder="Last name" title="Enter your last name.">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="dob">Date of birth</label>
+                                <input type="date" class="form-control" name="dob" id="dob">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="birthplace">Birthplace</label>
+                                <input type="text" class="form-control" name="birthplace" id="birthplace">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="phone">Phone number</label>
+                                <input type="text" class="form-control" name="phone" id="phone">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="gender">Gender</label>
+                                <select class="form-control" name="gender" id="gender">
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="age">Age</label>
+                                <input type="text" class="form-control" name="age" id="age">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="scholar_status">Scholar Status</label>
+                                <input type="text" class="form-control" name="scholar_status" id="scholar_status">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="student_id">Student ID</label>
+                                <input type="text" class="form-control" name="student_id" id="student_id">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="school_name">Name Of School</label>
+                                <input type="text" class="form-control" name="school_name" id="school_name">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="course_strand">Course/Strand</label>
+                                <input type="text" class="form-control" name="course_strand" id="course_strand">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="year_level">Year Level</label>
+                                <input type="text" class="form-control" name="year_level" id="year_level">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="academic_status">Academic Status</label>
+                                <input type="text" class="form-control" name="academic_status" id="academic_status">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="register_date">Register Date</label>
+                                <input type="text" class="form-control" name="register_date" id="register_date">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-4">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" name="city" id="city">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="barangay">Barangay</label>
+                                <input type="text" class="form-control" name="barangay" id="barangay">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="village">Village/Purok</label>
+                                <input type="text" class="form-control" name="village" id="village">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col">
+                                <label for="street_address">Street Address</label>
+                                <input type="text" class="form-control" name="street_address" id="street_address">
+                            </div>
+                            <div class="col">
+                                <label for="houseno">House No</label>
+                                <input type="text" class="form-control" name="houseno" id="houseno" placeholder="House No" title="Enter your house no.">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col">
+                                <label for="fathersname">Fathers Name</label>
+                                <input type="text" class="form-control" name="Fathers Name" id="fathersname" placeholder="Fathers Name" title="Enter your fathers name.">
+                            </div>
+                            <div class="col">
+                                <label for="fathersoccupation">Occupation</label>
+                                <input type="text" class="form-control" name="Occupation" id="fathersoccupation" placeholder="Fathers Occupation" title="Enter your fathers occupation.">
+                            </div>
+                            <div class="col">
+                                <label for="fathersmonthly">Monthly Salary</label>
+                                <input type="text" class="form-control" name="Fathers Monthly" id="fathersmonthly" placeholder="Fathers Monthly" title="Enter your fathers monthly salary.">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row g-3">
+                            <div class="col">
+                                <label for="mothersname">Mother's Name</label>
+                                <input type="text" class="form-control" name="Mothers Name" id="mothersname" placeholder="Mothers Name" title="Enter your mothers name.">
+                            </div>
+                            <div class="col">
+                                <label for="mothersoccupation">Occupation</label>
+                                <input type="text" class="form-control" name="Occupation" id="mothersoccupation" placeholder="Mothers Occupation" title="Enter your mothers occupation.">
+                            </div>
+                            <div class="col">
+                                <label for="mothersmonthly">Monthly Salary</label>
+                                <input type="text" class="form-control" name="Monthly Salary" id="mothersmonthly" placeholder="Mothers Monthly" title="Enter your mothers monthly salary.">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane" id="upload" role="tabpanel">
+                    <form>
+                        <div class="file-upload-wrapper">
+                            <label for="input-file-now-1">Certified True Copy ng inyong grado (mula sa nakaraang markahan)</label>
+                            <div class="file-drop-area">
+                                <span class="fake-btn">
+                                    <i class="fa fa-folder-open file-icon"></i>
+                                </span>
+                                <span class="file-msg">or drag and drop here</span>
+                                <input type="file" id="input-file-now-1" class="file-upload-input" accept="image/*,.pdf,.doc,.docx" multiple />
+                            </div>
+                            <div class="preview-area" id="preview-area-1"></div>
+                        </div>
+                    
+                        <div class="file-upload-wrapper">
+                            <label for="input-file-now-2">Orihinal at kopya ng inyong enrolment/registration form ng 1st semester (AY 2024-2025)</label>
+                            <div class="file-drop-area">
+                                <span class="fake-btn">
+                                    <i class="fa fa-folder-open file-icon"></i>
+                                </span>
+                                <span class="file-msg">or drag and drop here</span>
+                                <input type="file" id="input-file-now-2" class="file-upload-input" accept="image/*,.pdf,.doc,.docx" multiple />
+                            </div>
+                            <div class="preview-area" id="preview-area-2"></div>
+                        </div>
+                    
+                        <div class="file-upload-wrapper">
+                            <label for="input-file-now-3">Certificate of Residency</label>
+                            <div class="file-drop-area">
+                                <span class="fake-btn">
+                                    <i class="fa fa-folder-open file-icon"></i>
+                                </span>
+                                <span class="file-msg">or drag and drop here</span>
+                                <input type="file" id="input-file-now-3" class="file-upload-input" accept="image/*,.pdf,.doc,.docx" multiple />
+                            </div>
+                            <div class="preview-area" id="preview-area-3"></div>
+                        </div>
+                    
+                        <div class="file-upload-wrapper">
+                            <label for="input-file-now-4">Kapag nagtatrabaho ang mga magulang - Income Tax Return (ITR) mula sa BIR</label>
+                            <div class="file-drop-area">
+                                <span class="fake-btn">
+                                    <i class="fa fa-folder-open file-icon"></i>
+                                </span>
+                                <span class="file-msg">or drag and drop here</span>
+                                <input type="file" id="input-file-now-4" class="file-upload-input" accept="image/*,.pdf,.doc,.docx" multiple />
+                            </div>
+                            <div class="preview-area" id="preview-area-4"></div>
+                        </div>
+                    
+                        <div class="file-upload-wrapper">
+                            <label for="input-file-now-5">Kapag walang trabaho ang mga magulang - Affidavit of No Fix Income (makukuha sa City Legal Office ang sertipikasyon o katunayan bago dalhin sa BIR)</label>
+                            <div class="file-drop-area">
+                                <span class="fake-btn">
+                                    <i class="fa fa-folder-open file-icon"></i>
+                                </span>
+                                <span class="file-msg">or drag and drop here</span>
+                                <input type="file" id="input-file-now-5" class="file-upload-input" accept="image/*,.pdf,.doc,.docx" multiple />
+                            </div>
+                            <div class="preview-area" id="preview-area-5"></div>
+                        </div>
+                    
+                        <div class="file-upload-wrapper">
+                            <label for="input-file-now-6">2 piraso ng Passport Size na larawan</label>
+                            <div class="file-drop-area">
+                                <span class="fake-btn">
+                                    <i class="fa fa-folder-open file-icon"></i>
+                                </span>
+                                <span class="file-msg">or drag and drop here</span>
+                                <input type="file" id="input-file-now-6" class="file-upload-input" accept="image/*,.pdf,.doc,.docx" multiple />
+                            </div>
+                            <div class="preview-area" id="preview-area-6"></div>
+                        </div>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

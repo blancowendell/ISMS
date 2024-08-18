@@ -1,0 +1,251 @@
+<script>
+
+    let studentId = "<%= studentid %>";
+
+    $(document).ready(function () {
+        loadStudentData();
+
+        $("#submit").click(function () {
+            let image = $("#avatar").val();
+            let first_name = $("#first_name").val();
+            let middle_name = $("#middle_name").val();
+            let last_name = $("#last_name").val();
+            let dob = $("#dob").val();
+            let birthplace = $("#birthplace").val();
+            let phone = $("#phone").val();
+            let gender = $("#gender").val();
+            let age = $("#age").val();
+            let scholar_status = $("#scholar_status").val();
+            let student_id = $("#student_id").val();
+            let school_name = $("#school_name").val();
+            let course_strand = $("#course_strand").val();
+            let year_level = $("#year_level").val();
+            let academic_status = $("#academic_status").val();
+            let register_date = $("#register_date").val();
+            let city = $("#city").val();
+            let barangay = $("#barangay").val();
+            let village = $("#village").val();
+            let street_address = $("#street_address").val();
+            let houseno = $("#houseno").val();
+            let fathersname = $("#fathersname").val();
+            let fathersmonthly = $("#fathersmonthly").val();
+            let fathersoccupation = $("#fathersoccupation").val();
+            let mothersname = $("#mothersname").val();
+            let mothersoccupation = $("#mothersoccupation").val();
+            let mothersmonthly = $("#mothersmonthly").val();
+
+            var message = '';
+
+            if (
+                image == ""
+                || first_name == ""
+                || middle_name == ""
+                || last_name == ""
+                || dob == ""
+                || birthplace == ""
+                || phone == ""
+                || gender == ""
+                || age == ""
+                || student_id == ""
+                || school_name == ""
+                || course_strand == ""
+                || year_level == ""
+                || academic_status == ""
+                || register_date == ""
+                || city == ""
+                || barangay == ""
+                || village == ""
+                || street_address == ""
+                || houseno == ""
+                || fathersname == ""
+                || fathersmonthly == ""
+                || fathersoccupation == ""
+                || mothersname == ""
+                || mothersoccupation == ""
+                || mothersmonthly == "") {
+                message = "Please fill all the fields";
+            }
+            if (message !== "") {
+                swal("Validation Error", message, "error");
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/createuser/save",
+                    data: {
+                        studentid: studentId,
+                        image: image,
+                        first_name: first_name,
+                        middle_name: middle_name,
+                        last_name: last_name,
+                        dob: dob,
+                        birthplace: birthplace,
+                        phone: phone,
+                        gender: gender,
+                        age: age,
+                        scholar_status: scholar_status,
+                        student_id: student_id,
+                        school_name: school_name,
+                        course_strand: course_strand,
+                        year_level: year_level,
+                        academic_status: academic_status,
+                        register_date: register_date,
+                        city: city,
+                        barangay: barangay,
+                        village: village,
+                        street_address: street_address,
+                        houseno: houseno,
+                        fathersname: fathersname,
+                        fathersmonthly: fathersmonthly,
+                        fathersoccupation: fathersoccupation,
+                        mothersname: mothersname,
+                        mothersoccupation: mothersoccupation,
+                        mothersmonthly: mothersmonthly,
+                    },
+                    success: function (result) {
+                        if (result.msg == "success") {
+                            swal({
+                                title: "Saved Successfully",
+                                text: "You clicked the button!",
+                                icon: "success",
+                                button: "OK!",
+                            }).then((results) => {
+                                window.location.reload();
+                            });
+                        } else {
+                            swal({
+                                title: "Exist",
+                                text: "Data already exists!",
+                                icon: "warning",
+                                button: "OK!",
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        swal("Data already exist!", "You clicked the button!", "warning");
+                    },
+                });
+            }
+        });
+
+        function loadStudentData() {
+            $.ajax({
+                type: "POST",
+                url: "/finishapplication/loadexistingrecord",
+                data: {
+                    studentid: studentId,
+                },
+                success: function (result) {
+                    if (result.msg === "success") {
+                        const existingData = result.data;
+
+                        $.each(existingData, (key, item) => {
+                            $("#first_name").val(item.first_name);
+                            $("#middle_name").val(item.middle_name);
+                            $("#last_name").val(item.last_name);
+                            $("#dob").val(item.date_of_birth);
+                            $("#birthplace").val(item.birthplace);
+                            $("#phone").val(item.phone);
+                            $("#gender").val(item.gender);
+                            $("#age").val(item.age);
+                            $("#scholar_status").val(item.scholar_status);
+                            $("#student_id").val(item.student_id);
+                            $("#school_name").val(item.school_name);
+                            $("#course_strand").val(item.course_strand);
+                            $("#year_level").val(item.year_level);
+                            $("#academic_status").val(item.academic_status);
+                            $("#register_date").val(item.register_date);
+                            $("#city").val(item.city);
+                            $("#barangay").val(item.baranggay);
+                            $("#village").val(item.village);
+                            $("#street_address").val(item.street_address);
+                            $("#houseno").val(item.house_no);
+                            $("#fathersname").val(item.fathers_name);
+                            $("#fathersmonthly").val(item.fathers_salary);
+                            $("#fathersoccupation").val(item.fathers_occupation);
+                            $("#mothersname").val(item.mothers_name);
+                            $("#mothersoccupation").val(item.mothers_occupation);
+                            $("#mothersmonthly").val(item.mothers_salary);
+                            $("#image").attr("src", "data:image/jpg;base64," + item.image); // Ensure you have an element with id="image"
+                        });
+                    } else {
+                        swal("Error fetching employee data", result.message, "error");
+                    }
+                },
+                error: function (err) {
+                    swal(
+                        "An error occurred while fetching employee data",
+                        err.message,
+                        "error"
+                    );
+                },
+            });
+        }
+
+        function previewImages(inputElement, dropArea) {
+            const files = inputElement.files;
+            dropArea.innerHTML = ''; // Clear previous previews
+
+            for (const file of files) {
+                const reader = new FileReader();
+
+                if (file.type.startsWith('image/')) {
+                    reader.onload = function (e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        dropArea.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Handle PDF and Word files
+                    const fileName = file.name;
+                    const fileIcon = file.type === 'application/pdf' ? 'fa-file-pdf-o' : 'fa-file-word-o';
+                    const filePreview = document.createElement('div');
+                    filePreview.classList.add('file-preview');
+                    filePreview.innerHTML = `<i class="fa ${fileIcon}"></i> ${fileName}`;
+                    dropArea.appendChild(filePreview);
+                }
+            }
+        }
+
+        var readURL = function (input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('.avatar').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+
+        $(".file-upload").on('change', function () {
+            readURL(this);
+        });
+
+        document.querySelectorAll('.file-upload-input').forEach(inputElement => {
+            const dropArea = inputElement.closest('.file-drop-area');
+
+            dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropArea.classList.add('dragover');
+            });
+
+            dropArea.addEventListener('dragleave', () => {
+                dropArea.classList.remove('dragover');
+            });
+
+            dropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropArea.classList.remove('dragover');
+                inputElement.files = e.dataTransfer.files;
+                previewImages(inputElement, dropArea);
+            });
+
+            inputElement.addEventListener('change', () => {
+                previewImages(inputElement, dropArea);
+            });
+        });
+    });
+</script>

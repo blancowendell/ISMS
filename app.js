@@ -21,6 +21,8 @@ var adminloginRouter = require("./routes/adminlogin");
 var adminusersRouter = require("./routes/adminusers");
 var coursesRouter = require("./routes/courses");
 var master_studentsRouter = require("./routes/master_student");
+var studentprofileRouter = require("./routes/studentprofile");
+var finishapplicationRouter = require("./routes/finishapplication");
 
 
 var app = express();
@@ -55,6 +57,8 @@ app.use("/adminlogin", adminloginRouter);
 app.use("/adminusers", adminusersRouter);
 app.use("/courses", coursesRouter);
 app.use("/master_student", master_studentsRouter);
+app.use("/studentprofile", studentprofileRouter);
+app.use("/finishapplication", finishapplicationRouter);
 
 
 

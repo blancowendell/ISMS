@@ -25,7 +25,8 @@ router.get("/getbulletin", (req, res) => {
     a_targerdate as targetdate,
     a_description AS description
     FROM announcements
-    WHERE (a_type = 'Announcement' OR (a_type = 'Event' AND a_targerdate >= CURDATE()))`;
+    WHERE (a_type = 'Announcement' OR (a_type = 'Event' AND a_targerdate >= CURDATE()))
+    AND a_status = 'Active'`;
 
     mysql
       .mysqlQueryPromise(sql)

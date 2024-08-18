@@ -1,3 +1,175 @@
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .avatar {
+      width: 100px;
+      height: 100px;
+  }
+  
+  .file-upload {
+      width: 100%;
+  }
+  
+  .nav-tabs {
+      flex-direction: column;
+  }
+  
+  .nav-link {
+      text-align: center;
+      width: 100%;
+      padding: 10px;
+  }
+  
+  .panel {
+      margin-bottom: 20px;
+  }
+  
+  .form-control {
+      width: 100%;
+  }
+}
+
+
+@media (max-width: 576px) {
+  .file-drop-area {
+      padding: 0.5rem;
+  }
+
+  .file-drop-area .fake-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+  }
+
+  .file-drop-area .file-msg {
+      font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .row {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+  }
+
+  .col-sm-8, .col-sm-4 {
+      width: 100%;
+      padding: 0;
+  }
+
+  .text-right {
+      text-align: center;
+      margin-top: 1rem; /* Adjust spacing between elements as needed */
+  }
+  
+  .btn-lg {
+      margin-top: 1rem; /* Adjust spacing as needed */
+      display: inline-flex; /* Ensures button centers correctly */
+      align-items: center; /* Center items vertically within the button */
+  }
+}
+
+/* DRAG AND DROP UPLOAD */
+.file-drop-area {
+  position: relative;
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  overflow: hidden;
+  height: 150px; /* Adjust the height as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.file-drop-area img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain; /* Ensures images fit within the area */
+}
+
+.file-drop-area .fake-btn {
+  display: inline-block;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.file-drop-area .file-msg {
+  display: block;
+  margin-top: 10px;
+  color: #555;
+}
+
+.file-drop-area.dragover {
+  border-color: #007bff;
+}
+
+.file-drop-area .file-icon {
+  font-size: 24px;
+}
+
+.file-drop-area .file-preview {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+/* DRAWER TABS */
+
+
+.drawer-tabs {
+  margin-bottom: 0;
+  border: none;
+}
+.drawer-item a {
+  display: block;
+  padding: 15px;
+  color: #333;
+  text-decoration: none;
+  border-left: 5px solid transparent;
+  background-color: #f8f9fa;
+}
+.drawer-item.active a {
+  background-color: #007bff;
+  color: white;
+  border-left-color: #007bff;
+}
+.drawer-item:hover a {
+  background-color: #e9ecef;
+  color: #007bff;
+}
+
+
+/* Icon styles */
+
+.verified-icon {
+    color: green;
+}
+
+.not-verified-icon {
+    color: red;
+}
+
+/* Status text styles */
+.verified {
+    color: green;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.UnVerified { /* Ensure the class name is correct */
+    color: red;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+
 /*---- wendell/class -----*/
 .uppercase-input {
   text-transform: uppercase;
@@ -1848,7 +2020,8 @@ span.prev-bday, span.next-bday {
 }
 
 div#nav-tab.nav.nav-tabs, .ch-generate {
-  background-color: #7a1818 !important;
+  background-color: #feffaa !important;
+  color: black !important;
 }
 
 .generate-profile,
@@ -1932,15 +2105,15 @@ div#nav-tab.nav.nav-tabs, .ch-generate {
 }
 
 .cell-work {
-  background-color: #801919 !important;
+  background-color: white !important;
   border-radius: 0px !important;
 }
 
 .cell-rest {
-  background-color: #fef8ea !important;
+  background-color: white !important;
 }
 .p-work, .p-number {
-  color: white !important;
+  color: black !important;
   font-weight: 600;
 }
 
