@@ -1,12 +1,85 @@
 <script>
-
     let studentId = "<%= studentid %>";
+    let base64StringGradeCopy = "";
+    let base64StringRegForm = "";
+    let base64StringCertRes = "";
+    let base64StringItr = "";
+    let base64StringNfi = "";
+    let base64profileImage = "";
 
     $(document).ready(function () {
         loadStudentData();
+        LoadInstitutions();
+        LoadCoursesOnly();
 
-        $("#submit").click(function () {
-            let image = $("#avatar").val();
+
+        $("#school_name").change(function () {
+            var institutionId = $(this).val(); // Get the selected institution ID
+            if (institutionId) {
+                LoadCourses(institutionId);
+            }
+        });
+
+
+        function LoadInstitutions() {
+            $.ajax({
+                type: "GET",
+                url: "/institutions/loadinstitutions",
+                success: function (result) {
+                    var data = result.data;
+
+                    $.each(data, function (key, item) {
+                        var options = new Option(item.institutionsid, item.institutionsid);
+                        $(options).html(item.name);
+                        $("#school_name").append(options);
+                    });
+                },
+                error: function (result) {
+                    alert("error: " + result.data);
+                },
+            });
+        }
+
+        function LoadCourses(institutionId) {
+            $.ajax({
+                type: "POST",
+                url: "/institutions/loadcourses",
+                data: { institutionsid: institutionId },
+                success: function (result) {
+                    var data = result.data;
+                    $("#course_strand").empty();
+
+                    $.each(data, function (key, item) {
+                        var options = new Option(item.course_id, item.course_id);
+                        $(options).html(item.name_code);
+                        $("#course_strand").append(options);
+                    });
+                },
+                error: function (result) {
+                    alert("error: " + result.data);
+                },
+            });
+        }
+
+        function LoadCoursesOnly() {
+            $.ajax({
+                type: "GET",
+                url: "/courses/loadcourses",
+                success: function (result) {
+                    var data = result.data;
+                    $.each(data, function (key, item) {
+                        var options = new Option(item.course_id, item.course_id);
+                        $(options).html(item.name_code);
+                        $("#course_strand").append(options);
+                    });
+                },
+                error: function (result) {
+                    alert("error: " + result.data);
+                },
+            });
+        }
+
+        $(document).on("click", "#submit", function () {
             let first_name = $("#first_name").val();
             let middle_name = $("#middle_name").val();
             let last_name = $("#last_name").val();
@@ -33,47 +106,89 @@
             let mothersname = $("#mothersname").val();
             let mothersoccupation = $("#mothersoccupation").val();
             let mothersmonthly = $("#mothersmonthly").val();
+            let imageFile = base64profileImage;
+            let imageFileGradeCopy = base64StringGradeCopy;
+            let imageFileRegForm = base64StringRegForm;
+            let imageFileCertRes = base64StringCertRes;
+            let imageFileItr = base64StringItr;
+            let imageFileNfi = base64StringNfi;
+            var message = "";
 
-            var message = '';
+            console.log(imageFileGradeCopy, 'image');
 
-            if (
-                image == ""
-                || first_name == ""
-                || middle_name == ""
-                || last_name == ""
-                || dob == ""
-                || birthplace == ""
-                || phone == ""
-                || gender == ""
-                || age == ""
-                || student_id == ""
-                || school_name == ""
-                || course_strand == ""
-                || year_level == ""
-                || academic_status == ""
-                || register_date == ""
-                || city == ""
-                || barangay == ""
-                || village == ""
-                || street_address == ""
-                || houseno == ""
-                || fathersname == ""
-                || fathersmonthly == ""
-                || fathersoccupation == ""
-                || mothersname == ""
-                || mothersoccupation == ""
-                || mothersmonthly == "") {
-                message = "Please fill all the fields";
+
+            if (first_name == "") {
+                message += "First Name ";
             }
+
+            if (middle_name == "") {
+                message += "Middle Name ";
+            }
+
+            if (last_name == "") {
+                message += "Last Name ";
+            }
+
+            if (dob == "") {
+                message += "Date of Birth ";
+            }
+
+            if (gender == "") {
+                message += "Gender ";
+            }
+
+            if (phone == "") {
+                message += "Phone ";
+            }
+
+            if (academic_status == "") {
+                message += "Academic Status ";
+            }
+
+            if (year_level == "") {
+                message += "Year Level ";
+            }
+
+            if (birthplace == "") {
+                message += "Birth Place ";
+            }
+
+            if (age == "") {
+                message += "Age ";
+            }
+
+            if (fathersname == "") {
+                message += "Father's Name ";
+            }
+
+            if (fathersoccupation == "") {
+                message += "Father's Occupation ";
+            }
+
+            if (fathersmonthly == "") {
+                message += "Father's Salary Income ";
+            }
+
+            if (mothersname == "") {
+                message += "Mother's Name ";
+            }
+
+            if (mothersoccupation == "") {
+                message += "Mother's Occupation ";
+            }
+
+            if (mothersmonthly == "") {
+                message += "Mother's Salary Income ";
+            }
+
             if (message !== "") {
                 swal("Validation Error", message, "error");
             } else {
                 $.ajax({
                     type: "POST",
-                    url: "/createuser/save",
+                    url: "/finishapplication/save",
                     data: {
                         studentid: studentId,
-                        image: image,
                         first_name: first_name,
                         middle_name: middle_name,
                         last_name: last_name,
@@ -83,7 +198,6 @@
                         gender: gender,
                         age: age,
                         scholar_status: scholar_status,
-                        student_id: student_id,
                         school_name: school_name,
                         course_strand: course_strand,
                         year_level: year_level,
@@ -100,6 +214,12 @@
                         mothersname: mothersname,
                         mothersoccupation: mothersoccupation,
                         mothersmonthly: mothersmonthly,
+                        imageFile: imageFile,
+                        imageFileGradeCopy: imageFileGradeCopy,
+                        imageFileRegForm: imageFileRegForm,
+                        imageFileCertRes: imageFileCertRes,
+                        imageFileItr: imageFileItr,
+                        imageFileNfi: imageFileNfi,
                     },
                     success: function (result) {
                         if (result.msg == "success") {
@@ -121,11 +241,12 @@
                         }
                     },
                     error: function (err) {
-                        swal("Data already exist!", "You clicked the button!", "warning");
+                        swal("Data already exists!", "You clicked the button!", "warning");
                     },
                 });
             }
         });
+
 
         function loadStudentData() {
             $.ajax({
@@ -147,13 +268,13 @@
                             $("#phone").val(item.phone);
                             $("#gender").val(item.gender);
                             $("#age").val(item.age);
-                            $("#scholar_status").val(item.scholar_status);
-                            $("#student_id").val(item.student_id);
-                            $("#school_name").val(item.school_name);
-                            $("#course_strand").val(item.course_strand);
+                            // $("#scholar_status").val(item.status);
+                            $("#student_id").val(item.studentid);
+                            $("#school_name").val(item.institutionid);
+                            $("#course_strand").val(item.courseid);
                             $("#year_level").val(item.year_level);
                             $("#academic_status").val(item.academic_status);
-                            $("#register_date").val(item.register_date);
+                            $("#register_date").val(item.registerdate);
                             $("#city").val(item.city);
                             $("#barangay").val(item.baranggay);
                             $("#village").val(item.village);
@@ -247,5 +368,178 @@
                 previewImages(inputElement, dropArea);
             });
         });
+
+
+
+
+        //#region File Upload
+
+        $(document).on("change", "#profileImage", function (e) {
+            const input = document.getElementById("profileImage");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("profileimagepreview");
+                preview.src = reader.result;
+            };
+            profileImage();
+        });
+
+        function profileImage() {
+            const input = document.getElementById("reqtruecopygrade");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64StringGradeCopy = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64StringGradeCopy;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        $(document).on("change", "#reqtruecopygrade", function (e) {
+            const input = document.getElementById("reqtruecopygrade");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("truecopypreview");
+                preview.src = reader.result;
+            };
+            trueCopyGrade();
+        });
+
+        function trueCopyGrade() {
+            const input = document.getElementById("reqtruecopygrade");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64StringGradeCopy = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64StringGradeCopy;
+            };
+            reader.readAsDataURL(file);
+        }
+
+
+        $(document).on("change", "#reqregform", function (e) {
+            const input = document.getElementById("reqregform");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("regformpreview");
+                preview.src = reader.result;
+            };
+            registrationForm();
+        });
+
+        function registrationForm() {
+            const input = document.getElementById("reqregform");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64StringRegForm = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64StringRegForm;
+            };
+            reader.readAsDataURL(file);
+        }
+
+
+        $(document).on("change", "#reqcertres", function (e) {
+            const input = document.getElementById("reqcertres");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("certrespreview");
+                preview.src = reader.result;
+            };
+            certificateResidency();
+        });
+
+        function certificateResidency() {
+            const input = document.getElementById("reqcertres");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64StringCertRes = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64StringCertRes;
+            };
+            reader.readAsDataURL(file);
+        }
+
+
+        $(document).on("change", "#reqitr", function (e) {
+            const input = document.getElementById("reqitr");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("itipreview");
+                preview.src = reader.result;
+            };
+            itrForm();
+        });
+
+        function itrForm() {
+            const input = document.getElementById("reqitr");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64StringItr = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64StringItr;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        $(document).on("change", "#reqnfi", function (e) {
+            const input = document.getElementById("reqnfi");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("nfipreview");
+                preview.src = reader.result;
+            };
+            nfiForm();
+        });
+
+        function nfiForm() {
+            const input = document.getElementById("reqnfi");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64StringNfi = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64StringNfi;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        //#endregion
+
     });
 </script>
