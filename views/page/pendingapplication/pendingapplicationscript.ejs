@@ -1,0 +1,529 @@
+<script>
+    let institutionsid = "";
+    let base64String = "";
+    let studentid = "";
+
+    $(document).ready(function () {
+        LoadTable();
+        searchTable();
+
+        $(document).on("keyup", "#myInput", function () {
+            searchTable();
+        });
+
+        function LoadTable() {
+            $("#dataTablePendingApplications").DataTable({
+                destroy: true,
+                processing: true,
+                serverSide: true,
+                paging: false,
+                searching: false,
+                info: false,
+                scrollY: 600,
+                scrollCollapse: true,
+                serverMethod: "GET",
+                ajax: {
+                    url: "/pendingapplication/load",
+                    dataSrc: (json) => {
+                        var finalData = [];
+                        var data = json.data;
+
+                        $.each(data, (key, item) => {
+                            var action = "";
+                            var status = item.status;
+
+                            action = `
+                        <button id="editBtn" class="btn text-primary" name="editBtn" data-bs-toggle="modal" data-bs-target="#viewapplicationmodal"><i class="fas fa-fw fa-pen"></i></button>
+                       `;
+
+                            var imgElement = document.createElement("img");
+                            imgElement.src = "data:image/jpg;base64," + item.image;
+                            imgElement.alt = "Profile Image";
+                            imgElement.style.width = "90px";
+                            imgElement.style.height = "90px";
+
+                            finalData.push({
+                                image: imgElement.outerHTML,
+                                studentid: item.studentid,
+                                fullname: item.fullname,
+                                institutionid: item.institutionid,
+                                courseid: item.courseid,
+                                city: item.city,
+                                baranggay: item.baranggay,
+                                academicstatus: item.academic_status,
+                                yearlevel: item.yearlevel,
+                                email: item.email,
+                                phone: item.phone,
+                                action: action,
+                            });
+                        });
+
+                        return finalData;
+                    },
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: "td-indent",
+                    },
+                ],
+                columns: [
+                    { data: "image" },
+                    { data: "studentid" },
+                    { data: "fullname" },
+                    { data: "institutionid" },
+                    { data: "courseid" },
+                    { data: "city" },
+                    { data: "baranggay" },
+                    { data: "academicstatus" },
+                    { data: "yearlevel" },
+                    { data: "email" },
+                    { data: "phone" },
+                    { data: "action" }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    $("td", row).each(function (index) {
+                        this.style.textAlign = "center";
+                        this.style.verticalAlign = "middle";
+                    });
+                },
+
+                initComplete: function () { },
+            });
+        }
+
+        $("#instphone").inputmask({
+            mask: "+63 999 9999 9999",
+            placeholder: " ",
+            showMaskOnHover: false,
+            showMaskOnFocus: true,
+            definitions: {
+                9: {
+                    validator: "[0-9]",
+                    cardinality: 1,
+                    casing: "lower",
+                },
+            },
+            onBeforePaste: function (pastedValue, opts) {
+                if (pastedValue.startsWith("09")) {
+                    return pastedValue.substring(1);
+                }
+                return pastedValue;
+            },
+            oncomplete: function () {
+                let inputValue = $("#instphone").val();
+                if (inputValue.includes("09")) {
+                    $("#instphone").val(inputValue.replace("09", "9"));
+                }
+            },
+        });
+
+        $(document).on("click", "#institutionsSaveBtn", function () {
+            let institutionsname = $("#instname").val();
+            let institutionsaddress = $("#instaddress").val();
+            let institutionsphone = $("#instphone").val().replace(/\s+/g, "");
+            let institutionsemail = $("#instemail").val();
+            let image = base64String;
+
+            var message = "";
+
+            if (institutionsname == "") {
+                message += "Institutions name is required. ";
+            }
+
+            if (institutionsaddress == "") {
+                message += "Institutions address is required. ";
+            }
+
+            if (
+                institutionsphone == "" ||
+                !/^(\+\d{1,3}[- ]?)?\d{10}$/.test(institutionsphone)
+            ) {
+                message += "Valid institutions phone is required. ";
+            }
+
+            if (institutionsemail == "") {
+                message += "Institutions email is required. ";
+            }
+
+            if (image == "") {
+                message += "Image is required. ";
+            }
+
+            if (message !== "") {
+                swal("Validation Error", message, "error");
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/institutions/save",
+                    data: {
+                        institutionsname: institutionsname,
+                        institutionsaddress: institutionsaddress,
+                        institutionsphone: institutionsphone,
+                        institutionsemail: institutionsemail,
+                        image: image,
+                    },
+                    success: function (result) {
+                        if (result.msg == "success") {
+                            swal({
+                                title: "Saved Successfully",
+                                text: "You clicked the button!",
+                                icon: "success",
+                                button: "OK!",
+                            }).then((results) => {
+                                window.location.reload();
+                            });
+                            LoadTable();
+                        } else {
+                            swal({
+                                title: "Exist",
+                                text: "Data already exists!",
+                                icon: "warning",
+                                button: "OK!",
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        swal("Data already exists!", "You clicked the button!", "warning");
+                    },
+                });
+            }
+        });
+
+        $("#dataTablePendingApplications tbody").on("click", "tr", function () {
+            var dataRow = [];
+            $(this)
+                .closest("tr")
+                .find("td")
+                .each(function () {
+                    dataRow.push($(this).text());
+                });
+            studentid = dataRow[1];
+            console.log(dataRow);
+        });
+
+        $(document).on("click", "#editBtn", function () {
+            $.ajax({
+                type: "POST",
+                url: "/pendingapplication/loadstudentrequest",
+                data: {
+                    studentid: studentid,
+                },
+                success: function (result) {
+                    if (result.msg === "success") {
+                        const existingData = result.data;
+
+                        $.each(existingData, (key, item) => {
+                            $("#editpreview").attr("src", "data:image/jpg;base64," + item.image);
+                            $("#dateregisteredreq").text(item.registerdate);
+                            $("#cityreq").text(item.city);
+                            $("#barranggayreq").text(item.baranggay);
+                            $("#villagepurokreq").text(item.village);
+                            $("#streetreq").text(item.street);
+                            $("#fullnamereq").text(item.fullname);
+                            $("#emailreq").text(item.email);
+                            $("#dobreq").text(item.date_of_birth);
+                            $("#birthplacereq").text(item.birthplace);
+                            $("#phonereq").text(item.phone);
+                            $("#schholenamereq").text(item.schoolname);
+                            $("#coursereq").text(item.course_code);
+                            $("#acadstatusreq").text(item.academic_status);
+                            $("#agereq").text(item.age);
+                            $("#statusreq").text(item.status);
+                            $("#fathersnamereq").text(item.fathers_name);
+                            $("#fathersoccupationreq").text(item.fathers_occupation);
+                            $("#mothersnamereq").text(item.mothers_name);
+                            $("#mothersoccupationreq").text(item.mothers_occupation);
+                            $("#truecopypreview").attr("src", "data:image/jpg;base64," + item.grade_copy);
+                            $("#regformpreview").attr("src", "data:image/jpg;base64," + item.registration_form);
+                            $("#certrespreview").attr("src", "data:image/jpg;base64," + item.certificate_residency);
+                            $("#itipreview").attr("src", "data:image/jpg;base64," + item.itr);
+                            $("#nfipreview").attr("src", "data:image/jpg;base64," + item.nfi);
+
+                            function handleFileButtons(base64String, downloadButtonId, previewId, previewButtonId, fileName) {
+                                const fileHeader = base64String.substring(0, 10);
+                                let fileType = "";
+                                let blobType = "";
+                                let fileExtension = "";
+
+                                if (fileHeader.includes("JVBER")) {
+                                    // PDF file
+                                    fileType = "pdf";
+                                    blobType = "application/pdf";
+                                    fileExtension = ".pdf";
+                                } else if (fileHeader.includes("/9j/4")) {
+                                    // JPEG file
+                                    fileType = "image/jpeg";
+                                    blobType = "image/jpeg";
+                                    fileExtension = ".jpg";
+                                } else if (fileHeader.includes("iVBORw0KG")) {
+                                    // PNG file
+                                    fileType = "image/png";
+                                    blobType = "image/png";
+                                    fileExtension = ".png";
+                                }
+
+                                if (fileType && blobType) {
+                                    const byteCharacters = atob(base64String);
+                                    const byteNumbers = new Array(byteCharacters.length);
+                                    for (let i = 0; i < byteCharacters.length; i++) {
+                                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                    }
+                                    const byteArray = new Uint8Array(byteNumbers);
+                                    const blob = new Blob([byteArray], { type: blobType });
+                                    const downloadLink = URL.createObjectURL(blob);
+
+                                    // Set the preview image and download link
+                                    if (fileType.startsWith("image")) {
+                                        $(`#${previewId}`).attr("src", downloadLink);
+                                        $(`#${previewId}`).show();
+                                    } else if (fileType === "application/pdf") {
+                                        $(`#${previewId}`).attr("src", "https://via.placeholder.com/250?text=PDF"); // Placeholder for PDF
+                                        $(`#${previewId}`).hide(); // Hide the preview image for PDF
+                                    }
+
+                                    $(`#${downloadButtonId}`).attr("href", downloadLink).attr("download", `${fileName}${fileExtension}`).show();
+
+                                    // Handle preview button click
+                                    $(`#${previewButtonId}`).on("click", function () {
+                                        window.open(downloadLink, '_blank');
+                                    }).show();
+                                }
+                            }
+
+                            // Apply the function to each file preview and button
+                            handleFileButtons(item.grade_copy, "downloadTrueCopy", "truecopypreview", "previewTrueCopy", "TrueCopy");
+                            handleFileButtons(item.registration_form, "downloadRegForm", "regformpreview", "previewRegForm", "RegistrationForm");
+                            handleFileButtons(item.certificate_residency, "downloadCertRes", "certrespreview", "previewCertRes", "CertificateOfResidency");
+                            handleFileButtons(item.itr, "downloadItr", "itipreview", "previewItr", "IncomeTaxReturn");
+                            handleFileButtons(item.nfi, "downloadNfi", "nfipreview", "previewNfi", "AffidavitOfNoFixIncome");
+
+
+
+                        });
+                    } else {
+                        swal("Error fetching employee data", message, "error");
+                    }
+                },
+                error: function (err) {
+                    swal(
+                        "An error occurred while fetching employee data",
+                        message,
+                        "error"
+                    );
+                },
+            });
+        });
+
+        $(document).on("click", "#applicationSaveBtn", function () {
+            let id = studentid;
+            var message = "";
+
+            if (studentid === "") {
+                message += "Student Id is required. ";
+            }
+
+            if (message !== "") {
+                swal("Validation Error", message, "error");
+            } else {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to approve this application?",
+                    icon: "warning",
+                    buttons: ["Cancel", "Yes, approve it!"],
+                    dangerMode: true,
+                }).then((willApprove) => {
+                    if (willApprove) {
+                        swal({
+                            title: "Processing",
+                            text: "Please wait while we process your request.",
+                            icon: "info",
+                            buttons: false,
+                            closeOnClickOutside: false,
+                            closeOnEsc: false,
+                            timer: 15000 // Optional: Duration of the loading state
+                        });
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/pendingapplication/approved",
+                            data: {
+                                studentid: id,
+                            },
+                            success: function (result) {
+                                swal.close();
+
+                                if (result.msg === "success") {
+                                    swal({
+                                        title: "Update Successfully",
+                                        text: "The application has been approved!",
+                                        icon: "success",
+                                        button: "OK!",
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                    LoadTable();
+                                } else if (result.msg === "exist") {
+                                    swal({
+                                        title: "Exist",
+                                        text: "Data already exists!",
+                                        icon: "warning",
+                                        button: "OK!",
+                                    });
+                                } else {
+                                    swal(
+                                        "Data already exists!",
+                                        "You clicked the button!",
+                                        "warning"
+                                    );
+                                }
+                            },
+                            error: function (err) {
+                                swal.close();
+                                swal("Error", "An error occurred while saving data.", "error");
+                            },
+                        });
+                    } else {
+                        swal("Cancelled", "The approval was cancelled.", "info");
+                    }
+                });
+            }
+        });
+
+        $(document).on("click", "#applicationRejectBtn", function () {
+            let id = studentid;
+
+            if (studentid === "") {
+                swal("Validation Error", "Student Id is required.", "error");
+            } else {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to reject this application?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willReject) => {
+                    if (willReject) {
+                        // Close the view application modal
+                        $('#viewapplicationmodal').modal('hide');
+
+                        // Show the rejection modal
+                        $('#rejectionModal').modal('show');
+
+                        // Handle rejection submission
+                        $('#sendRejectionBtn').off('click').on('click', function () {
+                            let rejectionMessage = $('#rejectionMessage').val().trim();
+
+                            if (rejectionMessage) {
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/pendingapplication/reject",
+                                    data: {
+                                        studentid: id,
+                                        message: rejectionMessage,
+                                    },
+                                    success: function (result) {
+                                        if (result.msg === "success") {
+                                            swal({
+                                                title: "Rejected Successfully",
+                                                text: "The application has been rejected.",
+                                                icon: "success",
+                                                button: "OK!",
+                                            }).then(() => {
+                                                window.location.reload();
+                                            });
+                                        } else {
+                                            swal("Error", "An error occurred while rejecting the application.", "error");
+                                        }
+                                    },
+                                    error: function () {
+                                        swal("Error", "An error occurred while sending the rejection.", "error");
+                                    }
+                                });
+                                $('#rejectionModal').modal('hide');
+                            } else {
+                                swal("Cancelled", "Rejection message was not provided.", "error");
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        $(document).on("change", "#announcementimage", function (e) {
+            const input = document.getElementById("announcementimage");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("preview");
+                preview.src = reader.result;
+            };
+            imageUploaded();
+        });
+
+        function imageUploaded() {
+            const input = document.getElementById("announcementimage");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64String;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        $(document).on("change", "#editannouncementimage", function (e) {
+            const input = document.getElementById("editannouncementimage");
+            const file = input.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                const preview = document.getElementById("editpreview");
+                preview.src = reader.result;
+            };
+            editimage();
+        });
+
+        function editimage() {
+            const input = document.getElementById("editannouncementimage");
+            const file = input.files[0];
+
+            var reader = new FileReader();
+
+            reader.onload = function () {
+                base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                imageBase64Stringsep = base64String;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function searchTable() {
+            var input, filter, found, table, tr, td, i, j;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("dataTablePendingApplications");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                    found = false;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    });
+</script>

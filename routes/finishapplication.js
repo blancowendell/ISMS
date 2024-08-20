@@ -18,6 +18,42 @@ router.get("/", function (req, res, next) {
 module.exports = router;
 
 
+router.get("/load", function (req, res, next) {
+  try {
+    let studentid = req.session.studentid;
+    let sql = `
+    SELECT * FROM master_students_request
+    WHERE msr_studentid = '${studentid}' AND msr_status = 'Applied'`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      console.log(result);
+
+      if (result.length > 0) {  // Check if the result length is greater than 0
+        let data = DataModeling(result, "msr_");
+        console.log(data);
+        res.json({
+          status: "exists",    // Indicate that the record exists
+          data: JsonDataResponse(data)
+        });
+      } else {
+        res.json({
+          status: "not_found", // Indicate that no record was found
+          data: JsonDataResponse(result)
+        });
+      }
+    });
+  } catch (error) {
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+
 router.post("/loadexistingrecord", (req, res) => {
     try {
       let studentid = req.body.studentid;
@@ -89,10 +125,6 @@ router.post("/loadexistingrecord", (req, res) => {
       } = req.body;
       let scholar_status = 'Applied';
 
-      console.log('Request Body:', req.body);
-
-      
-  
       // Update the InsertStatement to include the new columns for files
       let sql = InsertStatement("master_students_request", "msr", [
         "studentid",
@@ -166,6 +198,7 @@ router.post("/loadexistingrecord", (req, res) => {
           imageFileNfi,
         ],
       ];
+      
   
       let checkStatement = SelectStatement(
         "select * from master_students_request where msr_studentid=? and msr_status=?",

@@ -23,9 +23,12 @@ var roleacess = [
       {
         layout: "announcementslayout",
       },
-      // {
-      //   layout: "announcementslayout",
-      // },
+      {
+        layout: "pendingapplicationlayout",
+      },
+      {
+        layout: "calendarlayout",
+      },
     ],
   },
   {

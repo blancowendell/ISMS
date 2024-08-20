@@ -1,3 +1,25 @@
+/*INDEX DASHBOARD*/
+.applicant {
+  margin-bottom: 20px;
+}
+
+.applicant img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 50%;
+}
+
+.applicant h5 {
+  margin: 0;
+}
+
+.applicant p {
+  margin: 5px 0;
+}
+
+
+
+
 /* DRAG AND DROP UPLOAD */
 #truecopypreview,
 #regformpreview,
@@ -148,12 +170,14 @@
     color: green;
     font-weight: bold;
     font-size: 30px;
+    margin-left: 10px;
 }
 
 .UnVerified { /* Ensure the class name is correct */
     color: red;
     font-weight: bold;
     font-size: 30px;
+    margin-left: 10px;
 }
 
 
@@ -243,7 +267,7 @@ body{
 }
 
 .fa-bars {
-  color: white !important;
+  color: rgb(3, 3, 3) !important;
 }
 
 .fa-bars:hover {

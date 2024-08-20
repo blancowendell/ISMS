@@ -23,6 +23,8 @@ var coursesRouter = require("./routes/courses");
 var master_studentsRouter = require("./routes/master_student");
 var studentprofileRouter = require("./routes/studentprofile");
 var finishapplicationRouter = require("./routes/finishapplication");
+var pendingapplicationRouter = require("./routes/pendingapplication");
+var calendarRouter = require("./routes/calendar");
 
 
 var app = express();
@@ -59,6 +61,8 @@ app.use("/courses", coursesRouter);
 app.use("/master_student", master_studentsRouter);
 app.use("/studentprofile", studentprofileRouter);
 app.use("/finishapplication", finishapplicationRouter);
+app.use("/pendingapplication", pendingapplicationRouter);
+app.use("/calendar", calendarRouter);
 
 
 

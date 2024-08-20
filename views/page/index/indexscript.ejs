@@ -1,0 +1,49 @@
+<script>
+    $(document).ready(function () {
+        console.log("hello");
+        
+        loadNewApplicants();
+
+        function loadNewApplicants() {
+    console.log("Fetching new applicants...");
+
+    $.ajax({
+        url: "/loadnewapplicants",
+        type: "GET",
+        success: function (response) {
+            console.log("Data fetched:", response);
+
+            if (response.data && response.data.length > 0) {
+                let applicantsHtml = '';
+                response.data.forEach((applicant, index) => {
+                    applicantsHtml += `
+                        <div class="applicant" id="applicant-${index}">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <img src="data:image/jpeg;base64,${applicant.image}" alt="Applicant Image" class="img-fluid rounded-circle">
+                                </div>
+                                <div class="col-md-10">
+                                    <h5>${applicant.fullname}</h5>
+                                    <p>School: ${applicant.schoolname}</p>
+                                    <p>Course: ${applicant.corse_code}</p>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>`;
+                });
+                $('#applicants').html(applicantsHtml);
+            } else {
+                $('#applicants').html('<p>No new applicants found.</p>');
+            }
+        },
+        error: function (err) {
+            console.error("Error fetching applicants:", err);
+            $('#applicants').html('<p>Failed to load applicants.</p>');
+        }
+    });
+}
+
+
+
+    });
+</script>
