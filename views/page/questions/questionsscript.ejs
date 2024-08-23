@@ -1,0 +1,396 @@
+<script>
+    let userid = "";
+    let base64String = "";
+    let currentPassword = "";
+  
+    $(document).ready(function () {
+      LoadTable();
+      searchTable();
+      LoadAccess();
+      EditLoadAccess();
+  
+      $(document).on("keyup", "#myInput", function () {
+        searchTable();
+      });
+  
+      function LoadTable() {
+        $("#dataTableQuestions").DataTable({
+          destroy: true,
+          processing: true,
+          serverSide: true,
+          paging: false,
+          searching: false,
+          info: false,
+          scrollY: 600,
+          scrollCollapse: true,
+          serverMethod: "GET",
+          ajax: {
+            url: "/questions/load",
+            dataSrc: (json) => {
+              var finalData = [];
+              var data = json.data;
+  
+              $.each(data, (key, item) => {
+                var action = "";
+                var status = item.status;
+  
+                action = `
+                      <button id="editBtn" class="btn text-primary" name="editBtn" data-bs-toggle="modal" data-bs-target="#editadminusersmodal"><i class="fas fa-fw fa-pen"></i></button>
+                     `;
+
+  
+                finalData.push({
+                  questionid: item.questionid,
+                  description: item.description,
+                  responseid: item.responseid,
+                  createdate: item.createdate,
+                  createby: item.createby,
+                  action: action,
+                });
+              });
+  
+              return finalData;
+            },
+          },
+          columnDefs: [
+            {
+              targets: 1,
+              className: "td-indent",
+            },
+          ],
+          columns: [
+            { data: "questionid" },
+            { data: "description" },
+            { data: "responseid" },
+            { data: "createdate" },
+            { data: "createby" },
+            { data: "action" },
+          ],
+          createdRow: function (row, data, dataIndex) {
+            $("td", row).each(function (index) {
+              this.style.textAlign = "center";
+              this.style.verticalAlign = "middle";
+            });
+          },
+          initComplete: function () {},
+        });
+      }
+  
+      function LoadAccess() {
+        $.ajax({
+          type: "GET",
+          url: "/access/load",
+          success: function (result) {
+            var data = result.data;
+  
+            $.each(data, function (key, item) {
+              var options = new Option(item.accessid, item.accessid);
+              $(options).html(item.accessname);
+              $("#accesstype").append(options);
+            });
+          },
+          error: function (result) {
+            alert("error: " + result.data);
+          },
+        });
+      }
+  
+      $(document).on("click", "#addquestionSaveBtn", function () {
+        let question = $("#questions").val();
+        let response = $("#responses").val();
+  
+        var message = "";
+  
+        if (question == "") {
+          message += "Question is required. ";
+        }
+  
+        if (response == "") {
+          message += "Response is required. ";
+        }
+  
+        if (message !== "") {
+          swal("Validation Error", message, "error");
+        } else {
+          $.ajax({
+            type: "POST",
+            url: "/questions/save",
+            data: {
+              question: question,
+              response: response,
+            },
+            success: function (result) {
+              if (result.msg == "success") {
+                swal({
+                  title: "Saved Successfully",
+                  text: "You clicked the button!",
+                  icon: "success",
+                  button: "OK!",
+                }).then((results) => {
+                  window.location.reload();
+                });
+                LoadTable();
+              } else {
+                swal({
+                  title: "Exist",
+                  text: "Data already exists!",
+                  icon: "warning",
+                  button: "OK!",
+                });
+              }
+            },
+            error: function (err) {
+              swal("Data already exists!", "You clicked the button!", "warning");
+            },
+          });
+        }
+      });
+  
+      $("#dataTableQuestions tbody").on("click", "tr", function () {
+        var dataRow = [];
+        $(this)
+          .closest("tr")
+          .find("td")
+          .each(function () {
+            dataRow.push($(this).text());
+          });
+        userid = dataRow[1];
+        console.log(dataRow);
+      });
+  
+      function EditLoadAccess() {
+        $.ajax({
+          type: "GET",
+          url: "/access/load",
+          success: function (result) {
+            var data = result.data;
+  
+            $.each(data, function (key, item) {
+              var options = new Option(item.accessid, item.accessid);
+              $(options).html(item.accessname);
+              $("#editaccesstype").append(options);
+            });
+          },
+          error: function (result) {
+            alert("error: " + result.data);
+          },
+        });
+      }
+  
+      $(document).on("click", "#editBtn", function () {
+        $.ajax({
+          type: "POST",
+          url: "/adminusers/getadminusers",
+          data: {
+            userid: userid,
+          },
+          success: function (result) {
+            if (result.msg === "success") {
+              const existingData = result.data;
+  
+              $.each(existingData, (key, item) => {
+                $("#editdepartmentid").val(item.userid);
+                $("#editaccesstype").val(item.accesstype);
+                $("#editfullname").val(item.fullname);
+                $("#editusername").val(item.username);
+                currentPassword = item.password;
+                $("#editstatus").val(item.status);
+                $("#editpreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.image
+                );
+              });
+  
+              console.log(currentPassword, "currentPassword");
+            } else {
+              swal("Error fetching employee data", message, "error");
+            }
+          },
+          error: function (err) {
+            swal(
+              "An error occurred while fetching employee data",
+              message,
+              "error"
+            );
+          },
+        });
+      });
+  
+      $(document).on("click", "#adminUserEditBtn", function () {
+        let id = userid;
+        let accesstype = $("#editaccesstype").val();
+        let fullname = $("#editfullname").val();
+        let username = $("#editusername").val();
+        let status = $("#editstatus").val();
+        let currentpassword = $("#currentPassword").val();
+        let newpassword = $("#newpassword").val();
+        let image = base64String;
+  
+        // Assume currentPassword is a global variable that holds the actual current password
+        if (currentpassword !== currentPassword) {
+          swal("Validation Error", "Current password is incorrect.", "error");
+          return; // Exit early if current password is incorrect
+        }
+  
+        var message = "";
+  
+        if (accesstype === "") {
+          message += "Accesstype is required. ";
+        }
+  
+        if (fullname === "") {
+          message += "Fullname is required. ";
+        }
+  
+        if (username === "") {
+          message += "Username is required. ";
+        }
+  
+        if (status === "") {
+          message += "Status is required. ";
+        }
+  
+        if (newpassword === "") {
+          message += "Newpassword is required. ";
+        }
+  
+        if (message !== "") {
+          swal("Validation Error", message, "error");
+        } else {
+          $.ajax({
+            type: "PUT",
+            url: "adminusers/edit",
+            data: {
+              userid: userid,
+              accesstype: accesstype,
+              fullname: fullname,
+              username: username,
+              status: status,
+              currentpassword: currentpassword,
+              newpassword: newpassword,
+              image: image,
+            },
+            success: function (result) {
+              if (result.msg === "success") {
+                swal({
+                  title: "Update Successfully",
+                  text: "You clicked the button!",
+                  icon: "success",
+                  button: "OK!",
+                }).then((results) => {
+                  window.location.reload();
+                });
+                LoadTable();
+              } else if (result.msg === "exist") {
+                swal({
+                  title: "Exist",
+                  text: "Data already exists!",
+                  icon: "warning",
+                  button: "OK!",
+                });
+              } else {
+                swal(
+                  "Data already exists!",
+                  "You clicked the button!",
+                  "warning"
+                );
+              }
+            },
+            error: function (err) {
+              swal("Error", "An error occurred while saving data.", "error");
+            },
+          });
+        }
+      });
+  
+      $(document).on("change", "#announcementimage", function (e) {
+        const input = document.getElementById("announcementimage");
+        const file = input.files[0];
+  
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+          const preview = document.getElementById("preview");
+          preview.src = reader.result;
+        };
+        imageUploaded();
+      });
+  
+      function imageUploaded() {
+        const input = document.getElementById("announcementimage");
+        const file = input.files[0];
+  
+        var reader = new FileReader();
+  
+        reader.onload = function () {
+          base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+  
+          imageBase64Stringsep = base64String;
+        };
+        reader.readAsDataURL(file);
+      }
+  
+      $(document).on("change", "#editannouncementimage", function (e) {
+        const input = document.getElementById("editannouncementimage");
+        const file = input.files[0];
+  
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = function () {
+          const preview = document.getElementById("editpreview");
+          preview.src = reader.result;
+        };
+        editimage();
+      });
+  
+      function editimage() {
+        const input = document.getElementById("editannouncementimage");
+        const file = input.files[0];
+  
+        var reader = new FileReader();
+  
+        reader.onload = function () {
+          base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+  
+          imageBase64Stringsep = base64String;
+        };
+        reader.readAsDataURL(file);
+      }
+  
+      function searchTable() {
+        var input, filter, found, table, tr, td, i, j;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("dataTableQuestions");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td");
+          for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+              found = true;
+            }
+          }
+          if (found) {
+            tr[i].style.display = "";
+            found = false;
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+  
+      $(".toggle-password").on("click", function () {
+        const targetSelector = $(this).data("target");
+        const passwordInput = $(targetSelector);
+        const passwordFieldType = passwordInput.attr("type");
+        if (passwordFieldType === "password") {
+          passwordInput.attr("type", "text");
+          $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+        } else {
+          passwordInput.attr("type", "password");
+          $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+        }
+      });
+    });
+  </script>
+  

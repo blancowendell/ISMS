@@ -1,7 +1,7 @@
 const mysql = require("./repository/ismsdb");
 const moment = require('moment');
 var express = require("express");
-const { MessageStatus, JsonErrorResponse, JsonSuccess, JsonWarningResponse } = require("./repository/response");
+const { MessageStatus, JsonErrorResponse, JsonSuccess, JsonWarningResponse, JsonDataResponse } = require("./repository/response");
 const { SelectStatement, InsertStatement, GetCurrentDatetime } = require("./repository/customhelper");
 const { InsertTable, Select } = require("./repository/dbconnect");
 //const { Validator } = require("./controller/middleware");
@@ -9,6 +9,7 @@ var router = express.Router();
 const currentYear = moment().format("YY");
 const currentMonth = moment().format("MM");
 const nodemailer = require('nodemailer');
+const { DataModeling } = require("./model/ismsdb");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -114,8 +115,8 @@ router.post("/save", async (req, res) => {
     ];
 
     let checkStatement = SelectStatement(
-      "select * from master_students where ms_email=?",
-      [email]
+      "select * from master_students where ms_email = ? or ms_first_name = ? and ms_last_name = ?",
+      [email, firstname, lastname]
     );
 
     Check(checkStatement)
@@ -201,6 +202,141 @@ router.post("/send-create-account-link", (req, res) => {
       res.json(JsonSuccess({ message: "Account creation link sent" }));
     }
   });
+});
+
+
+router.post("/send", (req, res) => {
+  try {
+    let message = req.body.message;
+    let sql = `SELECT 
+      mr_description,
+      mq_description as mr_question
+    FROM 
+        master_questions  
+    INNER JOIN 
+        master_response 
+    ON 
+        master_questions.mq_responseid = master_response.mr_responseid
+    WHERE 
+        mq_description LIKE '%${message}%'`;
+
+    console.log(message, 'body');
+
+    // First SQL query to get data
+    Select(sql, (error, result) => {
+      if (error) {
+        console.error(error);
+        return res.json(JsonErrorResponse(error));
+      }
+
+      console.log(result);
+
+      if (result && result.length > 0) {
+        let data = DataModeling(result, "mr_");
+
+        console.log(data);
+
+        // Extract the mq_description from the result
+        let selectedDescription = data[0].question;
+
+        console.log(selectedDescription,'selectedDescription');
+        
+
+        // Update SQL query to increment count
+        let updateSql = `UPDATE master_questions 
+                         SET mq_questionask = mq_questionask + 1 
+                         WHERE mq_description = '${selectedDescription}'`;
+
+        // Perform the update operation
+        mysql.mysqlQueryPromise(updateSql)
+          .then((updateResult) => {
+            console.log("Question count updated successfully:", updateResult);
+
+            // Send the response only after successful update
+            res.json(JsonDataResponse(data));
+          })
+          .catch((updateError) => {
+            console.error("Error updating question count:", updateError);
+
+            // Send the response even if there's an error updating the count
+            res.json(JsonDataResponse(data)); // Send the data anyway
+          });
+      } else {
+        // If no results, return an empty result
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+
+router.get("/loadfrequentquestions", (req, res) => {
+  try {
+    let sql = `SELECT 
+    mq_description
+    FROM master_questions
+    ORDER BY mq_questionask DESC
+    LIMIT 5`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      //console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "mq_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+router.get("/frequentquestions", (req, res) => {
+  try {
+    let sql = `SELECT 
+    mq_description,
+    mr_description as mq_answer
+    FROM master_questions
+    INNER JOIN master_response ON master_questions.mq_responseid = mr_responseid
+    ORDER BY mq_questionask DESC
+    LIMIT 5`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      //console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "mq_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
 });
 
 

@@ -29,6 +29,9 @@ var roleacess = [
       {
         layout: "calendarlayout",
       },
+      {
+        layout: "questionslayout",
+      },
     ],
   },
   {
