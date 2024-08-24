@@ -52,20 +52,19 @@
   font-size: 24px; /* Adjust size as needed */
 }
 
-
-
+/* Modal Dialog: Fixed position, bottom-right corner */
 .modal-dialog {
   position: fixed;
   bottom: 0;
   right: 0;
   margin: 0;
   width: 100%;
-  max-width: 400px; /* Set a maximum width for the modal */
-  height: 80%; /* Adjust height to fit your design */
-  max-height: 80%; /* Prevent modal from getting too tall */
+  max-width: 400px; /* Set maximum width */
+  height: 80%; /* Adjust height */
+  max-height: 80%; /* Prevent overflow */
 }
 
-/* Ensure card fills the modal content area */
+/* Modal Content: Fill the modal dialog */
 .modal-content {
   height: 100%;
   display: flex;
@@ -73,30 +72,38 @@
   border-radius: 15px 0 0 15px; /* Rounded corners */
 }
 
-/* Ensure card body and footer use available space */
+/* Card: Flexible layout, full height */
 .card {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
+/* Card Body: Scrollable content area */
 .card-body {
-  flex: 1; /* Allow card-body to expand */
-  overflow-y: auto; /* Enable scrolling */
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 60px; /* Space for input field */
 }
 
+/* Card Footer: Fixed position at the bottom */
 .card-footer {
-  flex-shrink: 0; /* Prevent card-footer from shrinking */
+  flex-shrink: 0; /* Prevent shrinking */
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #f8f9fa; /* Optional: background color */
 }
 
-/* Position the chatbot button */
+/* Chatbot Button: Fixed position at the bottom-right corner */
 .chatbot-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 1050; /* Ensure the button is on top of other content */
+  z-index: 1050; /* High z-index to stay on top */
 }
 
+/* Padding adjustments for custom dialog */
 .custom-dialog-padding {
   padding-right: 30px;
   padding-bottom: 30px;
