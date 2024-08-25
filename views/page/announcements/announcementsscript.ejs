@@ -47,7 +47,6 @@
                 tittle: item.tittle,
                 type: item.type,
                 targerdate: item.targerdate,
-                description: item.description,
                 createby: item.createby,
                 createdate: item.createdate,
                 status: item.status,
@@ -70,7 +69,6 @@
           { data: "tittle" },
           { data: "type" },
           { data: "targerdate" },
-          { data: "description" },
           { data: "createby" },
           { data: "createdate" },
           { data: "status" },
@@ -78,7 +76,7 @@
         ],
         createdRow: function (row, data, dataIndex) {
           //miyaka
-          var statusCell = $(row).find("td:eq(8)");
+          var statusCell = $(row).find("td:eq(7)");
 
           var statusText = data.status;
 
@@ -103,7 +101,7 @@
           });
         },
 
-        initComplete: function () {},
+        initComplete: function () { },
       });
     }
 
@@ -128,7 +126,8 @@
       let tittle = $("#announcementtittle").val();
       let type = $("#announcementtype").val();
       let targetdate = $("#targetdate").val();
-      let description = $("#announcementdescription").val();
+      let enddate = $("#enddate").val();
+      let description = $('#announcementdescription').summernote('code'); // Capture the HTML content
 
       var message = "";
 
@@ -141,6 +140,10 @@
       }
 
       if (type == "") {
+        message += "TITTLE ";
+      }
+
+      if (enddate == "") {
         message += "TITTLE ";
       }
 
@@ -163,7 +166,8 @@
             tittle: tittle,
             type: type,
             targetdate: targetdate,
-            description: description,
+            enddate: enddate,
+            description: description, // Send the HTML content
           },
           success: function (result) {
             if (result.msg == "success") {
@@ -215,39 +219,49 @@
             const existingData = result.data;
 
             $.each(existingData, (key, item) => {
-              $("#editdepartmentid").val(item.bulletinid);
               $("#editannouncementtittle").val(item.tittle);
-              $("#editpreview").attr(
-                "src",
-                "data:image/jpg;base64," + item.image
-              );
-              $("#editannouncementdescription").val(item.description);
+              $("#editpreview").attr("src", "data:image/jpg;base64," + item.image);
+              $("#editannouncementdescription").summernote('code', item.description); // Load the description into Summernote
               $("#editannouncementstatus").val(item.status);
               $("#editannouncementtype").val(item.type);
               $("#edittargetdate").val(item.targetdate);
+              $("#editenddate").val(item.enddate);
               base64String = item.image;
             });
           } else {
-            swal("Error fetching employee data", message, "error");
+            swal("Error fetching employee data", result.msg, "error");
           }
         },
         error: function (err) {
-          swal(
-            "An error occurred while fetching employee data",
-            message,
-            "error"
-          );
+          swal("An error occurred while fetching employee data", err.message, "error");
         },
       });
+    });
+
+    $('#editannouncementdescription').summernote({
+      placeholder: 'Enter the description here...',
+      tabsize: 2,
+      height: 200,
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'clear']],
+        ['fontname', ['fontname']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['table', ['table']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ]
     });
 
     $(document).on("click", "#editannouncementsavebtn", function () {
       let id = bulletinid;
       let tittle = $("#editannouncementtittle").val();
-      let description = $("#editannouncementdescription").val();
+      let description = $('#editannouncementdescription').summernote('code');
       let status = $("#editannouncementstatus").val();
       let type = $("#editannouncementtype").val();
       let targetdate = $("#edittargetdate").val();
+      let enddate = $("#editenddate").val();
       let image = base64String;
 
       var message = "";
@@ -276,6 +290,10 @@
         message += "targetdate is required. ";
       }
 
+      if (enddate === "") {
+        message += "enddate is required. ";
+      }
+
       if (message !== "") {
         swal("Validation Error", message, "error");
       } else {
@@ -288,6 +306,7 @@
             tittle: tittle,
             type: type,
             targetdate: targetdate,
+            enddate: enddate,
             description: description,
             status: status,
           },

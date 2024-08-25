@@ -12,9 +12,8 @@
         LoadInstitutions();
         LoadCoursesOnly();
 
-        console.log(base64profileImage, 'image');
-
-
+        console.log(studentId, 'id');
+        
 
         $("#school_name").change(function () {
             var institutionId = $(this).val();
@@ -92,7 +91,7 @@
             let gender = $("#gender").val();
             let age = $("#age").val();
             let scholar_status = $("#scholar_status").val();
-            let student_id = $("#student_id").val();
+            // let student_id = $("#student_id").val();
             let school_name = $("#school_name").val();
             let course_strand = $("#course_strand").val();
             let year_level = $("#year_level").val();
@@ -115,9 +114,11 @@
             let imageFileCertRes = base64StringCertRes;
             let imageFileItr = base64StringItr;
             let imageFileNfi = base64StringNfi;
+            let studentid = studentId;
             var message = "";
 
             console.log(imageFileGradeCopy, 'image');
+            console.log(studentId, 'id');
 
             if (
                 imageFile == ""
@@ -129,7 +130,6 @@
                 || phone == ""
                 || gender == ""
                 || age == ""
-                || student_id == ""
                 || school_name == ""
                 || course_strand == ""
                 || year_level == ""
@@ -172,7 +172,7 @@
                     type: "POST",
                     url: "/finishapplication/save",
                     data: {
-                        studentid: student_id,
+                        studentid: studentid,
                         first_name: first_name,
                         middle_name: middle_name,
                         last_name: last_name,
@@ -211,8 +211,8 @@
 
                         if (result.msg == "success") {
                             swal({
-                                title: "Saved Successfully",
-                                text: "Your application has been submitted successfully.",
+                                title: "Submitted Successfully",
+                                text: "Your application has been submitted wait for the admin to approve it.",
                                 icon: "success",
                                 button: "OK!",
                             }).then((results) => {
@@ -244,66 +244,79 @@
                 type: "GET",
                 url: "/finishapplication/load",
                 success: function (result) {
-                    if (result.status === "exists") {
-                        // If application already exists, show the SweetAlert
-                        swal("Already Submitted", "You have already submitted your application.", "info")
-                            .then(() => {
-                                // Redirect to /studentindex after the user clicks "OK"
-                                window.location.href = "/studentindex";
-                            });
-                    } {
-                        $.ajax({
-                            type: "POST",
-                            url: "/finishapplication/loadexistingrecord",
-                            data: {
-                                studentid: studentId,
-                            },
-                            success: function (result) {
-                                if (result.msg === "success") {
-                                    const existingData = result.data;
+                    // if (result.status === "exists") {
+                    //     swal("Already Submitted", "You have already submitted your application.", "info")
+                    //         .then(() => {
+                    //             window.location.href = "/studentindex";
+                    //         });
+                    // } {
 
-                                    $.each(existingData, (key, item) => {
-                                        $("#first_name").val(item.first_name);
-                                        $("#middle_name").val(item.middle_name);
-                                        $("#last_name").val(item.last_name);
-                                        $("#dob").val(item.date_of_birth);
-                                        $("#birthplace").val(item.birthplace);
-                                        $("#phone").val(item.phone);
-                                        $("#gender").val(item.gender);
-                                        $("#age").val(item.age);
-                                        $("#scholar_status").val(item.status);
-                                        $("#student_id").val(item.studentid);
-                                        $("#school_name").val(item.institutionid);
-                                        $("#course_strand").val(item.courseid);
-                                        $("#year_level").val(item.year_level);
-                                        $("#academic_status").val(item.academic_status);
-                                        $("#register_date").val(item.registerdate);
-                                        $("#city").val(item.city);
-                                        $("#barangay").val(item.baranggay);
-                                        $("#village").val(item.village);
-                                        $("#street_address").val(item.street_address);
-                                        $("#houseno").val(item.house_no);
-                                        $("#fathersname").val(item.fathers_name);
-                                        $("#fathersmonthly").val(item.fathers_salary);
-                                        $("#fathersoccupation").val(item.fathers_occupation);
-                                        $("#mothersname").val(item.mothers_name);
-                                        $("#mothersoccupation").val(item.mothers_occupation);
-                                        $("#mothersmonthly").val(item.mothers_salary);
-                                        $("#image").attr("src", "data:image/jpg;base64," + item.image); // Ensure you have an element with id="image"
-                                    });
-                                } else {
-                                    swal("Error fetching student data", result.message, "error");
-                                }
-                            },
-                            error: function (err) {
-                                swal(
-                                    "An error occurred while fetching student data",
-                                    err.message,
-                                    "error"
-                                );
-                            },
-                        });
-                    }
+                    // }
+                    $.ajax({
+                        type: "POST",
+                        url: "/finishapplication/loadexistingrecord",
+                        data: {
+                            studentid: studentId,
+                        },
+                        success: function (result) {
+                            if (result.msg === "success") {
+                                const existingData = result.data;
+
+                                console.log(existingData,'data');
+                                
+
+                                $.each(existingData, (key, item) => {
+                                    $("#first_name").val(item.first_name);
+                                    $("#middle_name").val(item.middle_name);
+                                    $("#last_name").val(item.last_name);
+                                    $("#dob").val(item.date_of_birth);
+                                    $("#birthplace").val(item.birthplace);
+                                    $("#phone").val(item.phone);
+                                    $("#gender").val(item.gender);
+                                    $("#age").val(item.age);
+                                    $("#scholar_status").val(item.status);
+                                    $("#student_id").val(item.studentid);
+                                    $("#school_name").val(item.institutionid);
+                                    $("#course_strand").val(item.courseid);
+                                    $("#year_level").val(item.yearlevel);
+                                    $("#academic_status").val(item.academic_status);
+                                    $("#register_date").val(item.registerdate);
+                                    $("#city").val(item.city);
+                                    $("#barangay").val(item.baranggay);
+                                    $("#village").val(item.village);
+                                    $("#street_address").val(item.street);
+                                    $("#houseno").val(item.house_no);
+                                    $("#fathersname").val(item.fathers_name);
+                                    $("#fathersmonthly").val(item.fathers_salary);
+                                    $("#fathersoccupation").val(item.fathers_occupation);
+                                    $("#mothersname").val(item.mothers_name);
+                                    $("#mothersoccupation").val(item.mothers_occupation);
+                                    $("#mothersmonthly").val(item.mothers_salary);
+                                    $("#profileimagepreview").attr("src", "data:image/jpg;base64," + item.image);
+                                    base64profileImage = item.image;
+                                    $("#truecopypreview").attr("src", "data:image/jpg;base64," + item.grade_copy);
+                                    base64StringGradeCopy = item.grade_copy;
+                                    $("#regformpreview").attr("src", "data:image/jpg;base64," + item.registration_form);
+                                    base64StringRegForm = item.registration_form;
+                                    $("#certrespreview").attr("src", "data:image/jpg;base64," + item.certificate_residency);
+                                    base64StringCertRes = item.certificate_residency;
+                                    $("#itipreview").attr("src", "data:image/jpg;base64," + item.itr);
+                                    base64StringItr = item.itr;
+                                    $("#nfipreview").attr("src", "data:image/jpg;base64," + item.nfi);
+                                    base64StringNfi = item.nfi;
+                                });
+                            } else {
+                                swal("Error fetching student data", result.message, "error");
+                            }
+                        },
+                        error: function (err) {
+                            swal(
+                                "An error occurred while fetching student data",
+                                err.message,
+                                "error"
+                            );
+                        },
+                    });
                 },
                 error: function (err) {
                     swal(
@@ -316,6 +329,8 @@
         }
 
         //#region File Upload
+
+        
 
         $(document).on("change", "#profileImage", function (e) {
             const input = document.getElementById("profileImage");

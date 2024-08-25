@@ -1,20 +1,23 @@
 <script>
   $(document).ready(function () {
     let anouncementdiv = "";
-    GenerateAnouncement();
+    GenerateAnnouncement();
     updateTime();
+
+    $('#proceedButton').click(function () {
+      window.location.href = '/finishapplication'; 
+    });
 
     function updateTime() {
       const now = new Date();
 
-      // Format hours, minutes, and seconds
       let hours = now.getHours();
       let minutes = now.getMinutes();
       let seconds = now.getSeconds();
       const ampm = hours >= 12 ? 'PM' : 'AM';
 
       hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
+      hours = hours ? hours : 12;
       minutes = minutes < 10 ? '0' + minutes : minutes;
       seconds = seconds < 10 ? '0' + seconds : seconds;
 
@@ -35,61 +38,76 @@
 
     // Initialize the clock
     updateTime();
-
-
-    function GenerateAnouncement() {
+    function GenerateAnnouncement() {
       $.ajax({
         type: "GET",
         url: "studentindex/getbulletin",
         success: function (result) {
-          if (result.msg === "success") {
+          let announcementDiv = ''; // Initialize as empty string
+
+          if (result.msg === "success" && result.data.length > 0) {
             const announcementData = result.data;
             let counter = 0;
+
             $.each(announcementData, (key, item) => {
               counter++;
-              anouncementdiv += `
-                            <div class="carousel-item active" data-bs-interval="3000">
-                                    <img id="preview${counter}" src="data:image/jpg;base64,${item.image}"
-                                     class="d-block w-100 eportal-img-announce" alt="...">
-
-
-                                <div class="announcement-hrmis">
-                                    <h6 id="announcedate${counter}" class="a-date">${item.targetdate}</h6>
-                                    <h6 id="announcetitle${counter}" class="announce-title">${item.title}</h6>
-                                    <p id="announcedesc${counter}" class="a-des">${item.description}</p>
-                                <button class="carousel-control-prev" type="button"
-                                    data-bs-target="#carouselannouncement" data-bs-slide="prev">
-                                    <i class='bx bxs-left-arrow prev-hrmis' aria-hidden="true"></i>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button class="carousel-control-next" type="button"
-                                    data-bs-target="#carouselannouncement" data-bs-slide="next">
-                                    <i class='bx bxs-right-arrow next-hrmis' aria-hidden="true"></i>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
-                                </div>
-                                </div>`;
+              announcementDiv += `
+            <div class="carousel-item ${counter === 1 ? 'active' : ''}" data-bs-interval="3000">
+              <div class="row">
+                <!-- Description on the left -->
+                <div class="col-md-6 d-flex align-items-center">
+                  <div class="announcement-content">
+                    <h6 id="announcedate${counter}" class="a-date">${item.targetdate}</h6>
+                    <h6 id="announcetitle${counter}" class="announce-title">${item.title}</h6>
+                    <p id="announcedesc${counter}" class="a-des">${item.description}</p>
+                  </div>
+                </div>
+                <!-- Image on the right -->
+                <div class="col-md-6">
+                  <img id="preview${counter}" src="data:image/jpg;base64,${item.image}"
+                   class="d-block w-100 eportal-img-announce" alt="...">
+                </div>
+              </div>
+            </div>`;
             });
           } else {
-            console.error("Error: ", result.message);
+            // No announcements available
+            announcementDiv = `
+          <div class="carousel-item active">
+            <div class="row">
+              <div class="col-12 text-center">
+                <p>No announcements today.</p>
+              </div>
+            </div>
+          </div>`;
+          }
+
+          $("#carouselannouncement").html(announcementDiv);
+        },
+        error: function (err) {
+          if (err.status === 404 && err.responseJSON && err.responseJSON.msg === "no announcements today") {
+            // Handle the case when no announcements are available
+            $("#carouselannouncement").html(`
+          <div class="carousel-item active">
+            <div class="row">
+              <div class="col-12 text-center">
+                <p>No announcements today.</p>
+              </div>
+            </div>
+          </div>
+        `);
+          } else {
+            console.error("AJAX Error: ", err.responseText);
             swal(
               "An error occurred while fetching announcement data",
               "Please try again later.",
               "error"
             );
           }
-
-          $("#carouselannouncement").html(anouncementdiv);
-        },
-        error: function (err) {
-          console.error("AJAX Error: ", err.responseText);
-          swal(
-            "An error occurred while fetching announcement data",
-            "Please try again later.",
-            "error"
-          );
         },
       });
     }
+
+
   });
 </script>

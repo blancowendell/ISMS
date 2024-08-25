@@ -6,6 +6,7 @@
 
     LoadInstitutions();
     loadAnnouncements();
+    LoadInstitutions();
 
     function loadAnnouncements() {
       $.ajax({
@@ -53,8 +54,9 @@
               'text': item.title
             }).appendTo(announcementDetail);
 
-            $('<p/>', {
-              'text': item.description
+            // Render the description as HTML
+            $('<div/>', {
+              'html': item.description // Use 'html' to render HTML content
             }).appendTo(announcementDetail);
           });
         },
@@ -63,6 +65,7 @@
         }
       });
     }
+
 
     // Trigger LoadCourses when an institution is selected
     $("#school").change(function () {
@@ -386,153 +389,91 @@
       });
     });
 
-    // $('#chatbotModal').on('shown.bs.modal', function () {
-    //   setTimeout(function () {
-    //     displayMessage("Chatbot", '<span class="wave">👋</span> Hi there! How can I assist you today?');
-    //   }, 500); // Delay for animation effect
-    // });
-
-    // $("#sendButton").click(function () {
-    //   const message = $("#chatInput").val();
-    //   if (message.trim() === "") return;
-
-    //   // Display user's message
-    //   displayMessage("You", message);
-
-    //   $.ajax({
-    //     url: "landingpage/send",
-    //     type: "POST",
-    //     data: {
-    //       message: message,
-    //     },
-    //     success: function (result) {
-    //       if (result.msg == "success" && result.data.length > 0) {
-    //         displayMessage("Chatbot", result.data[0].description);
-    //       } else {
-    //         displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
-    //       }
-    //     },
-    //     error: function (err) {
-    //       displayMessage("Chatbot", "There was an error processing your request.");
-    //     },
-    //   });
-
-    //   $("#chatInput").val("");
-    // });
-
-    // function displayMessage(sender, message) {
-    //   const chatBody = $("#chatBody");
-
-    //   let messageHtml = "";
-    //   if (sender === "You") {
-    //     messageHtml = `
-    //   <div class="d-flex justify-content-end mb-2">
-    //     <div class="d-flex flex-row justify-content-end">
-    //       <div>
-    //         <p class="small p-2 me-3 mb-3 text-white rounded-3 bg-primary">${message}</p>
-    //       </div>
-    //     </div>
-    //   </div>`;
-    //   } else {
-    //     messageHtml = `
-    //   <div class="d-flex justify-content-start mb-2">
-    //     <div class="d-flex flex-row justify-content-start">
-    //       <div>
-    //         <p class="small p-2 ms-3 mb-3 rounded-3 bg-body-tertiary">${message}</p>
-    //       </div>
-    //     </div>
-    //   </div>`;
-    //   }
-
-    //   chatBody.append(messageHtml);
-    //   chatBody.scrollTop(chatBody[0].scrollHeight); // Auto-scroll to the bottom
-    // }
-    // Fetch and display frequent questions when the modal is shown
     $('#chatbotModal').on('shown.bs.modal', function () {
-    setTimeout(function () {
-      // Display initial greeting with a wave animation
-      displayMessage("Chatbot", '<span class="wave">👋</span> Hi there! How can I assist you today?');
+      setTimeout(function () {
+        // Display initial greeting with a wave animation
+        displayMessage("Chatbot", '<span class="wave">👋</span> Hi there! How can I assist you today?');
 
-      // Fetch and display frequent questions
+        // Fetch and display frequent questions
+        $.ajax({
+          url: 'landingpage/loadfrequentquestions',
+          type: 'GET',
+          success: function (result) {
+            if (result.msg === "success" && result.data.length > 0) {
+              let frequentQuestionsHtml = result.data.map(item => `<p><a href="#" class="frequent-question">${item.description}</a></p>`).join('');
+              $('#frequentQuestions').html('<strong>Frequently Asked Questions:</strong><br>' + frequentQuestionsHtml);
+            } else {
+              $('#frequentQuestions').html('<strong>No frequent questions available.</strong>');
+            }
+          },
+          error: function () {
+            $('#frequentQuestions').html('<strong>Error loading frequent questions.</strong>');
+          }
+        });
+      }, 500); // Delay for animation effect
+    });
+
+    // Handle frequent question clicks
+    $(document).on('click', '.frequent-question', function (e) {
+      e.preventDefault();
+      let question = $(this).text();
+
+      // Display the clicked question in the chat
+      displayMessage("You", question);
+
       $.ajax({
-        url: 'landingpage/loadfrequentquestions',
-        type: 'GET',
+        url: "landingpage/send",
+        type: "POST",
+        data: { message: question },
         success: function (result) {
           if (result.msg === "success" && result.data.length > 0) {
-            let frequentQuestionsHtml = result.data.map(item => `<p><a href="#" class="frequent-question">${item.description}</a></p>`).join('');
-            $('#frequentQuestions').html('<strong>Frequently Asked Questions:</strong><br>' + frequentQuestionsHtml);
+            displayMessage("Chatbot", result.data[0].description);
           } else {
-            $('#frequentQuestions').html('<strong>No frequent questions available.</strong>');
+            displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
           }
         },
         error: function () {
-          $('#frequentQuestions').html('<strong>Error loading frequent questions.</strong>');
+          displayMessage("Chatbot", "There was an error processing your request.");
         }
       });
-    }, 500); // Delay for animation effect
-  });
-
-  // Handle frequent question clicks
-  $(document).on('click', '.frequent-question', function (e) {
-    e.preventDefault();
-    let question = $(this).text();
-
-    // Display the clicked question in the chat
-    displayMessage("You", question);
-
-    $.ajax({
-      url: "landingpage/send",
-      type: "POST",
-      data: { message: question },
-      success: function (result) {
-        if (result.msg === "success" && result.data.length > 0) {
-          displayMessage("Chatbot", result.data[0].description);
-        } else {
-          displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
-        }
-      },
-      error: function () {
-        displayMessage("Chatbot", "There was an error processing your request.");
-      }
     });
-  });
 
-  $("#chatInput").on("keypress", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      $("#sendButton").click();
-    }
-  });
-
-  $("#sendButton").click(function () {
-    const message = $("#chatInput").val().trim();
-    if (message === "") return;
-    displayMessage("You", message);
-
-    $.ajax({
-      url: "landingpage/send",
-      type: "POST",
-      data: { message: message },
-      success: function (result) {
-        if (result.msg === "success" && result.data.length > 0) {
-          displayMessage("Chatbot", result.data[0].description);
-        } else {
-          displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
-        }
-      },
-      error: function () {
-        displayMessage("Chatbot", "There was an error processing your request.");
+    $("#chatInput").on("keypress", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        $("#sendButton").click();
       }
     });
 
-    $("#chatInput").val("").focus();
-    $("#chatBody").scrollTop($("#chatBody")[0].scrollHeight);
-  });
+    $("#sendButton").click(function () {
+      const message = $("#chatInput").val().trim();
+      if (message === "") return;
+      displayMessage("You", message);
 
-  function displayMessage(sender, message) {
-    const chatBody = $("#chatBody");
+      $.ajax({
+        url: "landingpage/send",
+        type: "POST",
+        data: { message: message },
+        success: function (result) {
+          if (result.msg === "success" && result.data.length > 0) {
+            displayMessage("Chatbot", result.data[0].description);
+          } else {
+            displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
+          }
+        },
+        error: function () {
+          displayMessage("Chatbot", "There was an error processing your request.");
+        }
+      });
 
-    let messageHtml = sender === "You" ? `
+      $("#chatInput").val("").focus();
+      $("#chatBody").scrollTop($("#chatBody")[0].scrollHeight);
+    });
+
+    function displayMessage(sender, message) {
+      const chatBody = $("#chatBody");
+
+      let messageHtml = sender === "You" ? `
       <div class="d-flex justify-content-end mb-2">
         <div class="d-flex flex-row justify-content-end">
           <div>
@@ -548,9 +489,9 @@
         </div>
       </div>`;
 
-    chatBody.append(messageHtml);
-    chatBody.scrollTop(chatBody[0].scrollHeight); 
-  }
+      chatBody.append(messageHtml);
+      chatBody.scrollTop(chatBody[0].scrollHeight);
+    }
 
     $.ajax({
       url: 'landingpage/frequentquestions',

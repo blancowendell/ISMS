@@ -26,6 +26,7 @@ router.post("/getannouncement", (req, res) => {
     a_type as type,
     a_description as description,
     a_targerdate as targetdate,
+    a_enddate as enddate,
     a_createby as createby,
     a_status as status
     FROM announcements
@@ -88,6 +89,7 @@ router.post("/save", (req, res) => {
     let tittle = req.body.tittle;
     let type = req.body.type;
     let targetdate = req.body.targetdate;
+    let enddate = req.body.enddate;
     let description = req.body.description;
     let createby = req.session.fullname;
     let createdate = GetCurrentDatetime();
@@ -101,6 +103,7 @@ router.post("/save", (req, res) => {
       "tittle",
       "type",
       "targerdate",
+      "enddate",
       "description",
       "createby",
       "createdate",
@@ -116,6 +119,7 @@ router.post("/save", (req, res) => {
         tittle,
         type,
         targetdate,
+        enddate,
         description,
         createby,
         createdate,
@@ -158,26 +162,6 @@ router.post("/save", (req, res) => {
 
 
 
-router.post("/update", (req, res) => {
-  try {
-    let bulletinid = req.body.bulletinid;
-    let image = req.body.image;
-    let tittle = req.body.tittle;
-    let type = req.body.type;
-    let targetdate = req.body.targetdate;
-    let description = req.body.description;
-    let createby = req.session.fullname;
-    let status = req.body.status;
-
-
-  } catch (error) {
-    res.json({
-      msg: "error",
-    });
-  }
-});
-
-
 router.put("/edit", (req, res) => {
   try {
     let bulletinid = req.body.bulletinid;
@@ -185,6 +169,7 @@ router.put("/edit", (req, res) => {
     let tittle = req.body.tittle;
     let type = req.body.type;
     let targetdate = req.body.targetdate;
+    let enddate = req.body.enddate;
     let description = req.body.description;
     let createby = req.session.fullname;
     let status = req.body.status;
@@ -202,6 +187,17 @@ router.put("/edit", (req, res) => {
       data.push(tittle);
       columns.push("tittle");
     }
+
+    if (targetdate) {
+      data.push(targetdate);
+      columns.push("targerdate");
+    }
+
+    if (enddate) {
+      data.push(enddate);
+      columns.push("enddate");
+    }
+
 
     if (type) {
       data.push(type);
@@ -239,8 +235,8 @@ router.put("/edit", (req, res) => {
     console.log(updateStatement);
 
     let checkStatement = SelectStatement(
-      "select * from announcements where a_announcementsid = ? and a_tittle = ? and a_type = ? and a_status = ? and a_image = ?",
-      [bulletinid, tittle, type, status, image]
+      "select * from announcements where a_announcementsid = ? and a_tittle = ? and a_type = ? and a_status = ? and a_image = ? and a_description = ? and a_enddate = ? and a_targerdate = ?",
+      [bulletinid, tittle, type, status, image, description, enddate, targetdate]
     );
 
     Check(checkStatement)

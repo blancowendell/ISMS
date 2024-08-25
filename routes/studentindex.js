@@ -16,16 +16,15 @@ module.exports = router;
 
 router.get("/getbulletin", (req, res) => {
   try {
-    // let bulletinid = req.body.bulletinid;
     let sql = `
-    SELECT
+     SELECT
     a_image AS image,
     a_tittle AS title,
     a_type as type,
     a_targerdate as targetdate,
     a_description AS description
     FROM announcements
-    WHERE (a_type = 'Announcement' OR (a_type = 'Event' AND a_targerdate >= CURDATE()))
+    WHERE a_enddate >= CURDATE()
     AND a_status = 'Active'`;
 
     mysql
@@ -38,7 +37,7 @@ router.get("/getbulletin", (req, res) => {
           });
         } else {
           res.status(404).json({
-            msg: "Department not found",
+            msg: "no announcements today",
           });
         }
       })

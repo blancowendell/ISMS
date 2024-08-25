@@ -9,7 +9,14 @@
     background: linear-gradient(to right, #feffaa, #dbdd50, #ebb84c, #cea140);
 }
 
-.col-lg-6.d-flex {
+/* .col-lg-6.d-flex {
+    background-image: url('/images/img/userlogin.gif');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+} */
+
+.bgimage {
     background-image: url('/images/img/userlogin.gif');
     background-size: cover;
     background-position: center;

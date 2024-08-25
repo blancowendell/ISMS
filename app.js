@@ -26,6 +26,7 @@ var finishapplicationRouter = require("./routes/finishapplication");
 var pendingapplicationRouter = require("./routes/pendingapplication");
 var calendarRouter = require("./routes/calendar");
 var questionsRouter = require("./routes/questions");
+var scholarshipRouter = require("./routes/scholarship");
 
 
 var app = express();
@@ -65,6 +66,7 @@ app.use("/finishapplication", finishapplicationRouter);
 app.use("/pendingapplication", pendingapplicationRouter);
 app.use("/calendar", calendarRouter);
 app.use("/questions", questionsRouter);
+app.use("/scholarship", scholarshipRouter);
 
 
 // catch 404 and forward to error handler

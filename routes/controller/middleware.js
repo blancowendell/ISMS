@@ -32,6 +32,9 @@ var roleacess = [
       {
         layout: "questionslayout",
       },
+      {
+        layout: "scholarshiplayout",
+      },
     ],
   },
   {

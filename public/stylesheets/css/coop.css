@@ -1,3 +1,116 @@
+.tab-content form {
+  background-color: #fdf9b4; /* Light yellow background */
+  padding: 20px;
+  border-radius: 5px;
+}
+
+/* Background color for the selected tab */
+.nav-tabs .nav-link.active {
+  background-color: #fdf9b4 !important; /* Ensure the background color is applied */
+  color: red !important; /* Ensure the text color is applied */
+  border-radius: 5px 5px 0 0; /* Rounded top corners */
+  font-weight: bold; /* Make the text bold */
+}
+
+/* Background color for the tab content */
+.tab-content .tab-pane {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #ffffff; /* White background for each tab panel */
+}
+
+/* Background color for tab list items */
+.nav-tabs .nav-item {
+  margin-right: 5px;
+}
+
+
+.carousel-item {
+  display: flex;
+}
+
+.carousel-item .row {
+  height: 100%;
+  width: 100%;
+}
+
+.carousel-item .col-md-6 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.col-md-6 img {
+  width: 100%;
+  height: auto; /* Adjust height automatically */
+  object-fit: cover; /* Ensure image covers the container */
+}
+
+.carousel-control-prev, .carousel-control-next {
+  width: 5%; /* Adjust width of the navigation buttons */
+}
+
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background for visibility */
+}
+
+.announcement-content {
+  padding: 15px;
+  text-align: left; /* Align text to the left */
+}
+
+
+
+
+#status-icon {
+  background: none;
+  border: none;
+  color: #007bff; /* Customize the icon color */
+  cursor: pointer;
+  font-size: 1.5rem; /* Adjust the icon size */
+  margin-left: 10px; /* Adjust spacing from the text */
+  animation: shake 0.5s ease-in-out infinite; /* Apply shaking animation */
+}
+
+/* Define the shaking animation */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+
+.custom-box {
+  padding: 1rem;
+  background-color: #fdf9b4; /* Adjust the background color */
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Rounded corners */
+  display: flex;
+  flex-direction: column; /* Stack child elements vertically */
+  align-items: center; /* Center align items horizontally */
+  justify-content: center; /* Center align items vertically */
+  text-align: center;
+  height: 100%; /* Ensure it fills the parent container height */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/* Custom font styling */
+.custom-font {
+  font-family: 'Arial', sans-serif; /* Replace with your desired font-family */
+}
+
+/* Additional font styling */
+.custom-font {
+  font-weight: bold; /* Example of additional font styling */
+  font-size: x-large;
+}
+
+
+
+
 /*INDEX DASHBOARD*/
 .applicant {
   margin-bottom: 20px;
@@ -27,7 +140,7 @@
 #itipreview,
 #nfipreview {
   margin-top: 20px;
-  width: 700px;
+  width: 250px;
   height: 250px;
 }
 
@@ -1134,9 +1247,9 @@ tr:hover {
 }
 
 #editpreview {
-  width: 150px;
-  height: 150px;
-  margin-top: 15px;
+  margin-top: 100px;
+  width: 250px;
+  height: 250px;
 }
 .modal-content-title {
   font-family: Georgia;

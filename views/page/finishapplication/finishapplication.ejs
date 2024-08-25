@@ -29,7 +29,7 @@
             <li
                 class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
                 <div class="col-sm-6">
-                    <p class="mb-0 p-rest" id="headerschool" >School</p>
+                    <p class="mb-0 p-rest" id="headerschool">School</p>
                 </div>
                 <p class="mb-0 number-rest" id="absent"></p>
             </li>
@@ -41,9 +41,15 @@
                     <a class="nav-link active w-auto px-4" data-toggle="tab" href="#home" role="tab">Home</a>
                 </li>
                 <li class="nav-item text-center">
+                    <a class="nav-link w-auto px-4" data-toggle="tab" href="#residency" role="tab">Residency</a>
+                </li>
+                <li class="nav-item text-center">
+                    <a class="nav-link w-auto px-4" data-toggle="tab" href="#family" role="tab">Family Background</a>
+                </li>
+                <li class="nav-item text-center">
                     <a class="nav-link w-auto px-4" data-toggle="tab" href="#upload" role="tab">Upload Documents</a>
                 </li>
-            </ul>
+            </ul>            
             <div class="tab-content">
                 <div class="tab-pane active" id="home" role="tabpanel">
                     <form>
@@ -98,17 +104,13 @@
                         </div>
                         <br>
                         <div class="row g-3">
-                            <div class="col-12 col-md-4">
-                                <label for="student_id">Student ID</label>
-                                <input type="text" class="form-control" name="student_id" id="student_id">
-                            </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col">
                                 <label for="school_name">Name Of School</label>
                                 <select class="form-control" name="school_name" id="school_name">
                                     <option selected disabled></option>
                                 </select>
                             </div>
-                            <div class="col-12 col-md-4">
+                            <div class="col">
                                 <label for="course_strand">Course/Strand</label>
                                 <select class="form-control" name="course_strand" id="course_strand">
                                     <option selected disabled></option>
@@ -138,6 +140,11 @@
                             </div>
                         </div>
                         <br>
+                    </form>
+                </div>
+                <div class="tab-pane" id="residency" role="tabpanel">
+                    <form>
+                        <br>
                         <div class="row g-3">
                             <div class="col-12 col-md-4">
                                 <label for="city">City</label>
@@ -163,8 +170,12 @@
                                 <input type="text" class="form-control" name="houseno" id="houseno" placeholder="House No" title="Enter your house no.">
                             </div>
                         </div>
+                    </form>
+                </div>
+                <div class="tab-pane" id="family" role="tabpanel">
+                    <form>
                         <br>
-                        <div class="row g-3">
+                         <div class="row g-3">
                             <div class="col">
                                 <label for="fathersname">Fathers Name</label>
                                 <input type="text" class="form-control" name="Fathers Name" id="fathersname" placeholder="Fathers Name" title="Enter your fathers name.">
@@ -194,60 +205,77 @@
                             </div>
                         </div>
                     </form>
-                </div>
+                </div>    
                 <div class="tab-pane" id="upload" role="tabpanel">
                     <form>
-                        <div class="col">
-                            <label for="reqtruecopygrade">Certified True Copy ng inyong grado (mula sa nakaraang markahan)</label>
-                                <div class="form-floating">
-                                    <label class="form-label" for="customFile"></label>
+                        <div class="container">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="reqtruecopygrade">Certified True Copy ng inyong grado (mula sa nakaraang markahan)</label>
+                                    <p class="form-label">Upload the certified true copy of your grades.</p>
+                                </div>
+                                <div class="col-md-6">
                                     <input type="file" name="reqtruecopygrade" id="reqtruecopygrade" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
-                                    <div class="text-center">
-                                      <img id="truecopypreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                                    <div class="text-center mt-2">
+                                        <img id="truecopypreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="preview">
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="reqregform">Orihinal at kopya ng inyong enrolment/registration form ng 1st semester (AY 2024-2025)</label>
+                                    <p class="form-label">Upload the original and copy of your enrollment/registration form for the first semester.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="file" name="reqregform" id="reqregform" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                    <div class="text-center mt-2">
+                                        <img id="regformpreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="preview">
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="reqcertres">Certificate of Residency</label>
+                                    <p class="form-label">Upload your certificate of residency.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="file" name="reqcertres" id="reqcertres" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                    <div class="text-center mt-2">
+                                        <img id="certrespreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="preview">
+                                        <button id="previewTrueCopy" type="button" class="btn btn-secondary mt-2" style="display: none;">Preview</button>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="reqitr">Kapag nagtatrabaho ang mga magulang - Income Tax Return (ITR) mula sa BIR</label>
+                                    <p class="form-label">Upload the Income Tax Return (ITR) from BIR if your parents are employed.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="file" name="reqitr" id="reqitr" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                    <div class="text-center mt-2">
+                                        <img id="itipreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="preview">
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="reqnfi">Kapag walang trabaho ang mga magulang - Affidavit of No Fix Income (makukuha sa City Legal Office ang sertipikasyon o katunayan bago dalhin sa BIR)</label>
+                                    <p class="form-label">Upload the Affidavit of No Fixed Income if your parents are unemployed.</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="file" name="reqnfi" id="reqnfi" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
+                                    <div class="text-center mt-2">
+                                        <img id="nfipreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="preview">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <label for="input-file-now-2">Orihinal at kopya ng inyong enrolment/registration form ng 1st semester (AY 2024-2025)</label>
-                                <div class="form-floating">
-                                    <label class="form-label" for="customFile"></label>
-                                    <input type="file" name="reqregform" id="reqregform" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
-                                    <div class="text-center">
-                                      <img id="regformpreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
-                                </div>
-                            </div>
-                        </div> 
-                        <div class="col">
-                            <label for="input-file-now-3">Certificate of Residency</label>
-                                <div class="form-floating">
-                                    <label class="form-label" for="customFile"></label>
-                                    <input type="file" name="reqcertres" id="reqcertres" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
-                                    <div class="text-center">
-                                      <img id="certrespreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
-                                </div>
-                            </div>
-                        </div>   
-                        <div class="col">
-                            <label for="input-file-now-4">Kapag nagtatrabaho ang mga magulang - Income Tax Return (ITR) mula sa BIR</label>
-                                <div class="form-floating">
-                                    <label class="form-label" for="customFile"></label>
-                                    <input type="file" name="reqitr" id="reqitr" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
-                                    <div class="text-center">
-                                      <img id="itipreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
-                                </div>
-                            </div>
-                        </div>   
-                        <div class="col">
-                            <label for="input-file-now-5">Kapag walang trabaho ang mga magulang - Affidavit of No Fix Income (makukuha sa City Legal Office ang sertipikasyon o katunayan bago dalhin sa BIR)</label>
-                                <div class="form-floating">
-                                    <label class="form-label" for="customFile"></label>
-                                    <input type="file" name="reqnfi" id="reqnfi" class="form-control border-form-modal" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps">
-                                    <div class="text-center">
-                                      <img id="nfipreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
-                                </div>
-                            </div>
-                        </div>                             
-                    </form>                    
+                    </form>             
                 </div>
             </div>
         </div>

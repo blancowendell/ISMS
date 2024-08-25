@@ -1,138 +1,96 @@
 <div class="container-fluid">
-
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
-    </div>
-
-    <!-- Content Row -->
     <div class="row">
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Total Scholars</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">40,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Pending Applications</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">215,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Earnings (Monthly) Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-info shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                Total Rgister
-                            </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">215,000</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Requests Card Example -->
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-warning shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                Total Graduated</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                        </div>
-                        <div class="col-auto">
-                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Content Row -->
-
-    <div class="row">
-
-        <!-- Area Chart -->
+        <!-- Left Column (Custom Box and Cards) -->
         <div class="col-xl-8 col-lg-7">
-            <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                    <h6 class="m-0 font-weight-bold text-primary">Per Barranggay</h6>
-                    <div class="dropdown no-arrow">
-                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                            aria-labelledby="dropdownMenuLink">
-                            <div class="dropdown-header">Dropdown Header:</div>
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
+            <div class="row h-100">
+                <!-- Custom Box -->
+                <div class="col-12 mb-4">
+                    <div class="card border-left-custom shadow h-100 py-2 d-flex flex-column">
+                        <div class="card-body">
+                            <div class="custom-box flex-grow-1 text-center">
+                                <h1 class="h1 mb-0 text-black-800 custom-font">
+                                    Welcome <%= fullname %><br>
+                                    <span class="h3 mb-0 text-danger" id="dynamic-time"></span>
+                                </h1>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                    <div class="chart-area">
-                        <canvas id="myAreaChart"></canvas>
+    
+                <!-- Cards -->
+                <div class="col-12">
+                    <div class="row h-100">
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2 d-flex flex-column">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Pending Applications
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">40,000</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2 d-flex flex-column">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Approved Applications
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">215,000</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="col-md-4 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2 d-flex flex-column">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Total Applications
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">215,000</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Pie Chart -->
+    
+        <!-- Right Column (Calendar) -->
         <div class="col-xl-4 col-lg-5">
-            <div class="card shadow mb-4">
+            <div class="card shadow mb-4 h-100">
                 <!-- Card Header - Dropdown -->
-                <div
-                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                     <h6 class="m-0 font-weight-bold text-primary">Calendar</h6>
                     <div class="dropdown no-arrow">
                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                            aria-labelledby="dropdownMenuLink">
+                             aria-labelledby="dropdownMenuLink">
                             <div class="dropdown-header">Dropdown Header:</div>
                             <a class="dropdown-item" href="#">Action</a>
                             <a class="dropdown-item" href="#">Another action</a>
@@ -149,18 +107,18 @@
                         style="border: 0; width: 100%; height: 400px; pointer-events: none;" 
                         frameborder="0" 
                         scrolling="no">
-                    </iframe>                    
+                    </iframe>
                 </div>          
             </div>
         </div>
     </div>
-
+    
+    <br>
+    
     <!-- Content Row -->
     <div class="row">
-
         <!-- Content Column -->
         <div class="col-lg-8 mb-8">
-
             <!-- Project Card Example -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -173,13 +131,13 @@
                         <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
                             aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <h4 class="small font-weight-bold">San Pedro City Polythecnic College<span
+                    <h4 class="small font-weight-bold">San Pedro City Polytechnic College<span
                             class="float-right">40%</span></h4>
                     <div class="progress mb-4">
                         <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
                             aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <h4 class="small font-weight-bold">San Pedro Buisness College<span
+                    <h4 class="small font-weight-bold">San Pedro Business College<span
                             class="float-right">60%</span></h4>
                     <div class="progress mb-4">
                         <div class="progress-bar" role="progressbar" style="width: 60%"
@@ -191,7 +149,7 @@
                         <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
                             aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-                    <h4 class="small font-weight-bold">Sain Louis Anne College<span
+                    <h4 class="small font-weight-bold">Saint Louis Anne College<span
                             class="float-right">Complete!</span></h4>
                     <div class="progress">
                         <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
@@ -199,34 +157,18 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="col-lg-4 mb-4">
-            <!-- Illustrations -->
             <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">New Applicants</h6>
-                </div>
-                <div class="card-body" id="applicants">
-                    <!-- New applicants will be loaded here -->
+                <div class="col">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">New Applicants</h6>
+                    </div>
+                    <div class="card-body" id="applicants">
+                    </div>
                 </div>
             </div>
-
-            <!-- Approach -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                </div>
-                <div class="card-body">
-                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                        custom components and custom utility classes.</p>
-                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                        Bootstrap framework, especially the utility classes.</p>
-                </div>
-            </div>
-
         </div>
     </div>
 
