@@ -3,10 +3,30 @@
 
   $(document).ready(function () {
     console.log("Initializing");
-
-    LoadInstitutions();
     loadAnnouncements();
     LoadInstitutions();
+    LoadScholarships();
+    checkSignupPageStatus();
+
+
+    function checkSignupPageStatus() {
+      $.ajax({
+        type: "GET",
+        url: "landingpage/loadsignuppage",
+        success: function (result) {
+          console.log(result);
+
+          if (result.data && result.data[0].status === 'Active') {
+            $("#signup").show();
+          } else {
+            $("#signup").hide();
+          }
+        },
+        error: function (err) {
+          console.error("Error fetching signup page status:", err);
+        }
+      });
+    }
 
     function loadAnnouncements() {
       $.ajax({
@@ -14,33 +34,23 @@
         url: "studentindex/getbulletin",
         success: function (result) {
           var data = result.data;
-
-          // Clear previous content
           $('#announcement-container').empty();
-
-          // Iterate over each announcement and dynamically create the content
           $.each(data, function (key, item) {
-            // Create a row to hold both image and details
             var rowContainer = $('<div/>', {
               'class': 'row gy-5',
               'data-aos': 'fade-up',
               'data-aos-delay': 100 * (key + 1)
             }).appendTo('#announcement-container');
 
-            // Create a div to hold the announcement image
             var imageContainer = $('<div/>', {
               'class': 'col-xl-5 d-flex align-items-center'
             }).appendTo(rowContainer);
-
-            // Create an image element for the announcement
             $('<img/>', {
               'id': 'announcement-image-' + key,
               'src': 'data:image/jpg;base64,' + item.image,
               'class': 'img-fluid',
               'alt': item.title
             }).appendTo(imageContainer);
-
-            // Create a container for the announcement details
             var detailContainer = $('<div/>', {
               'class': 'col-xl-7 d-flex align-items-center'
             }).appendTo(rowContainer);
@@ -94,6 +104,25 @@
       });
     }
 
+    function LoadScholarships() {
+      $.ajax({
+        type: "GET",
+        url: "/scholarship/loadscholarlandingpage",
+        success: function (result) {
+          var data = result.data;
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.scholarship_id, item.scholarship_id);
+            $(options).html(item.name);
+            $("#scholarshipid").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
     function LoadCourses(institutionId) {
       $.ajax({
         type: "POST",
@@ -129,102 +158,25 @@
       let yearlevel = $("#yearlevel").val();
       let birthplace = $("#birthplace").val();
       let age = $("#age").val();
-      let fathers_name = $("#fathersname").val();
-      let fathers_occupation = $("#fatheroccupation").val();
-      let fathers_salary = $("#fathersalaryincome").val();
-      let mothers_name = $("#mothersname").val();
-      let mothers_occupation = $("#mothersoccupation").val();
-      let mothers_salary = $("#mothersalaryincome").val();
-      let registerdate = $("#registerdate").val();
-      // let certifyInfo = $("#usersname").val();
-      // let agreeTerms = $("#usersname").val();
-
-      console.log(firstname, "FIRSTNAME");
+      let scholarshipid = $("#scholarshipid").val();
 
       var message = "";
 
-      if (firstname == "") {
-        message += "First Name ";
-      }
-
-      if (middlename == "") {
-        message += "Middle Name ";
-      }
-
-      if (lastname == "") {
-        message += "Last Name ";
-      }
-
-      if (date_of_birth == "") {
-        message += "Date of Birth ";
-      }
-
-      if (email == "") {
-        message += "Email ";
-      }
-
-      if (gender == "") {
-        message += "Gender ";
-      }
-
-      if (phone == "") {
-        message += "Phone ";
-      }
-
-      if (institutionid == "") {
-        message += "Institution ";
-      }
-
-      if (courseid == "") {
-        message += "Course ";
-      }
-
-      if (academic_status == "") {
-        message += "Academic Status ";
-      }
-
-      if (yearlevel == "") {
-        message += "Year Level ";
-      }
-
-      if (birthplace == "") {
-        message += "Birth Place ";
-      }
-
-      if (age == "") {
-        message += "Age ";
-      }
-
-      if (fathers_name == "") {
-        message += "Father's Name ";
-      }
-
-      if (fathers_occupation == "") {
-        message += "Father's Occupation ";
-      }
-
-      if (fathers_salary == "") {
-        message += "Father's Salary Income ";
-      }
-
-      if (mothers_name == "") {
-        message += "Mother's Name ";
-      }
-
-      if (mothers_occupation == "") {
-        message += "Mother's Occupation ";
-      }
-
-      if (mothers_salary == "") {
-        message += "Mother's Salary Income ";
-      }
-      // if (certifyInfo == "") {
-      //     message += "Certification ";
-      // }
-
-      // if (agreeTerms == "") {
-      //     message += "Agree Terms ";
-      // }
+      // Validation checks
+      if (firstname === "") message += "First Name ";
+      if (middlename === "") message += "Middle Name ";
+      if (lastname === "") message += "Last Name ";
+      if (date_of_birth === "") message += "Date of Birth ";
+      if (email === "") message += "Email ";
+      if (gender === "") message += "Gender ";
+      if (phone === "") message += "Phone ";
+      if (institutionid === "") message += "Institution ";
+      if (courseid === "") message += "Course ";
+      if (academic_status === "") message += "Academic Status ";
+      if (yearlevel === "") message += "Year Level ";
+      if (birthplace === "") message += "Birth Place ";
+      if (age === "") message += "Age ";
+      if (scholarshipid === "") message += "Scholarship is required ";
 
       if (message !== "") {
         swal("Validation Error", message, "error");
@@ -246,20 +198,16 @@
             yearlevel: yearlevel,
             birthplace: birthplace,
             age: age,
-            fathers_name: fathers_name,
-            fathers_occupation: fathers_occupation,
-            fathers_salary: fathers_salary,
-            mothers_name: mothers_name,
-            mothers_occupation: mothers_occupation,
-            mothers_salary: mothers_salary,
-            registerdate: registerdate,
-            // certifyInfo: certifyInfo,
-            // agreeTerms: agreeTerms,
-            // certifyInfo: certifyInfo,
-            // agreeTerms: agreeTerms,
+            scholarshipid: scholarshipid,
           },
           success: function (result) {
-            if (result.msg === "success") {
+            if (result.msg === "noscholarid") {
+              swal(
+                "Scholarship Error",
+                "Select a school year if there is no selection, maybe it's closed or full slots.",
+                "warning"
+              );
+            } else if (result.msg === "success") {
               function promptOTP() {
                 return swal({
                   text: "Enter the OTP sent to your email",
@@ -356,17 +304,18 @@
             } else {
               swal(
                 "Looks like you already have an account",
-                "Check your email for the OTP or Provide a new email",
+                "Check your email for the OTP or provide a new email",
                 "warning"
               );
             }
           },
           error: function (err) {
-            swal("Data already exists!", "You clicked the button!", "warning");
+            swal("Error", "Something went wrong. Please try again later.", "error");
           },
         });
       }
     });
+
 
     document.addEventListener('DOMContentLoaded', function () {
       const chatbotButton = document.getElementById('chatbot-button');

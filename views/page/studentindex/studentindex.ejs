@@ -19,6 +19,7 @@
                 <h1 class="h1 mb-0 text-black-800 custom-font">
                     Status: <span class="<%= status === 'UnVerified' ? 'text-danger' : 'text-success' %>"><%= status %></span><br>
                     <!-- Exclamation Icon as Button -->
+                    <% if (status === 'UnVerified') { %>
                     <button 
                         id="status-icon" 
                         class="btn btn-link" 
@@ -26,6 +27,7 @@
                         data-target="#statusModal">
                         <i class="fas fa-exclamation-circle"></i>
                     </button>
+                    <% } %>
                 </h1>
             </div>
         </div>

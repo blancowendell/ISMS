@@ -3,8 +3,8 @@ const mysql = require("./repository/ismsdb");
 var express = require("express");
 const { Validator } = require("./controller/middleware");
 const { JsonErrorResponse, JsonSuccess, JsonWarningResponse, MessageStatus, JsonDataResponse } = require("./repository/response");
-const { InsertTable, Select } = require("./repository/dbconnect");
-const { SelectStatement, InsertStatement, GetCurrentDatetime } = require("./repository/customhelper");
+const { InsertTable, Select, Update } = require("./repository/dbconnect");
+const { SelectStatement, InsertStatement, GetCurrentDatetime, UpdateStatement } = require("./repository/customhelper");
 const { DataModeling } = require("./model/ismsdb");
 var router = express.Router();
 const nodemailer = require('nodemailer'); // Make sure to require nodemailer
@@ -109,6 +109,74 @@ router.post("/save", async (req, res) => {
 });
 
 
+router.get("/loadscholarlandingpage", (req, res) => {
+  try {
+    let sql = `
+    SELECT
+    s_scholarship_id,
+    s_name 
+    FROM scholarship
+    WHERE s_status = 'Active' AND s_available_slots > 0`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      //console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "s_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+router.post("/getscholarship", (req, res) => {
+  try {
+    let scholarshipid = req.body.scholarshipid;
+    let sql = `SELECT 
+      s_name,
+      DATE_FORMAT(s_start_date, '%Y-%m-%d') as s_start_date,
+      DATE_FORMAT(s_end_date, '%Y-%m-%d') as s_end_date,
+      s_status
+      FROM scholarship_config
+      INNER JOIN scholarship ON scholarship_config.sc_scholarship_id = s_scholarship_id
+      WHERE s_scholarship_id = '${scholarshipid}'`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "s_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
 router.get("/load", (req, res) => {
   try {
     let sql = `SELECT
@@ -146,6 +214,131 @@ router.get("/load", (req, res) => {
     res.json(JsonErrorResponse(error));
   }
 });
+
+
+router.put("/edit", (req, res) => {
+  try {
+    const { scholarshipid, name, startdate, enddate, status } = req.body;
+
+    let data = [];
+    let columns = [];
+    let arguments = [];
+
+    if (name) {
+      data.push(name);
+      columns.push("name");
+    }
+
+    if (startdate) {
+      data.push(startdate);
+      columns.push("start_date");
+    }
+
+    if (enddate) {
+      data.push(enddate);
+      columns.push("end_date");
+    }
+
+    if (status) {
+      data.push(status);
+      columns.push("status");
+    }
+
+    if (scholarshipid) {
+      data.push(scholarshipid);
+      arguments.push("scholarship_id");
+    }
+
+    let updateStatement = UpdateStatement(
+      "scholarship",
+      "s",
+      columns,
+      arguments
+    );
+
+    console.log(updateStatement);
+
+    let checkStatement = SelectStatement(
+      "select * from scholarship where s_scholarship_id = ? and s_name = ? and s_start_date = ? and s_end_date = ? and s_status = ?",
+      [scholarshipid, name, startdate, enddate, status]
+    );
+
+    Check(checkStatement)
+      .then((result) => {
+        if (result != 0) {
+          return res.json(JsonWarningResponse(MessageStatus.EXIST));
+        } else {
+          Update(updateStatement, data, (err, result) => {
+            if (err) console.error("Error: ", err);
+
+            //console.log(result);
+
+            res.json(JsonSuccess());
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json(JsonErrorResponse(error));
+      });
+  } catch (error) {
+    console.log(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+router.get("/status", (req, res) => {
+  try {
+    let sql = `SELECT sp_status FROM signup_page WHERE sp_id = 1`;
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      if (result.length > 0) {
+        let data = DataModeling(result, "sp_");
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result)); // Return empty if no data found
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+router.put("/status", (req, res) => {
+  try {
+    let id = 1;
+    let status = req.body.status;
+    let data = [status, id];
+
+    let updateStatement = UpdateStatement(
+      "signup_page",
+      "sp",
+      ["status"],
+      ["id"]
+    );
+
+    Update(updateStatement, data, (err, result) => {
+      if (err) {
+        console.error("Error: ", err);
+        res.json(JsonErrorResponse(err));
+      } else {
+        res.json(JsonSuccess());
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+
 
 
 

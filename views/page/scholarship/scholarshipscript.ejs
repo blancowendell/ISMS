@@ -1,418 +1,400 @@
 <script>
-    let userid = "";
-    let base64String = "";
-    let currentPassword = "";
-  
-    $(document).ready(function () {
-      LoadTable();
+  let scholarshipid = "";
+  let base64String = "";
+  let currentPassword = "";
+
+  $(document).ready(function () {
+    LoadTable();
+    searchTable();
+
+    $(document).on("keyup", "#myInput", function () {
       searchTable();
-      LoadAccess();
-      EditLoadAccess();
-  
-      $(document).on("keyup", "#myInput", function () {
-        searchTable();
-      });
-  
-      function LoadTable() {
-        $("#dataTableQuestions").DataTable({
-          destroy: true,
-          processing: true,
-          serverSide: true,
-          paging: false,
-          searching: false,
-          info: false,
-          scrollY: 600,
-          scrollCollapse: true,
-          serverMethod: "GET",
-          ajax: {
-            url: "/scholarship/load",
-            dataSrc: (json) => {
-              var finalData = [];
-              var data = json.data;
-  
-              $.each(data, (key, item) => {
-                var action = "";
-                var status = item.status;
-  
-                action = `
-                      <button id="editBtn" class="btn text-primary" name="editBtn" data-bs-toggle="modal" data-bs-target="#editadminusersmodal"><i class="fas fa-fw fa-pen"></i></button>
+    });
+
+    function LoadTable() {
+      $("#dataTableScholarships").DataTable({
+        destroy: true,
+        processing: true,
+        serverSide: true,
+        paging: false,
+        searching: false,
+        info: false,
+        scrollY: 600,
+        scrollCollapse: true,
+        serverMethod: "GET",
+        ajax: {
+          url: "/scholarship/load",
+          dataSrc: (json) => {
+            var finalData = [];
+            var data = json.data;
+
+            $.each(data, (key, item) => {
+              var action = "";
+              var status = item.status;
+
+              action = `
+                      <button id="editBtn" class="btn text-primary" name="editBtn" data-bs-toggle="modal" data-bs-target="#editscholarshipmodal"><i class="fas fa-fw fa-pen"></i></button>
                      `;
 
-  
-                finalData.push({
-                  scholarship_id: item.scholarship_id,
-                  name: item.name,
-                  total_slots: item.total_slots,
-                  available_slots: item.available_slots,
-                  max_slots: item.max_slots,
-                  start_date: item.start_date,
-                  end_date: item.end_date,
-                  status: item.status,
-                  created_at: item.created_at,
-                  action: action,
-                });
+
+              finalData.push({
+                scholarship_id: item.scholarship_id,
+                name: item.name,
+                total_slots: item.total_slots,
+                available_slots: item.available_slots,
+                max_slots: item.max_slots,
+                start_date: item.start_date,
+                end_date: item.end_date,
+                status: item.status,
+                created_at: item.created_at,
+                action: action,
               });
-  
-              return finalData;
-            },
-          },
-          columnDefs: [
-            {
-              targets: 1,
-              className: "td-indent",
-            },
-          ],
-          columns: [
-            { data: "scholarship_id" },
-            { data: "name" },
-            { data: "max_slots" },
-            { data: "total_slots" },
-            { data: "available_slots" },
-            { data: "start_date" },
-            { data: "end_date" },
-            { data: "status" },
-            { data: "created_at" },
-            { data: "action" },
-          ],
-          createdRow: function (row, data, dataIndex) {
-            $("td", row).each(function (index) {
-              this.style.textAlign = "center";
-              this.style.verticalAlign = "middle";
             });
-          },
-          initComplete: function () {},
-        });
-      }
-  
-      function LoadAccess() {
-        $.ajax({
-          type: "GET",
-          url: "/access/load",
-          success: function (result) {
-            var data = result.data;
-  
-            $.each(data, function (key, item) {
-              var options = new Option(item.accessid, item.accessid);
-              $(options).html(item.accessname);
-              $("#accesstype").append(options);
-            });
-          },
-          error: function (result) {
-            alert("error: " + result.data);
-          },
-        });
-      }
-  
-      $(document).on("click", "#addscholarSaveBtn", function () {
-        let scholarname = $("#scholarname").val();
-        let scholardesc = $("#scholardesc").val();
-        let maxslots = $("#maxslots").val();
-        let startdate = $("#startdate").val();
-        let enddate = $("#enddate").val();
-  
-        var message = "";
-  
-        if (scholarname == "") {
-          message += "Scholarship Name is required. ";
-        }
-  
-        if (maxslots == "") {
-          message += "Maximum Slots is required. ";
-        }
 
-        if (startdate == "") {
-          message += "Start Date is required. ";
-        }
+            return finalData;
+          },
+        },
+        columnDefs: [
+          {
+            targets: 1,
+            className: "td-indent",
+          },
+        ],
+        columns: [
+          { data: "scholarship_id" },
+          { data: "name" },
+          { data: "max_slots" },
+          { data: "total_slots" },
+          { data: "available_slots" },
+          { data: "start_date" },
+          { data: "end_date" },
+          { data: "status" },
+          { data: "created_at" },
+          { data: "action" },
+        ],
+        createdRow: function (row, data, dataIndex) {
+          $("td", row).each(function (index) {
+            this.style.textAlign = "center";
+            this.style.verticalAlign = "middle";
+          });
+        },
+        initComplete: function () { },
+      });
+    }
 
-        if (enddate == "") {
-          message += "End Date is required. ";
-        }
-  
-        if (message !== "") {
-          swal("Validation Error", message, "error");
-        } else {
-          $.ajax({
-            type: "POST",
-            url: "/scholarship/save",
-            data: {
-                scholarname: scholarname,
-                scholardesc: scholardesc,
-                maxslots: maxslots,
-                startdate: startdate,
-                enddate: enddate,
-            },
-            success: function (result) {
-              if (result.msg == "success") {
-                swal({
-                  title: "Saved Successfully",
-                  text: "You clicked the button!",
-                  icon: "success",
-                  button: "OK!",
-                }).then((results) => {
-                  window.location.reload();
-                });
-                LoadTable();
-              } else {
-                swal({
-                  title: "Exist",
-                  text: "Data already exists!",
-                  icon: "warning",
-                  button: "OK!",
-                });
-              }
-            },
-            error: function (err) {
-              swal("Data already exists!", "You clicked the button!", "warning");
-            },
-          });
-        }
-      });
-  
-      $("#dataTableQuestions tbody").on("click", "tr", function () {
-        var dataRow = [];
-        $(this)
-          .closest("tr")
-          .find("td")
-          .each(function () {
-            dataRow.push($(this).text());
-          });
-        userid = dataRow[1];
-        console.log(dataRow);
-      });
-  
-      function EditLoadAccess() {
-        $.ajax({
-          type: "GET",
-          url: "/access/load",
-          success: function (result) {
-            var data = result.data;
-  
-            $.each(data, function (key, item) {
-              var options = new Option(item.accessid, item.accessid);
-              $(options).html(item.accessname);
-              $("#editaccesstype").append(options);
-            });
-          },
-          error: function (result) {
-            alert("error: " + result.data);
-          },
-        });
+    $(document).on("click", "#addscholarSaveBtn", function () {
+      let scholarname = $("#scholarname").val();
+      let scholardesc = $("#scholardesc").val();
+      let maxslots = $("#maxslots").val();
+      let startdate = $("#startdate").val();
+      let enddate = $("#enddate").val();
+
+      var message = "";
+
+      if (scholarname == "") {
+        message += "Scholarship Name is required. ";
       }
-  
-      $(document).on("click", "#editBtn", function () {
+
+      if (maxslots == "") {
+        message += "Maximum Slots is required. ";
+      }
+
+      if (startdate == "") {
+        message += "Start Date is required. ";
+      }
+
+      if (enddate == "") {
+        message += "End Date is required. ";
+      }
+
+      if (message !== "") {
+        swal("Validation Error", message, "error");
+      } else {
         $.ajax({
           type: "POST",
-          url: "/adminusers/getadminusers",
+          url: "/scholarship/save",
           data: {
-            userid: userid,
+            scholarname: scholarname,
+            scholardesc: scholardesc,
+            maxslots: maxslots,
+            startdate: startdate,
+            enddate: enddate,
           },
           success: function (result) {
-            if (result.msg === "success") {
-              const existingData = result.data;
-  
-              $.each(existingData, (key, item) => {
-                $("#editdepartmentid").val(item.userid);
-                $("#editaccesstype").val(item.accesstype);
-                $("#editfullname").val(item.fullname);
-                $("#editusername").val(item.username);
-                currentPassword = item.password;
-                $("#editstatus").val(item.status);
-                $("#editpreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.image
-                );
+            if (result.msg == "success") {
+              swal({
+                title: "Saved Successfully",
+                text: "You clicked the button!",
+                icon: "success",
+                button: "OK!",
+              }).then((results) => {
+                window.location.reload();
               });
-  
-              console.log(currentPassword, "currentPassword");
+              LoadTable();
             } else {
-              swal("Error fetching employee data", message, "error");
+              swal({
+                title: "Exist",
+                text: "Data already exists!",
+                icon: "warning",
+                button: "OK!",
+              });
             }
           },
           error: function (err) {
-            swal(
-              "An error occurred while fetching employee data",
-              message,
-              "error"
-            );
+            swal("Data already exists!", "You clicked the button!", "warning");
           },
         });
-      });
-  
-      $(document).on("click", "#adminUserEditBtn", function () {
-        let id = userid;
-        let accesstype = $("#editaccesstype").val();
-        let fullname = $("#editfullname").val();
-        let username = $("#editusername").val();
-        let status = $("#editstatus").val();
-        let currentpassword = $("#currentPassword").val();
-        let newpassword = $("#newpassword").val();
-        let image = base64String;
-  
-        // Assume currentPassword is a global variable that holds the actual current password
-        if (currentpassword !== currentPassword) {
-          swal("Validation Error", "Current password is incorrect.", "error");
-          return; // Exit early if current password is incorrect
-        }
-  
-        var message = "";
-  
-        if (accesstype === "") {
-          message += "Accesstype is required. ";
-        }
-  
-        if (fullname === "") {
-          message += "Fullname is required. ";
-        }
-  
-        if (username === "") {
-          message += "Username is required. ";
-        }
-  
-        if (status === "") {
-          message += "Status is required. ";
-        }
-  
-        if (newpassword === "") {
-          message += "Newpassword is required. ";
-        }
-  
-        if (message !== "") {
-          swal("Validation Error", message, "error");
-        } else {
-          $.ajax({
-            type: "PUT",
-            url: "adminusers/edit",
-            data: {
-              userid: userid,
-              accesstype: accesstype,
-              fullname: fullname,
-              username: username,
-              status: status,
-              currentpassword: currentpassword,
-              newpassword: newpassword,
-              image: image,
-            },
-            success: function (result) {
-              if (result.msg === "success") {
-                swal({
-                  title: "Update Successfully",
-                  text: "You clicked the button!",
-                  icon: "success",
-                  button: "OK!",
-                }).then((results) => {
-                  window.location.reload();
-                });
-                LoadTable();
-              } else if (result.msg === "exist") {
-                swal({
-                  title: "Exist",
-                  text: "Data already exists!",
-                  icon: "warning",
-                  button: "OK!",
-                });
-              } else {
-                swal(
-                  "Data already exists!",
-                  "You clicked the button!",
-                  "warning"
-                );
-              }
-            },
-            error: function (err) {
-              swal("Error", "An error occurred while saving data.", "error");
-            },
-          });
-        }
-      });
-  
-      $(document).on("change", "#announcementimage", function (e) {
-        const input = document.getElementById("announcementimage");
-        const file = input.files[0];
-  
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function () {
-          const preview = document.getElementById("preview");
-          preview.src = reader.result;
-        };
-        imageUploaded();
-      });
-  
-      function imageUploaded() {
-        const input = document.getElementById("announcementimage");
-        const file = input.files[0];
-  
-        var reader = new FileReader();
-  
-        reader.onload = function () {
-          base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
-  
-          imageBase64Stringsep = base64String;
-        };
-        reader.readAsDataURL(file);
       }
-  
-      $(document).on("change", "#editannouncementimage", function (e) {
-        const input = document.getElementById("editannouncementimage");
-        const file = input.files[0];
-  
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = function () {
-          const preview = document.getElementById("editpreview");
-          preview.src = reader.result;
-        };
-        editimage();
-      });
-  
-      function editimage() {
-        const input = document.getElementById("editannouncementimage");
-        const file = input.files[0];
-  
-        var reader = new FileReader();
-  
-        reader.onload = function () {
-          base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
-  
-          imageBase64Stringsep = base64String;
-        };
-        reader.readAsDataURL(file);
-      }
-  
-      function searchTable() {
-        var input, filter, found, table, tr, td, i, j;
-        input = document.getElementById("myInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("dataTableQuestions");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-          td = tr[i].getElementsByTagName("td");
-          for (j = 0; j < td.length; j++) {
-            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
-              found = true;
-            }
-          }
-          if (found) {
-            tr[i].style.display = "";
-            found = false;
+    });
+
+    $("#dataTableScholarships tbody").on("click", "tr", function () {
+      var dataRow = [];
+      $(this)
+        .closest("tr")
+        .find("td")
+        .each(function () {
+          dataRow.push($(this).text());
+        });
+      scholarshipid = dataRow[0];
+      console.log(dataRow);
+    });
+
+    $(document).on("click", "#editBtn", function () {
+      $.ajax({
+        type: "POST",
+        url: "/scholarship/getscholarship",
+        data: {
+          scholarshipid: scholarshipid,
+        },
+        success: function (result) {
+          if (result.msg === "success") {
+            const existingData = result.data;
+
+            $.each(existingData, (key, item) => {
+              $("#editscholarname").val(item.name);
+              $("#editstartdate").val(item.start_date);
+              $("#editenddate").val(item.end_date);
+              $("#editscholarstatus").val(item.status);
+            });
+
+            console.log(currentPassword, "currentPassword");
           } else {
-            tr[i].style.display = "none";
+            swal("Error fetching employee data", message, "error");
           }
-        }
+        },
+        error: function (err) {
+          swal(
+            "An error occurred while fetching employee data",
+            message,
+            "error"
+          );
+        },
+      });
+    });
+
+    $(document).on("click", "#editScholarSaveBtn", function () {
+      let id = scholarshipid;
+      let name = $("#editscholarname").val();
+      let startdate = $("#editstartdate").val();
+      let enddate = $("#editenddate").val();
+      let status = $("#editscholarstatus").val();
+
+      var message = "";
+
+      if (name === "") {
+        message += "Scholarship Name is required. ";
       }
-  
-      $(".toggle-password").on("click", function () {
-        const targetSelector = $(this).data("target");
-        const passwordInput = $(targetSelector);
-        const passwordFieldType = passwordInput.attr("type");
-        if (passwordFieldType === "password") {
-          passwordInput.attr("type", "text");
-          $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
-        } else {
-          passwordInput.attr("type", "password");
-          $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+
+      if (startdate === "") {
+        message += "Start Date is required. ";
+      }
+
+      if (enddate === "") {
+        message += "End Date is required. ";
+      }
+
+      if (status === "") {
+        message += "Status is required. ";
+      }
+      if (message !== "") {
+        swal("Validation Error", message, "error");
+      } else {
+        $.ajax({
+          type: "PUT",
+          url: "scholarship/edit",
+          data: {
+            scholarshipid: scholarshipid,
+            name: name,
+            startdate: startdate,
+            enddate: enddate,
+            status: status,
+          },
+          success: function (result) {
+            if (result.msg === "success") {
+              swal({
+                title: "Update Successfully",
+                text: "You clicked the button!",
+                icon: "success",
+                button: "OK!",
+              }).then((results) => {
+                window.location.reload();
+              });
+              LoadTable();
+            } else if (result.msg === "exist") {
+              swal({
+                title: "Exist",
+                text: "Data already exists!",
+                icon: "warning",
+                button: "OK!",
+              });
+            } else {
+              swal(
+                "Data already exists!",
+                "You clicked the button!",
+                "warning"
+              );
+            }
+          },
+          error: function (err) {
+            swal("Error", "An error occurred while saving data.", "error");
+          },
+        });
+      }
+    });
+
+    //Status Update
+    let signupStatus = "";
+
+    // Fetch current status on page load
+    $.ajax({
+      type: "GET",
+      url: "/scholarship/status",
+      success: function (result) {
+        console.log(result);
+        
+        // Assuming the result data is modeled with a key 's_status'
+        signupStatus = result.data[0].status === "Active" ? "ON" : "OFF";
+        $("#signupToggleBtn").html(`<b>Signup Page ${signupStatus}</b>`);
+      },
+      error: function (err) {
+        warning("Error fetching signup status", err);
+      }
+    });
+
+    // Handle toggle button click
+    $("#signupToggleBtn").on("click", function () {
+      // Toggle the status based on the current state
+      let newStatus = signupStatus === "OFF" ? "Active" : "Inactive";
+
+      $.ajax({
+        type: "PUT",
+        url: "/scholarship/status",
+        data: {
+          status: newStatus,
+        },
+        success: function (result) {
+          if (result.msg === "success") {
+            signupStatus = newStatus === "Active" ? "ON" : "OFF";
+            $("#signupToggleBtn").html(`<b>Signup Page ${signupStatus}</b>`);
+            LoadTable(); // Assuming this refreshes your table data
+            swal("Saved", "Successfully Update Signup Page Status", "success");
+          } else if (result.msg === "notexist") {
+            swal("Error", "Signup Page does not exist", "error");
+          }
+        },
+        error: function (err) {
+          swal("Error", "An error occurred while saving data", "error");
         }
       });
     });
-  </script>
-  
+
+    $(document).on("change", "#announcementimage", function (e) {
+      const input = document.getElementById("announcementimage");
+      const file = input.files[0];
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = function () {
+        const preview = document.getElementById("preview");
+        preview.src = reader.result;
+      };
+      imageUploaded();
+    });
+
+    function imageUploaded() {
+      const input = document.getElementById("announcementimage");
+      const file = input.files[0];
+
+      var reader = new FileReader();
+
+      reader.onload = function () {
+        base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+        imageBase64Stringsep = base64String;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    $(document).on("change", "#editannouncementimage", function (e) {
+      const input = document.getElementById("editannouncementimage");
+      const file = input.files[0];
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = function () {
+        const preview = document.getElementById("editpreview");
+        preview.src = reader.result;
+      };
+      editimage();
+    });
+
+    function editimage() {
+      const input = document.getElementById("editannouncementimage");
+      const file = input.files[0];
+
+      var reader = new FileReader();
+
+      reader.onload = function () {
+        base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+        imageBase64Stringsep = base64String;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function searchTable() {
+      var input, filter, found, table, tr, td, i, j;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("dataTableScholarships");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+          if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            found = true;
+          }
+        }
+        if (found) {
+          tr[i].style.display = "";
+          found = false;
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+
+    $(".toggle-password").on("click", function () {
+      const targetSelector = $(this).data("target");
+      const passwordInput = $(targetSelector);
+      const passwordFieldType = passwordInput.attr("type");
+      if (passwordFieldType === "password") {
+        passwordInput.attr("type", "text");
+        $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+      } else {
+        passwordInput.attr("type", "password");
+        $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+      }
+    });
+  });
+</script>

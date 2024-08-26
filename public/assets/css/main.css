@@ -8,6 +8,10 @@
 
 /* Ensure modal takes up full height and width */
 
+#signup {
+  display: none; /* Hide by default until the status is checked */
+}
+
 
 /* FAQ toggle */
 .faq-question {

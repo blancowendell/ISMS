@@ -10,6 +10,7 @@ const currentYear = moment().format("YY");
 const currentMonth = moment().format("MM");
 const nodemailer = require('nodemailer');
 const { DataModeling } = require("./model/ismsdb");
+require("dotenv").config();
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -46,13 +47,14 @@ router.post("/save", async (req, res) => {
       yearlevel,
       birthplace,
       age,
-      fathers_name,
-      fathers_occupation,
-      fathers_salary,
-      mothers_name,
-      mothers_occupation,
-      mothers_salary,
+      scholarshipid,
     } = req.body;
+
+    if (!scholarshipid || scholarshipid.trim() === "") {
+      return res.json({
+        msg: "noscholarid",
+      });
+    }
 
     // Generate OTP
     let otp = Math.floor(100000 + Math.random() * 900000); // 6 digit OTP
@@ -60,6 +62,7 @@ router.post("/save", async (req, res) => {
     // Generate a student ID
     let newStudentID = await generateStudentId(currentYear, currentMonth);
 
+    // Prepare SQL for inserting student data
     let sql = InsertStatement("master_students", "ms", [
       "studentid",
       "first_name",
@@ -76,14 +79,9 @@ router.post("/save", async (req, res) => {
       "yearlevel",
       "birthplace",
       "age",
-      "fathers_name",
-      "fathers_occupation",
-      "fathers_salary",
-      "mothers_name",
-      "mothers_occupation",
-      "mothers_salary",
       "registerdate",
       "otp",
+      "scholarshipid"
     ]);
 
     let data = [
@@ -103,14 +101,9 @@ router.post("/save", async (req, res) => {
         yearlevel,
         birthplace,
         age,
-        fathers_name,
-        fathers_occupation,
-        fathers_salary,
-        mothers_name,
-        mothers_occupation,
-        mothers_salary,
         registerDate,
         otp,
+        scholarshipid,
       ],
     ];
 
@@ -127,25 +120,46 @@ router.post("/save", async (req, res) => {
           InsertTable(sql, data, (err, result) => {
             if (err) {
               console.log(err);
-              res.json(JsonErrorResponse(err));
+              return res.json(JsonErrorResponse(err));
             }
 
-            // Send OTP email
-            let mailOptions = {
-              from: 'your-email@gmail.com',
-              to: email,
-              subject: 'Your OTP Code',
-              text: `Your OTP code is ${otp}. Please enter this code to verify your email.`,
-            };
+            let updateSql = `UPDATE scholarship 
+                             SET s_available_slots = s_available_slots - 1 
+                             WHERE s_scholarship_id = '${scholarshipid}'`;
 
-            transporter.sendMail(mailOptions, (error, info) => {
-              if (error) {
-                console.log(error);
-                return res.json(JsonErrorResponse("Failed to send OTP"));
-              }
+            mysql.mysqlQueryPromise(updateSql)
+              .then((updateResult) => {
+                console.log("Scholarship slots updated successfully:", updateResult);
 
-              res.json(JsonSuccess({ message: "OTP sent to your email" }));
-            });
+                // Send OTP email with student ID
+                let mailOptions = {
+                  from: 'your-email@gmail.com',
+                  to: email,
+                  subject: 'Your OTP Code and Student ID',
+                  text: `Your OTP code is ${otp}. Please enter this code to verify your email. Your Applicant ID is ${newStudentID}.`,
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                  if (error) {
+                    console.log(error);
+                    return res.json(JsonErrorResponse("Failed to send OTP"));
+                  }
+
+                  res.json(JsonSuccess({ 
+                    message: "Student registered and scholarship slots updated successfully", 
+                    studentID: newStudentID 
+                  }));
+                });
+              })
+              .catch((updateError) => {
+                console.error("Error updating scholarship slots:", updateError);
+
+                // Send response even if there's an error updating scholarship slots
+                res.json(JsonSuccess({ 
+                  message: "Student registered but failed to update scholarship slots", 
+                  studentID: newStudentID 
+                }));
+              });
           });
         }
       })
@@ -185,7 +199,13 @@ router.post("/verify-otp", (req, res) => {
 router.post("/send-create-account-link", (req, res) => {
   const { email } = req.body;
 
-  let link = `http://localhost:3005/createuser?email=${email}`;
+  const host = process.env._HOST_ADMIN;
+  const port = process.env._PORT_ADMIN;
+  
+  console.log('Host:', host);
+  console.log('Port:', port);
+
+  let link = `http://${host}:${port}/createuser?email=${email}`;
 
   let mailOptions = {
     from: 'ilsp.test.dev@gmail.com',
@@ -273,7 +293,6 @@ router.post("/send", (req, res) => {
 });
 
 
-
 router.get("/loadfrequentquestions", (req, res) => {
   try {
     let sql = `SELECT 
@@ -326,6 +345,36 @@ router.get("/frequentquestions", (req, res) => {
 
       if (result != 0) {
         let data = DataModeling(result, "mq_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+router.get("/loadsignuppage", (req, res) => {
+  try {
+    let sql = `SELECT sp_status
+    FROM signup_page
+    WHERE sp_status = 'Active'`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      //console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "sp_");
 
         //console.log(data);
         res.json(JsonDataResponse(data));
