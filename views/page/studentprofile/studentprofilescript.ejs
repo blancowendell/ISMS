@@ -1,20 +1,272 @@
 <script>
-    document.getElementById('input-file-now').addEventListener('change', function (event) {
+  $(document).ready(function () {
+    loadStudentData();
+    LoadInstitutions();
+    LoadCoursesOnly();
+
+    document
+      .getElementById("input-file-now")
+      .addEventListener("change", function (event) {
         previewImage(event);
-    });
+      });
 
     function previewImage(event) {
-        const input = event.target;
-        const reader = new FileReader();
+      const input = event.target;
+      const reader = new FileReader();
 
-        reader.onload = function () {
-            const imagePreview = document.getElementById('image-preview');
-            imagePreview.src = reader.result;
-            imagePreview.style.display = 'block';
-        }
+      reader.onload = function () {
+        const imagePreview = document.getElementById("image-preview");
+        imagePreview.src = reader.result;
+        imagePreview.style.display = "block";
+      };
 
-        if (input.files && input.files[0]) {
-            reader.readAsDataURL(input.files[0]);
-        }
+      if (input.files && input.files[0]) {
+        reader.readAsDataURL(input.files[0]);
+      }
     }
+
+    function LoadInstitutions() {
+      $.ajax({
+        type: "GET",
+        url: "/institutions/loadinstitutions",
+        success: function (result) {
+          var data = result.data;
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.institutionsid, item.institutionsid);
+            $(options).html(item.name);
+            $("#school_name").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+    function LoadCoursesOnly() {
+      $.ajax({
+        type: "GET",
+        url: "/courses/loadcourses",
+        success: function (result) {
+          var data = result.data;
+          $.each(data, function (key, item) {
+            var options = new Option(item.course_id, item.course_id);
+            $(options).html(item.name_code);
+            $("#course_strand").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+    function loadStudentData() {
+      $.ajax({
+        type: "GET",
+        url: "/finishapplication/load",
+        success: function (result) {
+          $.ajax({
+            type: "GET",
+            url: "/studentprofile/studentprofileload",
+            success: function (result) {
+              if (result.msg === "success") {
+                const existingData = result.data;
+
+                // Set student data to respective fields
+                $("#first_name").val(item.first_name);
+                // ... other fields
+
+                // Set the image previews
+                $("#profileimagepreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.image
+                );
+                base64profileImage = item.image;
+
+                $("#truecopypreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.grade_copy
+                );
+                base64StringGradeCopy = item.grade_copy;
+
+                $("#regformpreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.registration_form
+                );
+                base64StringRegForm = item.registration_form;
+
+                $("#certrespreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.certificate_residency
+                );
+                base64StringCertRes = item.certificate_residency;
+
+                $("#itipreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.itr
+                );
+                base64StringItr = item.itr;
+
+                $("#nfipreview").attr(
+                  "src",
+                  "data:image/jpg;base64," + item.nfi
+                );
+                base64StringNfi = item.nfi;
+
+                // Add event listeners to the preview buttons
+                $("#previewTrueCopy").click(function () {
+                  window.open(
+                    "data:image/jpg;base64," + base64StringGradeCopy,
+                    "_blank"
+                  );
+                });
+
+                $("#previewRegForm").click(function () {
+                  window.open(
+                    "data:image/jpg;base64," + base64StringRegForm,
+                    "_blank"
+                  );
+                });
+
+                $("#previewCertRes").click(function () {
+                  window.open(
+                    "data:image/jpg;base64," + base64StringCertRes,
+                    "_blank"
+                  );
+                });
+
+                $("#previewItr").click(function () {
+                  window.open(
+                    "data:image/jpg;base64," + base64StringItr,
+                    "_blank"
+                  );
+                });
+
+                $("#previewNfi").click(function () {
+                  window.open(
+                    "data:image/jpg;base64," + base64StringNfi,
+                    "_blank"
+                  );
+                });
+              } else {
+                swal("Error fetching student data", result.message, "error");
+              }
+            },
+            error: function (err) {
+              swal(
+                "An error occurred while fetching student data",
+                err.message,
+                "error"
+              );
+            },
+          });
+        },
+        error: function (err) {
+          swal(
+            "An error occurred while checking application status",
+            err.message,
+            "error"
+          );
+        },
+      });
+    }
+
+    // function loadStudentData() {
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "/finishapplication/load",
+    //     success: function (result) {
+    //       $.ajax({
+    //         type: "GET",
+    //         url: "/studentprofile/studentprofileload",
+    //         success: function (result) {
+    //           if (result.msg === "success") {
+    //             const existingData = result.data;
+
+    //             console.log(existingData, "data");
+
+    //             $.each(existingData, (key, item) => {
+    //               $("#first_name").val(item.first_name);
+    //               $("#middle_name").val(item.middle_name);
+    //               $("#last_name").val(item.last_name);
+    //               $("#dob").val(item.date_of_birth);
+    //               $("#birthplace").val(item.birthplace);
+    //               $("#phone").val(item.phone);
+    //               $("#gender").val(item.gender);
+    //               $("#age").val(item.age);
+    //               $("#scholar_status").val(item.status);
+    //               $("#student_id").text(item.studentid);
+    //               $("#school_name").val(item.institutionid);
+    //               $("#course_strand").val(item.courseid);
+    //               $("#year_level").val(item.yearlevel);
+    //               $("#academic_status").val(item.academic_status);
+    //               $("#register_date").val(item.registerdate);
+    //               $("#city").val(item.city);
+    //               $("#barangay").val(item.baranggay);
+    //               $("#village").val(item.village);
+    //               $("#street_address").val(item.street);
+    //               $("#houseno").val(item.house_no);
+    //               $("#fathersname").val(item.fathers_name);
+    //               $("#fathersmonthly").val(item.fathers_salary);
+    //               $("#fathersoccupation").val(item.fathers_occupation);
+    //               $("#mothersname").val(item.mothers_name);
+    //               $("#mothersoccupation").val(item.mothers_occupation);
+    //               $("#mothersmonthly").val(item.mothers_salary);
+    //               $("#scholarshipid").val(item.scholarshipid);
+    //               $("#profileimagepreview").attr(
+    //                 "src",
+    //                 "data:image/jpg;base64," + item.image
+    //               );
+    //               base64profileImage = item.image;
+    //               $("#truecopypreview").attr(
+    //                 "src",
+    //                 "data:image/jpg;base64," + item.grade_copy
+    //               );
+    //               base64StringGradeCopy = item.grade_copy;
+    //               $("#regformpreview").attr(
+    //                 "src",
+    //                 "data:image/jpg;base64," + item.registration_form
+    //               );
+    //               base64StringRegForm = item.registration_form;
+    //               $("#certrespreview").attr(
+    //                 "src",
+    //                 "data:image/jpg;base64," + item.certificate_residency
+    //               );
+    //               base64StringCertRes = item.certificate_residency;
+    //               $("#itipreview").attr(
+    //                 "src",
+    //                 "data:image/jpg;base64," + item.itr
+    //               );
+    //               base64StringItr = item.itr;
+    //               $("#nfipreview").attr(
+    //                 "src",
+    //                 "data:image/jpg;base64," + item.nfi
+    //               );
+    //               base64StringNfi = item.nfi;
+    //             });
+    //           } else {
+    //             swal("Error fetching student data", result.message, "error");
+    //           }
+    //         },
+    //         error: function (err) {
+    //           swal(
+    //             "An error occurred while fetching student data",
+    //             err.message,
+    //             "error"
+    //           );
+    //         },
+    //       });
+    //     },
+    //     error: function (err) {
+    //       swal(
+    //         "An error occurred while checking application status",
+    //         err.message,
+    //         "error"
+    //       );
+    //     },
+    //   });
+    // }
+  });
 </script>
