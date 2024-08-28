@@ -63,93 +63,18 @@
     }
 
     function loadStudentData() {
+      // Fetch initial application data
       $.ajax({
         type: "GET",
         url: "/finishapplication/load",
-        success: function (result) {
+        success: function () {
+          // Fetch student profile data
           $.ajax({
             type: "GET",
             url: "/studentprofile/studentprofileload",
             success: function (result) {
               if (result.msg === "success") {
-                const existingData = result.data;
-
-                // Set student data to respective fields
-                $("#first_name").val(item.first_name);
-                // ... other fields
-
-                // Set the image previews
-                $("#profileimagepreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.image
-                );
-                base64profileImage = item.image;
-
-                $("#truecopypreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.grade_copy
-                );
-                base64StringGradeCopy = item.grade_copy;
-
-                $("#regformpreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.registration_form
-                );
-                base64StringRegForm = item.registration_form;
-
-                $("#certrespreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.certificate_residency
-                );
-                base64StringCertRes = item.certificate_residency;
-
-                $("#itipreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.itr
-                );
-                base64StringItr = item.itr;
-
-                $("#nfipreview").attr(
-                  "src",
-                  "data:image/jpg;base64," + item.nfi
-                );
-                base64StringNfi = item.nfi;
-
-                // Add event listeners to the preview buttons
-                $("#previewTrueCopy").click(function () {
-                  window.open(
-                    "data:image/jpg;base64," + base64StringGradeCopy,
-                    "_blank"
-                  );
-                });
-
-                $("#previewRegForm").click(function () {
-                  window.open(
-                    "data:image/jpg;base64," + base64StringRegForm,
-                    "_blank"
-                  );
-                });
-
-                $("#previewCertRes").click(function () {
-                  window.open(
-                    "data:image/jpg;base64," + base64StringCertRes,
-                    "_blank"
-                  );
-                });
-
-                $("#previewItr").click(function () {
-                  window.open(
-                    "data:image/jpg;base64," + base64StringItr,
-                    "_blank"
-                  );
-                });
-
-                $("#previewNfi").click(function () {
-                  window.open(
-                    "data:image/jpg;base64," + base64StringNfi,
-                    "_blank"
-                  );
-                });
+                populateStudentFields(result.data);
               } else {
                 swal("Error fetching student data", result.message, "error");
               }
@@ -173,100 +98,141 @@
       });
     }
 
-    // function loadStudentData() {
-    //   $.ajax({
-    //     type: "GET",
-    //     url: "/finishapplication/load",
-    //     success: function (result) {
-    //       $.ajax({
-    //         type: "GET",
-    //         url: "/studentprofile/studentprofileload",
-    //         success: function (result) {
-    //           if (result.msg === "success") {
-    //             const existingData = result.data;
+    function populateStudentFields(existingData) {
+      $.each(existingData, function (key, item) {
+        $("#first_name").val(item.first_name);
+        $("#middle_name").val(item.middle_name);
+        $("#last_name").val(item.last_name);
+        $("#dob").val(item.date_of_birth);
+        $("#birthplace").val(item.birthplace);
+        $("#phone").val(item.phone);
+        $("#gender").val(item.gender);
+        $("#age").val(item.age);
+        $("#scholar_status").val(item.status);
+        $("#student_id").text(item.studentid);
+        $("#school_name").val(item.institutionid);
+        $("#course_strand").val(item.courseid);
+        $("#year_level").val(item.yearlevel);
+        $("#academic_status").val(item.academic_status);
+        $("#register_date").val(item.registerdate);
+        $("#city").val(item.city);
+        $("#barangay").val(item.baranggay);
+        $("#village").val(item.village);
+        $("#street_address").val(item.street);
+        $("#houseno").val(item.house_no);
+        $("#fathersname").val(item.fathers_name);
+        $("#fathersmonthly").val(item.fathers_salary);
+        $("#fathersoccupation").val(item.fathers_occupation);
+        $("#mothersname").val(item.mothers_name);
+        $("#mothersoccupation").val(item.mothers_occupation);
+        $("#mothersmonthly").val(item.mothers_salary);
+        $("#scholarshipid").text(item.scholarshipid);
+        setImagePreview("#profileimagepreview", item.image);
+        setImagePreview("#truecopypreview", item.grade_copy);
+        setImagePreview("#regformpreview", item.registration_form);
+        setImagePreview("#certrespreview", item.certificate_residency);
+        setImagePreview("#itipreview", item.itr);
+        setImagePreview("#nfipreview", item.nfi);
+        handleFileButtons(
+          item.grade_copy,
+          "downloadTrueCopy",
+          "truecopypreview",
+          "previewTrueCopy",
+          "TrueCopy"
+        );
+        handleFileButtons(
+          item.registration_form,
+          "downloadRegForm",
+          "regformpreview",
+          "previewRegForm",
+          "RegistrationForm"
+        );
+        handleFileButtons(
+          item.certificate_residency,
+          "downloadCertRes",
+          "certrespreview",
+          "previewCertRes",
+          "CertificateOfResidency"
+        );
+        handleFileButtons(
+          item.itr,
+          "downloadItr",
+          "itipreview",
+          "previewItr",
+          "IncomeTaxReturn"
+        );
+        handleFileButtons(
+          item.nfi,
+          "downloadNfi",
+          "nfipreview",
+          "previewNfi",
+          "AffidavitOfNoFixIncome"
+        );
+      });
+    }
+    function setImagePreview(selector, base64String) {
+      $(selector).attr("src", "data:image/jpg;base64," + base64String);
+    }
+    function handleFileButtons(
+      base64String,
+      downloadButtonId,
+      previewId,
+      previewButtonId,
+      fileName
+    ) {
+      const fileHeader = base64String.substring(0, 10);
+      let fileType = "";
+      let blobType = "";
+      let fileExtension = "";
 
-    //             console.log(existingData, "data");
+      if (fileHeader.includes("JVBER")) {
+        // PDF file
+        fileType = "pdf";
+        blobType = "application/pdf";
+        fileExtension = ".pdf";
+      } else if (fileHeader.includes("/9j/4")) {
+        // JPEG file
+        fileType = "image/jpeg";
+        blobType = "image/jpeg";
+        fileExtension = ".jpg";
+      } else if (fileHeader.includes("iVBORw0KG")) {
+        // PNG file
+        fileType = "image/png";
+        blobType = "image/png";
+        fileExtension = ".png";
+      }
 
-    //             $.each(existingData, (key, item) => {
-    //               $("#first_name").val(item.first_name);
-    //               $("#middle_name").val(item.middle_name);
-    //               $("#last_name").val(item.last_name);
-    //               $("#dob").val(item.date_of_birth);
-    //               $("#birthplace").val(item.birthplace);
-    //               $("#phone").val(item.phone);
-    //               $("#gender").val(item.gender);
-    //               $("#age").val(item.age);
-    //               $("#scholar_status").val(item.status);
-    //               $("#student_id").text(item.studentid);
-    //               $("#school_name").val(item.institutionid);
-    //               $("#course_strand").val(item.courseid);
-    //               $("#year_level").val(item.yearlevel);
-    //               $("#academic_status").val(item.academic_status);
-    //               $("#register_date").val(item.registerdate);
-    //               $("#city").val(item.city);
-    //               $("#barangay").val(item.baranggay);
-    //               $("#village").val(item.village);
-    //               $("#street_address").val(item.street);
-    //               $("#houseno").val(item.house_no);
-    //               $("#fathersname").val(item.fathers_name);
-    //               $("#fathersmonthly").val(item.fathers_salary);
-    //               $("#fathersoccupation").val(item.fathers_occupation);
-    //               $("#mothersname").val(item.mothers_name);
-    //               $("#mothersoccupation").val(item.mothers_occupation);
-    //               $("#mothersmonthly").val(item.mothers_salary);
-    //               $("#scholarshipid").val(item.scholarshipid);
-    //               $("#profileimagepreview").attr(
-    //                 "src",
-    //                 "data:image/jpg;base64," + item.image
-    //               );
-    //               base64profileImage = item.image;
-    //               $("#truecopypreview").attr(
-    //                 "src",
-    //                 "data:image/jpg;base64," + item.grade_copy
-    //               );
-    //               base64StringGradeCopy = item.grade_copy;
-    //               $("#regformpreview").attr(
-    //                 "src",
-    //                 "data:image/jpg;base64," + item.registration_form
-    //               );
-    //               base64StringRegForm = item.registration_form;
-    //               $("#certrespreview").attr(
-    //                 "src",
-    //                 "data:image/jpg;base64," + item.certificate_residency
-    //               );
-    //               base64StringCertRes = item.certificate_residency;
-    //               $("#itipreview").attr(
-    //                 "src",
-    //                 "data:image/jpg;base64," + item.itr
-    //               );
-    //               base64StringItr = item.itr;
-    //               $("#nfipreview").attr(
-    //                 "src",
-    //                 "data:image/jpg;base64," + item.nfi
-    //               );
-    //               base64StringNfi = item.nfi;
-    //             });
-    //           } else {
-    //             swal("Error fetching student data", result.message, "error");
-    //           }
-    //         },
-    //         error: function (err) {
-    //           swal(
-    //             "An error occurred while fetching student data",
-    //             err.message,
-    //             "error"
-    //           );
-    //         },
-    //       });
-    //     },
-    //     error: function (err) {
-    //       swal(
-    //         "An error occurred while checking application status",
-    //         err.message,
-    //         "error"
-    //       );
-    //     },
-    //   });
-    // }
+      if (fileType && blobType) {
+        const byteCharacters = atob(base64String);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: blobType });
+        const downloadLink = URL.createObjectURL(blob);
+
+        // Set the preview image and download link
+        if (fileType.startsWith("image")) {
+          $(`#${previewId}`).attr("src", downloadLink).show();
+        } else if (fileType === "pdf") {
+          $(`#${previewId}`)
+            .attr("src", "https://via.placeholder.com/250?text=PDF")
+            .hide();
+        }
+
+        $(`#${downloadButtonId}`)
+          .attr("href", downloadLink)
+          .attr("download", `${fileName}${fileExtension}`)
+          .show();
+
+        // Handle preview button click
+        $(`#${previewButtonId}`)
+          .on("click", function () {
+            window.open(downloadLink, "_blank");
+          })
+          .show();
+      }
+    }
   });
 </script>

@@ -179,7 +179,7 @@ router.post("/getscholarship", (req, res) => {
 
 router.get("/load", (req, res) => {
   try {
-    let sql = `SELECT
+    let sql = `    SELECT
     s_scholarship_id,
     s_name,
     s_total_slots,
@@ -190,7 +190,7 @@ router.get("/load", (req, res) => {
     s_status,
     DATE_FORMAT(sc_created_at, '%Y-%m-%d %H:%i:%s') as s_created_at
     FROM scholarship
-    INNER JOIN scholarship_config`;
+    INNER JOIN scholarship_config ON scholarship.s_scholarship_id = sc_scholarship_id`;
 
     Select(sql, (err, result) => {
       if (err) {

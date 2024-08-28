@@ -68,8 +68,8 @@ router.post("/save", async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Error: ", error);
-    res.json({ msg: "error" });
+    console.error(error);
+    res.json(JsonErrorResponse(error));
   }
 });
 

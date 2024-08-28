@@ -11,6 +11,7 @@
         loadStudentData();
         LoadInstitutions();
         LoadCoursesOnly();
+        LoadScholarshipId();
 
         console.log(studentId, 'id');
         
@@ -81,6 +82,24 @@
             });
         }
 
+        function LoadScholarshipId() {
+            $.ajax({
+                type: "GET",
+                url: "/scholarship/loadscholarlandingpage",
+                success: function (result) {
+                    var data = result.data;
+                    $.each(data, function (key, item) {
+                        var options = new Option(item.scholarship_id, item.scholarship_id);
+                        $(options).html(item.name);
+                        $("#scholarshipidchoice").append(options);
+                    });
+                },
+                error: function (result) {
+                    alert("error: " + result.data);
+                },
+            });
+        }
+
         $(document).on("click", "#submit", function () {
             let first_name = $("#first_name").val();
             let middle_name = $("#middle_name").val();
@@ -108,6 +127,7 @@
             let mothersname = $("#mothersname").val();
             let mothersoccupation = $("#mothersoccupation").val();
             let mothersmonthly = $("#mothersmonthly").val();
+            let scholarshipid = $("#scholarshipidchoice").val();
             let imageFile = base64profileImage;
             let imageFileGradeCopy = base64StringGradeCopy;
             let imageFileRegForm = base64StringRegForm;
@@ -140,6 +160,7 @@
                 || village == ""
                 || street_address == ""
                 || houseno == ""
+                || scholarshipid == ""
                 || fathersname == ""
                 || fathersmonthly == ""
                 || fathersoccupation == ""
@@ -204,6 +225,7 @@
                         imageFileCertRes: imageFileCertRes,
                         imageFileItr: imageFileItr,
                         imageFileNfi: imageFileNfi,
+                        scholarshipid: scholarshipid,
                     },
                     success: function (result) {
                         // Close loading state
@@ -236,8 +258,6 @@
                 });
             }
         });
-
-
 
         function loadStudentData() {
             $.ajax({

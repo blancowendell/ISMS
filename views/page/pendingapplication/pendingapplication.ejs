@@ -8,6 +8,9 @@
         <div class="col">
           <input id='myInput' type='text' placeholder="  Search....">
         </div>
+        <div class="col-sm-2 col-add">
+            <button data-bs-toggle="modal" data-bs-target="#openModalBank" class="btn btn-export-color"><b>Filter Export</b></button>
+        </div>
       </div>
     </div>
     <div class="card-body">
@@ -37,6 +40,48 @@
 </div>
 </div>
 </div>
+
+<div class="modal fade" id="openModalBank" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" id="modal-header">
+            <lord-icon src="https://cdn.lordicon.com/hwpjjkev.json" class="db-hrmis"></lord-icon>
+            <h1 class="modal-title" id="exampleModalLabel">Export Bank Statement</h1>
+            <i class='bx bx-x' data-bs-dismiss="modal" aria-label="CLose"></i>
+        </div>
+        <div class="modal-body modal-batch-body" id="modal-body">
+            <form>
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select border-form-modal" id="bnkstmntpayroll" name="bnkstmntpayroll"
+                          aria-label="Floating label select example">
+                          <option selected disabled>Choose</option>
+                        </select>
+                        <label for="floatingSelectGrid">Select Payroll Date</label>
+                    </div>
+                </div>
+                <br>
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select border-form-modal" id="bnkstmntbank" name="bnkstmntbank"
+                          aria-label="Floating label select example">
+                          <option selected disabled>Choose</option>
+                        </select>
+                        <label for="floatingSelectGrid">Select Bank</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <br>
+        <br>
+        <div class="modal-footer" id="modal-footer">
+            <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-modal-save" id="exportbnkstmnt">Export</button>
+        </div>
+      </div>
+    </div>
+</div>
+
 <!-- Modal -->
 <div class="modal fade" id="viewapplicationmodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="head-title"
     aria-hidden="true">
