@@ -2,13 +2,22 @@ const mysql = require("./repository/ismsdb");
 //const moment = require('moment');
 var express = require("express");
 const { UserValidator } = require("./controller/middleware");
-const { JsonErrorResponse, JsonSuccess, JsonWarningResponse, MessageStatus, JsonDataResponse } = require("./repository/response");
+const {
+  JsonErrorResponse,
+  JsonSuccess,
+  JsonWarningResponse,
+  MessageStatus,
+  JsonDataResponse,
+} = require("./repository/response");
 const { InsertTable, Select } = require("./repository/dbconnect");
-const { SelectStatement, InsertStatement } = require("./repository/customhelper");
+const {
+  SelectStatement,
+  InsertStatement,
+} = require("./repository/customhelper");
 const { DataModeling } = require("./model/ismsdb");
 var router = express.Router();
-const ExcelJS = require('exceljs');
-const nodemailer = require('nodemailer'); // Make sure to require nodemailer
+const ExcelJS = require("exceljs");
+const nodemailer = require("nodemailer"); // Make sure to require nodemailer
 //const currentDate = moment();
 
 /* GET home page. */
@@ -19,20 +28,18 @@ router.get("/", function (req, res, next) {
 
 module.exports = router;
 
-
 // Setup nodemailer transport
 let transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-    user: 'ilsp.test.dev@gmail.com', // your email
-    pass: 'ujrf kdtj uwei conl', // your email password or app password
+    user: "ilsp.test.dev@gmail.com", // your email
+    pass: "ujrf kdtj uwei conl", // your email password or app password
   },
 });
 
-
 router.get("/load", function (req, res, next) {
-    try {
-        let sql = `SELECT
+  try {
+    let sql = `SELECT
         msr_image,
         msr_studentid,
         CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
@@ -49,28 +56,27 @@ router.get("/load", function (req, res, next) {
         INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
         WHERE msr_status = 'Applied'`;
 
-        Select(sql, (err, result) => {
-            if (err) {
-              console.error(err);
-              res.json(JsonErrorResponse(err));
-            }
-      
-            console.log(result);
-      
-            if (result != 0) {
-              let data = DataModeling(result, "msr_");
-      
-              console.log(data);
-              res.json(JsonDataResponse(data));
-            } else {
-              res.json(JsonDataResponse(result));
-            }
-          });
-    } catch (error) {
-        res.json(JsonErrorResponse(error));
-    }
-});
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
 
+      console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "msr_");
+
+        console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    res.json(JsonErrorResponse(error));
+  }
+});
 
 router.post("/loadstudentrequest", (req, res) => {
   try {
@@ -110,17 +116,16 @@ router.post("/loadstudentrequest", (req, res) => {
   }
 });
 
-
 router.post("/reject", async (req, res) => {
   const studentid = req.body.studentid;
   const rejectionMessage = req.body.message;
 
   if (!studentid) {
-    return res.status(400).json({ error: 'Student ID is required' });
+    return res.status(400).json({ error: "Student ID is required" });
   }
 
   if (!rejectionMessage) {
-    return res.status(400).json({ error: 'Rejection message is required' });
+    return res.status(400).json({ error: "Rejection message is required" });
   }
 
   try {
@@ -130,10 +135,13 @@ router.post("/reject", async (req, res) => {
       FROM master_students 
       WHERE ms_studentid = ?`;
 
-    const studentResults = await mysql.mysqlQueryPromise({ sql: fetchStudentQuery, values: [studentid] });
+    const studentResults = await mysql.mysqlQueryPromise({
+      sql: fetchStudentQuery,
+      values: [studentid],
+    });
 
     if (studentResults.length === 0) {
-      return res.status(404).json({ error: 'Student not found' });
+      return res.status(404).json({ error: "Student not found" });
     }
 
     const studentEmail = studentResults[0].ms_email;
@@ -147,23 +155,20 @@ router.post("/reject", async (req, res) => {
 
     // Send rejection email
     let mailOptions = {
-      from: 'ilsp.test.dev@gmail.com', // your email
+      from: "ilsp.test.dev@gmail.com", // your email
       to: studentEmail,
-      subject: 'Application Rejected',
+      subject: "Application Rejected",
       text: rejectionMessage,
     };
 
     await transporter.sendMail(mailOptions);
 
     res.json(JsonSuccess());
-
   } catch (error) {
     console.error(error);
     res.json(JsonErrorResponse(error));
   }
 });
-
-
 
 router.post("/approved", async (req, res) => {
   const studentid = req.body.studentid;
@@ -177,8 +182,11 @@ router.post("/approved", async (req, res) => {
     const fetchRequestQuery = `
       SELECT * FROM master_students_request 
       WHERE msr_studentid = ?`;
-      
-    const requestResults = await mysql.mysqlQueryPromise({ sql: fetchRequestQuery, values: [studentid] });
+
+    const requestResults = await mysql.mysqlQueryPromise({
+      sql: fetchRequestQuery,
+      values: [studentid],
+    });
 
     if (requestResults.length === 0) {
       return res.json(JsonDataResponse(requestResults));
@@ -257,7 +265,7 @@ router.post("/approved", async (req, res) => {
       requestData.msr_certificate_residency,
       requestData.msr_itr,
       requestData.msr_nfi,
-      studentid
+      studentid,
     ];
 
     await mysql.mysqlQueryPromise({ sql: updateQuery, values: updateValues });
@@ -268,7 +276,10 @@ router.post("/approved", async (req, res) => {
       FROM master_students 
       WHERE ms_studentid = ?`;
 
-    const studentResults = await mysql.mysqlQueryPromise({ sql: fetchStudentQuery, values: [studentid] });
+    const studentResults = await mysql.mysqlQueryPromise({
+      sql: fetchStudentQuery,
+      values: [studentid],
+    });
 
     if (studentResults.length === 0) {
       return res.json(JsonDataResponse(studentResults));
@@ -278,10 +289,10 @@ router.post("/approved", async (req, res) => {
 
     // Send email notification
     let mailOptions = {
-      from: 'ilsp.test.dev@gmail.com', 
+      from: "ilsp.test.dev@gmail.com",
       to: studentEmail,
-      subject: 'Congratulations!',
-      text: 'Congratulations! You are now a Verified Scholar ng Lungsod ng Sanpedro Laguna.',
+      subject: "Congratulations!",
+      text: "Congratulations! You are now a Verified Scholar ng Lungsod ng Sanpedro Laguna.",
     };
 
     await transporter.sendMail(mailOptions);
@@ -292,81 +303,17 @@ router.post("/approved", async (req, res) => {
       SET msr_status = 'Verified' 
       WHERE msr_studentid = ?`;
 
-    await mysql.mysqlQueryPromise({ sql: updateStatusQuery, values: [studentid] });
+    await mysql.mysqlQueryPromise({
+      sql: updateStatusQuery,
+      values: [studentid],
+    });
 
     res.json(JsonSuccess());
-
   } catch (error) {
     console.error(error);
     res.json(JsonErrorResponse(error));
   }
 });
-
-
-// router.post("/export", (req, res) => {
-//   try {
-//     let barranggay = req.body.barranggay;
-//     let schoolyear = req.body.schoolyear;
-
-//     let sql = `SELECT
-//       s_name,
-//       msr_studentid,
-//       msr_first_name,
-//       msr_last_name,
-//       msr_middle_name,
-//       msr_date_of_birth,
-//       msr_email,
-//       msr_gender,
-//       msr_phone,
-//       msr_city,
-//       msr_baranggay,
-//       msr_village,
-//       msr_street,
-//       msr_house_no,
-//       msr_status,
-//       mi_name,
-//       mc_name_code,
-//       msr_academic_status,
-//       msr_yearlevel,
-//       msr_birthplace,
-//       msr_age,
-//       msr_fathers_name,
-//       msr_fathers_occupation,
-//       msr_fathers_salary,
-//       msr_mothers_name,
-//       msr_mothers_occupation,
-//       msr_mothers_salary,
-//       msr_registerdate
-//       FROM master_students_request
-//       INNER JOIN master_institutions ON master_students_request.msr_institutionid = mi_institutionsid
-//       INNER JOIN scholarship ON master_students_request.msr_scholarshipid = s_scholarship_id
-//       INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
-//       WHERE msr_baranggay = '${barranggay}'
-//       AND msr_scholarshipid = '${schoolyear}'`;
-
-//       Select(sql, (err, result) => {
-//         if (err) {
-//           console.error(err);
-//           res.json(JsonErrorResponse(err));
-//         }
-
-//         //console.log(result);
-
-//         if (result != 0) {
-//           let data = DataModeling(result, "msr_");
-
-//           //console.log(data);
-//           res.json(JsonDataResponse(data));
-//         } else {
-//           res.json(JsonDataResponse(result));
-//         }
-//       });
-//   } catch (error) {
-//    console.error(error);
-//    res.json(JsonErrorResponse(error));
-//   }
-// });
-
 
 router.get("/barranggaydistinct", (req, res) => {
   try {
@@ -395,7 +342,6 @@ router.get("/barranggaydistinct", (req, res) => {
     res.json(JsonErrorResponse(error));
   }
 });
-
 
 router.post("/export", async (req, res) => {
   try {
@@ -446,52 +392,76 @@ router.post("/export", async (req, res) => {
       }
 
       if (result.length > 0) {
-        // Create a new workbook and add a worksheet
-        let workbook = new ExcelJS.Workbook();
-        let worksheet = workbook.addWorksheet('Students');
 
-        // Define columns
+        let s_name = result[0].s_name;
+        
+        let workbook = new ExcelJS.Workbook();
+        let worksheet = workbook.addWorksheet("Students");
         worksheet.columns = [
-          { header: 'Name', key: 's_name', width: 20 },
-          { header: 'Student ID', key: 'msr_studentid', width: 15 },
-          { header: 'First Name', key: 'msr_first_name', width: 20 },
-          { header: 'Last Name', key: 'msr_last_name', width: 20 },
-          { header: 'Middle Name', key: 'msr_middle_name', width: 20 },
-          { header: 'Date of Birth', key: 'msr_date_of_birth', width: 15 },
-          { header: 'Email', key: 'msr_email', width: 30 },
-          { header: 'Gender', key: 'msr_gender', width: 10 },
-          { header: 'Phone', key: 'msr_phone', width: 15 },
-          { header: 'City', key: 'msr_city', width: 20 },
-          { header: 'Baranggay', key: 'msr_baranggay', width: 20 },
-          { header: 'Village', key: 'msr_village', width: 20 },
-          { header: 'Street', key: 'msr_street', width: 20 },
-          { header: 'House No', key: 'msr_house_no', width: 10 },
-          { header: 'Status', key: 'msr_status', width: 15 },
-          { header: 'Institution Name', key: 'mi_name', width: 20 },
-          { header: 'Course Code', key: 'mc_name_code', width: 15 },
-          { header: 'Academic Status', key: 'msr_academic_status', width: 20 },
-          { header: 'Year Level', key: 'msr_yearlevel', width: 10 },
-          { header: 'Birthplace', key: 'msr_birthplace', width: 20 },
-          { header: 'Age', key: 'msr_age', width: 10 },
-          { header: 'Father\'s Name', key: 'msr_fathers_name', width: 20 },
-          { header: 'Father\'s Occupation', key: 'msr_fathers_occupation', width: 20 },
-          { header: 'Father\'s Salary', key: 'msr_fathers_salary', width: 15 },
-          { header: 'Mother\'s Name', key: 'msr_mothers_name', width: 20 },
-          { header: 'Mother\'s Occupation', key: 'msr_mothers_occupation', width: 20 },
-          { header: 'Mother\'s Salary', key: 'msr_mothers_salary', width: 15 },
-          { header: 'Register Date', key: 'msr_registerdate', width: 15 },
+          { header: "School Year", key: "s_name", width: 20 },
+          { header: "Applicant ID", key: "msr_studentid", width: 15 },
+          { header: "First Name", key: "msr_first_name", width: 20 },
+          { header: "Last Name", key: "msr_last_name", width: 20 },
+          { header: "Middle Name", key: "msr_middle_name", width: 20 },
+          { header: "Date of Birth", key: "msr_date_of_birth", width: 15 },
+          { header: "Email", key: "msr_email", width: 30 },
+          { header: "Gender", key: "msr_gender", width: 10 },
+          { header: "Phone", key: "msr_phone", width: 15 },
+          { header: "City", key: "msr_city", width: 20 },
+          { header: "Baranggay", key: "msr_baranggay", width: 20 },
+          { header: "Village", key: "msr_village", width: 20 },
+          { header: "Street", key: "msr_street", width: 20 },
+          { header: "House No", key: "msr_house_no", width: 10 },
+          { header: "Status", key: "msr_status", width: 15 },
+          { header: "Institution Name", key: "mi_name", width: 20 },
+          { header: "Course Code", key: "mc_name_code", width: 15 },
+          { header: "Academic Status", key: "msr_academic_status", width: 20 },
+          { header: "Year Level", key: "msr_yearlevel", width: 10 },
+          { header: "Birthplace", key: "msr_birthplace", width: 20 },
+          { header: "Age", key: "msr_age", width: 10 },
+          { header: "Father's Name", key: "msr_fathers_name", width: 20 },
+          {
+            header: "Father's Occupation",
+            key: "msr_fathers_occupation",
+            width: 20,
+          },
+          { header: "Father's Salary", key: "msr_fathers_salary", width: 15 },
+          { header: "Mother's Name", key: "msr_mothers_name", width: 20 },
+          {
+            header: "Mother's Occupation",
+            key: "msr_mothers_occupation",
+            width: 20,
+          },
+          { header: "Mother's Salary", key: "msr_mothers_salary", width: 15 },
+          { header: "Register Date", key: "msr_registerdate", width: 15 },
         ];
-        result.forEach(row => {
+
+        worksheet.getRow(1).font = { bold: true };
+        worksheet.getRow(1).alignment = {
+          vertical: "middle",
+          horizontal: "center",
+        };
+
+        result.forEach((row) => {
           worksheet.addRow(row);
         });
 
-        res.setHeader('Content-Disposition', 'attachment; filename=students.xlsx');
+        worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+          row.alignment = { vertical: "middle", horizontal: "center" };
+        });
+
+        const filename = `${s_name}_${barranggay}.xlsx`;
+
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
         await workbook.xlsx.write(res);
         res.end();
+
+        await workbook.xlsx.write(res);
+        res.end();
       } else {
-        res.json(JsonDataResponse([])); // No data found
+        res.json(JsonDataResponse([]));
       }
     });
   } catch (error) {
