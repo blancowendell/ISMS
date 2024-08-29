@@ -1,0 +1,48 @@
+<script>
+    $(document).ready(function () {
+        loadqr();
+
+        function loadqr() {
+            $.ajax({
+                url: 'testpermit/loadqr',
+                type: 'GET',
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.data && response.data.length > 0 && response.data[0].image) {
+                        // Ensure the Base64 string is properly formatted
+                        const base64Image = response.data[0].image.startsWith('data:image')
+                            ? response.data[0].image
+                            : `data:image/png;base64,${response.data[0].image}`;
+
+                        // Set the src attribute of the QR code image and make it visible
+                        $('#qrCode').attr('src', base64Image).show();
+                    } else {
+                        console.log('No QR Code found for this student.');
+                        $('#qrCode').hide(); // Hide the QR code image if not found
+                    }
+                },
+                error: function (error) {
+                    console.error('Error fetching QR code:', error);
+                    $('#qrCodeContainer').text('Error loading QR code.');
+                }
+            });
+        }
+
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            // Hide the download button
+            this.style.display = 'none';
+
+            html2canvas(document.getElementById('qrCodeContainer')).then(function (canvas) {
+                // Create a link element
+                let link = document.createElement('a');
+                link.download = 'qr_code_card.png'; // Set the download file name
+                link.href = canvas.toDataURL('image/png'); // Set the href to the data URL
+                link.click(); // Trigger the download
+
+                // Show the download button again
+                document.getElementById('downloadBtn').style.display = 'block';
+            });
+        });
+    });
+</script>

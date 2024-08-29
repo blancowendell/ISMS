@@ -1,3 +1,50 @@
+.receipt-card {
+  background-color: #feffaa; /* Light background color */
+  border: 1px solid #dee2e6; /* Border similar to a receipt */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  max-width: 350px; /* Limit the width to make it look like a receipt */
+  padding: 20px; /* Add padding inside the card */
+}
+
+.receipt-card img {
+  max-width: 100%; /* Ensure the QR code and logo are responsive */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.receipt-card .applicant-info {
+  font-size: 14px; /* Adjust font size for better readability */
+  margin-bottom: 15px; /* Space below the applicant info */
+}
+
+.receipt-card .applicant-info p {
+  margin: 0; /* Remove default margin */
+}
+
+.receipt-card .company-logo {
+  margin-top: 15px; /* Space above the company logo */
+}
+
+.receipt-card .company-logo img {
+  max-width: 100px; /* Limit the width of the logo */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.receipt-card .company-logo p {
+  margin: 5px 0 0; /* Space above the company name */
+  font-weight: bold; /* Bold text for the company name */
+  color: #333; /* Dark color for better readability */
+}
+
+.receipt-card p {
+  font-weight: bold; /* Bold text for the verification message */
+  color: #d8320d; /* Green color for the success message */
+}
+
+
+/**/
+
+
 .tab-content form {
   background-color: #fdf9b4; /* Light yellow background */
   padding: 20px;

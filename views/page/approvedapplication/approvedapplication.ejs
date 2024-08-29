@@ -1,0 +1,489 @@
+<br>
+
+<!-- Table -->
+<div class="card" id="tablecard">
+    <div class="card-header ch-coop">
+      <h3 class="title-card-table">List Of Approved Applications</h3>
+      <div class="row g-2">
+        <div class="col">
+          <input id='myInput' type='text' placeholder="  Search....">
+        </div>
+        <div class="col-sm-2 col-add">
+            <button data-bs-toggle="modal" data-bs-target="#openModalBank" class="btn btn-export-color"><b>Filter Export</b></button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive"  id="table-responsive-id">
+            <table class="table table-light table-bordered " id="dataTableApprovedApplications">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th class="col-sm-1">Student ID</th>
+                        <th>Full Name</th>
+                        <th>School</th>
+                        <th>Course Code</th>
+                        <th>City</th>
+                        <th>Barongay</th>
+                        <th>Academic Status</th>
+                        <th>Year Level</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="openModalBank" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" id="modal-header">
+            <lord-icon src="https://cdn.lordicon.com/hwpjjkev.json" class="db-hrmis"></lord-icon>
+            <h1 class="modal-title" id="exampleModalLabel">Filter Approved Application</h1>
+            <i class='bx bx-x' data-bs-dismiss="modal" aria-label="CLose"></i>
+        </div>
+        <div class="modal-body modal-batch-body" id="modal-body">
+            <form>
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select border-form-modal" id="selectBaranggay" name="selectBaranggay"
+                          aria-label="Floating label select example">
+                          <option selected disabled>Choose</option>
+                        </select>
+                        <label for="floatingSelectGrid">Baranggay</label>
+                    </div>
+                </div>
+                <br>
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select border-form-modal" id="selectSchoolYear" name="selectSchoolYear"
+                          aria-label="Floating label select example">
+                          <option selected disabled>Choose</option>
+                        </select>
+                        <label for="floatingSelectGrid">Scholarship School Year</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <br>
+        <br>
+        <div class="modal-footer" id="modal-footer">
+            <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-modal-save" id="exportpendingapplication">Export</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="viewapplicationmodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="head-title"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-header">
+                <h3 class="modal-title" id="head-title">View Application</h3>
+                <i class='bx bx-x' data-bs-dismiss="modal" aria-label="CLose"></i>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <br>
+                <div class="container p-0">
+                  <div class="col-md-12 col-xl-12">
+                    <div class="tab-pane fade show active" id="account" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header ch-generate">
+                                <h5 class="card-title mb-0">
+                                    <nav>
+                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                            <button class="nav-link active generate-profile"
+                                                id="nav-profile-tab" data-bs-toggle="tab"
+                                                data-bs-target="#nav-profile" type="button" role="tab"
+                                                aria-controls="nav-profile"
+                                                aria-selected="true" style="color: black !important;">Personal Info</button>
+                                            <button class="nav-link generate-deduction" id="nav-residency-tab"
+                                                data-bs-toggle="tab" data-bs-target="#nav-residency"
+                                                type="button" role="tab" aria-controls="nav-residency"
+                                                aria-selected="false" style="color: black !important;">Residency</button>
+                                            <button class="nav-link generate-deduction" id="nav-family-tab"
+                                                data-bs-toggle="tab" data-bs-target="#nav-family"
+                                                type="button" role="tab" aria-controls="nav-family"
+                                                aria-selected="false" style="color: black !important;">Family Background</button>
+                                            <button class="nav-link generate-deduction" id="nav-deductions-tab"
+                                                data-bs-toggle="tab" data-bs-target="#nav-deductions"
+                                                type="button" role="tab" aria-controls="nav-deductions"
+                                                aria-selected="false" style="color: black !important;">Upload</button>
+                                        </div>
+                                    </nav>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="tab-content" id="nav-tabContent">
+                                    <div class="tab-pane fade show active" id="nav-profile" role="tabpanel"
+                                        aria-labelledby="nav-profile-tab" tabindex="0">
+                                        <form>
+                                            <div class="row">
+                                                <div class="col-lg-4">
+                                                    <div class="card mb-4 card-payroll">
+                                                        <div class="card-body text-center">
+                                                            <img id="editpreview" alt="avatar"
+                                                                class="rounded img-fluid img-prof"
+                                                                style="width: 250px; height: 250px;">
+                                                            <h5 class="my-3 employee-label" id="employeename">
+                                                            </h5>
+                                                            <p class="mb-1 position-label" id="position"></p>
+                                                            <p class="mb-4 department-label" id="department">
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card mb-4 mb-lg-0 card-work">
+                                                        <ul class="list-group mt-4">
+                                                            <li
+                                                                class="list-group-item d-flex justify-content-between align-items-center p-3 cell-work">
+                                                                <div class="col-sm-6">
+                                                                    <p class="mb-0 p-work" id="headercourse">Applicant Id</p>
+                                                                </div>
+                                                                <p class="mb-0 p-number" id="applicantid"></p>
+                                                            </li>
+                                                            <li
+                                                                class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
+                                                                <div class="col-sm-6">
+                                                                    <p class="mb-0 p-rest" id="headerschool">School Year</p>
+                                                                </div>
+                                                                <p class="mb-0 number-rest" id="schoolyear"></p>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="card mb-4 card-work">
+                                                        <div class="card-body">
+                                                            <!-- Payroll Period -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Full Name
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="fullnamereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Payroll Date -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Email
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="emailreq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Semi-Monthly Salary -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Date of Birth</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="dobreq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Cash Advanced -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Birth Place</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="birthplacereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Daily Rate -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Phone Number</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="phonereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Monthly Allowances -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">School</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="schholenamereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Basic Adjustments -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Course/Strand</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="coursereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Payroll Adjustments -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Academic Status</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="acadstatusreq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Overtime Meal -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Age</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="agereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Leave Pay -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Status</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="statusreq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                   
+                                    <div class="tab-pane fade" id="nav-residency" role="tabpanel"
+                                        aria-labelledby="nav-residency-tab" tabindex="0">
+        
+                                        <div class="row">
+                                          <form>
+                                            <div class="card-body p-0">
+                                                <ul class="list-group list-group-flush rounded-3">
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-3 cell-work">
+                                                        <div class="col-sm-6">
+                                                            <p class="mb-0 p-work">Date Registered</p>
+                                                        </div>
+                                                        <p class="mb-0 p-number" id="dateregisteredreq"></p>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
+                                                        <div class="col-sm-6">
+                                                            <p class="mb-0 p-rest">City</p>
+                                                        </div>
+                                                        <p class="mb-0 number-rest" id="cityreq">
+                                                        </p>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-3 cell-work">
+                                                        <div class="col-sm-6">
+                                                            <p class="mb-0 p-work">Baranggay</p>
+                                                        </div>
+                                                        <p class="mb-0 p-number" id="barranggayreq"></p>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
+                                                        <div class="col-sm-6">
+                                                            <p class="mb-0 p-rest">Village/Purok</p>
+                                                        </div>
+                                                        <p class="mb-0 number-rest" id="villagepurokreq"></p>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-3 cell-work">
+                                                        <div class="col-sm-6">
+                                                            <p class="mb-0 p-work">Street</p>
+                                                        </div>
+                                                        <p class="mb-0 p-number" id="streetreq"></p>
+                                                    </li>
+                                                    <li
+                                                        class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
+                                                        <div class="col-sm-6">
+                                                            <p class="mb-0 p-rest">House No#</p>
+                                                        </div>
+                                                        <p class="mb-0 number-rest" id="housenoreq"></p>
+                                                    </li>
+                                                </ul>
+                                            </div>                       
+                                        </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="nav-family" role="tabpanel"
+                                        aria-labelledby="nav-family-tab" tabindex="0">
+        
+                                        <div class="row">
+                                          <form>
+                                            <hr class="hr-color">
+                                                            <!-- Loan Deductions -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <p class="mb-0 payroll-label">Fathers Name</p>
+                                                                </div>
+                                                                <div class="col-sm-9" id="fathersnamereq">
+                                                                    <p class="text-muted mb-0"></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr class="hr-color">
+                                                            <!-- Compensation -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                            <p class="mb-0 payroll-label">Fathers Occupation
+                                            </p>
+                                        </div>
+                                        <div class="col-sm-9" id="fathersoccupationreq">
+                                            <p class="text-muted mb-0"></p>
+                                        </div>
+                                    </div>
+                                    <hr class="hr-color">
+                                    <!-- Total Deductions -->
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <p class="mb-0 payroll-label">Mothers Name</p>
+                                        </div>
+                                        <div class="col-sm-9" id="mothersnamereq">
+                                            <p class="text-muted mb-0"></p>
+                                                </div>
+                                            </div>
+                                            <hr class="hr-color">
+                                            <!-- Total Net Pay -->
+                                            <div class="row">
+                                                <div class="col-sm-3">
+                                                    <p class="mb-0 payroll-label">Mothers Occupation
+                                                    </p>
+                                                </div>
+                                                <div class="col-sm-9" id="mothersoccupationreq">
+                                                    <p class="text-muted mb-0"></p>
+                                                </div>
+                                            </div>                             
+                                        </form>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="nav-deductions" role="tabpanel"
+                                        aria-labelledby="nav-deductions-tab" tabindex="0">
+        
+                                        <div class="row">
+                                          <form>
+                                            <div class="col">
+                                                <label for="reqtruecopygrade">Certified True Copy ng inyong grado (mula sa nakaraang markahan)</label>
+                                                <div class="form-floating">
+                                                    <label class="form-label" for="customFile"></label>
+                                                    <div class="text-center">
+                                                        <img id="truecopypreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                                                        <br>
+                                                        <a id="downloadTrueCopy" href="#" download="TrueCopy" class="btn btn-primary mt-2" style="display: none;">Download File</a>
+                                                        <button id="previewTrueCopy" type="button" class="btn btn-secondary mt-2" style="display: none;">Preview</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="col">
+                                                <label for="input-file-now-2">Orihinal at kopya ng inyong enrolment/registration form ng 1st semester (AY 2024-2025)</label>
+                                                <div class="form-floating">
+                                                    <label class="form-label" for="customFile"></label>
+                                                    <div class="text-center">
+                                                        <img id="regformpreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                                                        <br>
+                                                        <a id="downloadRegForm" href="#" download="RegistrationForm" class="btn btn-primary mt-2" style="display: none;">Download File</a>
+                                                        <button id="previewRegForm" type="button" class="btn btn-secondary mt-2" style="display: none;">Preview</button>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <br>
+                                            <div class="col">
+                                                <label for="input-file-now-3">Certificate of Residency</label>
+                                                <div class="form-floating">
+                                                    <label class="form-label" for="customFile"></label>
+                                                    <div class="text-center">
+                                                        <img id="certrespreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                                                        <br>
+                                                        <a id="downloadCertRes" href="#" download="CertificateOfResidency" class="btn btn-primary mt-2" style="display: none;">Download File</a>
+                                                        <button id="previewCertRes" type="button" class="btn btn-secondary mt-2" style="display: none;">Preview</button>
+                                                    </div>
+                                                </div>
+                                            </div>  
+                                            <br> 
+                                            <div class="col">
+                                                <label for="input-file-now-4">Kapag nagtatrabaho ang mga magulang - Income Tax Return (ITR) mula sa BIR</label>
+                                                <div class="form-floating">
+                                                    <label class="form-label" for="customFile"></label>
+                                                    <div class="text-center">
+                                                        <img id="itipreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                                                        <br>
+                                                        <a id="downloadItr" href="#" download="IncomeTaxReturn" class="btn btn-primary mt-2" style="display: none;">Download File</a>
+                                                        <button id="previewItr" type="button" class="btn btn-secondary mt-2" style="display: none;">Preview</button>
+                                                    </div>
+                                                </div>
+                                            </div>   
+                                            <br>
+                                            <div class="col">
+                                                <label for="input-file-now-5">Kapag walang trabaho ang mga magulang - Affidavit of No Fix Income (makukuha sa City Legal Office ang sertipikasyon o katunayan bago dalhin sa BIR)</label>
+                                                <div class="form-floating">
+                                                    <label class="form-label" for="customFile"></label>
+                                                    <div class="text-center">
+                                                        <img id="nfipreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                                                        <br>
+                                                        <a id="downloadNfi" href="#" download="AffidavitOfNoFixIncome" class="btn btn-primary mt-2" style="display: none;">Download File</a>
+                                                        <button id="previewNfi" type="button" class="btn btn-secondary mt-2" style="display: none;">Preview</button>
+                                                    </div>
+                                                </div>
+                                            </div>                             
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+            <div class="modal-footer" id="modal-footer">
+              <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal HTML -->
+<div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rejectionModalLabel">Rejection Message</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="rejectionMessage" class="form-label">Please enter the message to be sent:</label>
+          <textarea class="form-control" id="rejectionMessage" rows="3" placeholder="Type your message here"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="sendRejectionBtn">Send</button>
+      </div>
+    </div>
+  </div>
+</div>

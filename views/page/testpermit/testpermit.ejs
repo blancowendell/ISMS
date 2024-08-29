@@ -1,0 +1,20 @@
+<div class="container mt-5">
+    <h3 class="text-center">Your QR Code</h3>
+    <div id="qrCodeContainer" class="receipt-card text-center mx-auto p-4">
+        <!-- Applicant's name and ID (Static) -->
+        <div class="applicant-info">
+            <p id="applicantName">Name: <%= fullname %></p>
+            <p id="applicantId">ID: <%= studentid %></p>
+        </div>
+        <!-- QR Code will be dynamically injected here -->
+        <img id="qrCode" src="" alt="QR Code" style="display: none; width: 150px; height: 150px;">
+        <p>Scan this QR code to verify your details.</p>
+        <!-- Company logo and name (Static) -->
+        <div class="company-logo">
+            <img id="companyLogo" src="/images/img/ILSP-removebg-preview.png" alt="Company Logo">
+            <p id="companyName">Iskolar ng Lungsod ng San Pedro</p>
+        </div>
+        <!-- Download Button -->
+        <button id="downloadBtn" class="btn btn-primary mt-3">Download Card</button>
+    </div>
+</div>

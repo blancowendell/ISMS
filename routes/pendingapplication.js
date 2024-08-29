@@ -19,6 +19,7 @@ var router = express.Router();
 const ExcelJS = require("exceljs");
 const nodemailer = require("nodemailer"); // Make sure to require nodemailer
 //const currentDate = moment();
+const QRCode = require('qrcode');
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -178,7 +179,6 @@ router.post("/approved", async (req, res) => {
   }
 
   try {
-    // Fetch student request data
     const fetchRequestQuery = `
       SELECT * FROM master_students_request 
       WHERE msr_studentid = ?`;
@@ -193,6 +193,19 @@ router.post("/approved", async (req, res) => {
     }
 
     const requestData = requestResults[0];
+
+
+    const fetchMsOtp = `
+      SELECT ms_otp
+      FROM master_students 
+      WHERE ms_studentid = ?`;
+
+    const requestOtpResults = await mysql.mysqlQueryPromise({
+      sql: fetchMsOtp,
+      values: [studentid],
+    });
+
+    const requestOtp = requestOtpResults[0];
 
     // Update student data
     const updateQuery = `
@@ -270,7 +283,22 @@ router.post("/approved", async (req, res) => {
 
     await mysql.mysqlQueryPromise({ sql: updateQuery, values: updateValues });
 
-    // Fetch the email address
+    const qrData = `${studentid}-${requestOtp.ms_otp}`;
+    const qrCodeImage = await QRCode.toDataURL(qrData);
+
+    console.log(qrData,'qrdata');
+    
+    const insertQRCodeQuery = `
+      INSERT INTO student_qrcode (sq_studentid, sq_image, sq_createdate, sq_createby, sq_status)
+      VALUES (?, ?, NOW(), ?, 'Active')`;
+
+    const insertQRCodeValues = [studentid, qrCodeImage, 'system'];
+
+    await mysql.mysqlQueryPromise({
+      sql: insertQRCodeQuery,
+      values: insertQRCodeValues,
+    });
+
     const fetchStudentQuery = `
       SELECT ms_email 
       FROM master_students 
@@ -382,7 +410,8 @@ router.post("/export", async (req, res) => {
       INNER JOIN scholarship ON master_students_request.msr_scholarshipid = s_scholarship_id
       INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
       WHERE msr_baranggay = '${barranggay}'
-      AND msr_scholarshipid = '${schoolyear}'`;
+      AND msr_scholarshipid = '${schoolyear}'
+      AND msr_status = 'Applied'`;
 
     Select(sql, async (err, result) => {
       if (err) {

@@ -14,7 +14,7 @@
         });
 
         function LoadTable() {
-            $("#dataTablePendingApplications").DataTable({
+            $("#dataTableApprovedApplications").DataTable({
                 destroy: true,
                 processing: true,
                 serverSide: true,
@@ -25,7 +25,7 @@
                 scrollCollapse: true,
                 serverMethod: "GET",
                 ajax: {
-                    url: "/pendingapplication/load",
+                    url: "/approvedapplication/load",
                     dataSrc: (json) => {
                         var finalData = [];
                         var data = json.data;
@@ -182,7 +182,7 @@
             } else {
                 $.ajax({
                     type: "POST",
-                    url: "/pendingapplication/export",
+                    url: "/approvedapplication/export",
                     data: {
                         barranggay: baranggay,
                         schoolyear: scholarship_id,
@@ -191,8 +191,8 @@
                         responseType: 'blob' // Set the response type to 'blob' for file download
                     },
                     success: function (blob, status, xhr) {
-                        if (xhr.status !== 200 || blob.size === 0) {
-                            // Handle case where the response is an error or no data is available
+                        // Check if the response is empty (no data)
+                        if (blob.size === 0) {
                             swal("No Available Data", "No data available for the selected school year.", "info");
                         } else {
                             const downloadUrl = window.URL.createObjectURL(blob);
@@ -227,7 +227,7 @@
         });
 
 
-        $("#dataTablePendingApplications tbody").on("click", "tr", function () {
+        $("#dataTableApprovedApplications tbody").on("click", "tr", function () {
             var dataRow = [];
             $(this)
                 .closest("tr")
@@ -242,7 +242,7 @@
         $(document).on("click", "#editBtn", function () {
             $.ajax({
                 type: "POST",
-                url: "/pendingapplication/loadstudentrequest",
+                url: "/approvedapplication/loadstudentrequest",
                 data: {
                     studentid: studentid,
                 },
@@ -253,6 +253,8 @@
                         $.each(existingData, (key, item) => {
                             $("#editpreview").attr("src", "data:image/jpg;base64," + item.image);
                             $("#dateregisteredreq").text(item.registerdate);
+                            $("#applicantid").text(item.studentid);
+                            $("#schoolyear").text(item.scholarname);
                             $("#cityreq").text(item.city);
                             $("#barranggayreq").text(item.baranggay);
                             $("#villagepurokreq").text(item.village);
@@ -352,141 +354,6 @@
             });
         });
 
-        $(document).on("click", "#applicationSaveBtn", function () {
-            let id = studentid;
-            var message = "";
-
-            if (studentid === "") {
-                message += "Student Id is required. ";
-            }
-
-            if (message !== "") {
-                swal("Validation Error", message, "error");
-            } else {
-                swal({
-                    title: "Are you sure?",
-                    text: "Do you want to approve this application?",
-                    icon: "warning",
-                    buttons: ["Cancel", "Yes, approve it!"],
-                    dangerMode: true,
-                }).then((willApprove) => {
-                    if (willApprove) {
-                        swal({
-                            title: "Processing",
-                            text: "Please wait while we process your request.",
-                            icon: "info",
-                            buttons: false,
-                            closeOnClickOutside: false,
-                            closeOnEsc: false,
-                            timer: 15000 // Optional: Duration of the loading state
-                        });
-
-                        $.ajax({
-                            type: "POST",
-                            url: "/pendingapplication/approved",
-                            data: {
-                                studentid: id,
-                            },
-                            success: function (result) {
-                                swal.close();
-
-                                if (result.msg === "success") {
-                                    swal({
-                                        title: "Update Successfully",
-                                        text: "The application has been approved!",
-                                        icon: "success",
-                                        button: "OK!",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                    LoadTable();
-                                } else if (result.msg === "exist") {
-                                    swal({
-                                        title: "Exist",
-                                        text: "Data already exists!",
-                                        icon: "warning",
-                                        button: "OK!",
-                                    });
-                                } else {
-                                    swal(
-                                        "Data already exists!",
-                                        "You clicked the button!",
-                                        "warning"
-                                    );
-                                }
-                            },
-                            error: function (err) {
-                                swal.close();
-                                swal("Error", "An error occurred while saving data.", "error");
-                            },
-                        });
-                    } else {
-                        swal("Cancelled", "The approval was cancelled.", "info");
-                    }
-                });
-            }
-        });
-
-        $(document).on("click", "#applicationRejectBtn", function () {
-            let id = studentid;
-
-            if (studentid === "") {
-                swal("Validation Error", "Student Id is required.", "error");
-            } else {
-                swal({
-                    title: "Are you sure?",
-                    text: "Do you want to reject this application?",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willReject) => {
-                    if (willReject) {
-                        // Close the view application modal
-                        $('#viewapplicationmodal').modal('hide');
-
-                        // Show the rejection modal
-                        $('#rejectionModal').modal('show');
-
-                        // Handle rejection submission
-                        $('#sendRejectionBtn').off('click').on('click', function () {
-                            let rejectionMessage = $('#rejectionMessage').val().trim();
-
-                            if (rejectionMessage) {
-                                $.ajax({
-                                    type: "POST",
-                                    url: "/pendingapplication/reject",
-                                    data: {
-                                        studentid: id,
-                                        message: rejectionMessage,
-                                    },
-                                    success: function (result) {
-                                        if (result.msg === "success") {
-                                            swal({
-                                                title: "Rejected Successfully",
-                                                text: "The application has been rejected.",
-                                                icon: "success",
-                                                button: "OK!",
-                                            }).then(() => {
-                                                window.location.reload();
-                                            });
-                                        } else {
-                                            swal("Error", "An error occurred while rejecting the application.", "error");
-                                        }
-                                    },
-                                    error: function () {
-                                        swal("Error", "An error occurred while sending the rejection.", "error");
-                                    }
-                                });
-                                $('#rejectionModal').modal('hide');
-                            } else {
-                                swal("Cancelled", "Rejection message was not provided.", "error");
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
         $(document).on("change", "#announcementimage", function (e) {
             const input = document.getElementById("announcementimage");
             const file = input.files[0];
@@ -545,7 +412,7 @@
             var input, filter, found, table, tr, td, i, j;
             input = document.getElementById("myInput");
             filter = input.value.toUpperCase();
-            table = document.getElementById("dataTablePendingApplications");
+            table = document.getElementById("dataTableApprovedApplications");
             tr = table.getElementsByTagName("tr");
             for (i = 0; i < tr.length; i++) {
                 td = tr[i].getElementsByTagName("td");

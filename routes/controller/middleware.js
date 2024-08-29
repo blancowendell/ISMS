@@ -35,6 +35,9 @@ var roleacess = [
       {
         layout: "scholarshiplayout",
       },
+      {
+        layout: "approvedapplicationlayout",
+      },
     ],
   },
   {
@@ -49,9 +52,9 @@ var roleacess = [
       {
         layout: "finishapplicationlayout",
       },
-      // {
-      //   layout: "ojtattendancelayout",
-      // },
+      {
+        layout: "testpermitlayout",
+      },
       // {
       //   layout: "ojtreqabsentlayout",
       // },

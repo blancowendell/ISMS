@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <%- include("./components/header.ejs")%>
+    <%- include("./components/studentheader.ejs")%>
   </head>
 
   <body id="page-top">
@@ -9,15 +9,15 @@
 
     <div id="wrapper">
       <!-- Sidebar -->
-      <%- include("./components/sidebar.ejs")%>
+      <%- include("./components/studentsidebar.ejs")%>
       <!-- End of Sidebar -->
       <!-- Topbar -->
-      <%- include("./components/topbar.ejs")%>
+      <%- include("./components/studenttopbar.ejs")%>
       <!-- End of Topbar -->
 
       <!-- Content Wrapper -->
       <div id="content-wrapper">
-        <div class="content"><%- include("./page/pendingapplication/pendingapplication.ejs")%></div>
+        <div class="content"><%- include("./page/testpermit/testpermit.ejs")%></div>
       </div>
 
       <!-- End of Content Wrapper -->
@@ -29,9 +29,7 @@
     </a>
 
     <!-- Bootstrap core JavaScript-->
-    <%- include("./components/scripts.ejs")%> 
-    <%- include("./page/pendingapplication/pendingapplicationscript.ejs")%>
+    <%- include("./components/studentscript.ejs")%> 
+    <%- include("./page/testpermit/testpermitscript.ejs")%>
   </body>
 </html>
-
-

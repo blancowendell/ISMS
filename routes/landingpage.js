@@ -108,8 +108,8 @@ router.post("/save", async (req, res) => {
     ];
 
     let checkStatement = SelectStatement(
-      "select * from master_students where ms_email = ? or ms_first_name = ? and ms_last_name = ?",
-      [email, firstname, lastname]
+      "select * from master_students where ms_email = ? or ms_first_name = ? and ms_last_name = ? and ms_scholarshipid = ? ",
+      [email, firstname, lastname, scholarshipid]
     );
 
     Check(checkStatement)

@@ -48,3 +48,85 @@ router.get("/loadnewapplicants", (req, res) => {
     res.json(JsonErrorResponse(error));
   }
 });
+
+router.get("/loadtotal", (req, res) => {
+  try {
+    let sql = `SELECT COUNT(*) AS msr_TotalStudentsCount
+    FROM master_students ms
+    INNER JOIN scholarship s ON ms.ms_scholarshipid = s.s_scholarship_id
+    WHERE s.s_status = 'Active'`;
+
+    Select(sql, (err, result) => {  
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+      
+      if (result != 0) {
+        let data = DataModeling(result, "msr_");
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+
+router.get("/loadpending", (req, res) => {
+  try {
+    let sql = `SELECT COUNT(*) AS msr_PendinApplication
+    FROM master_students_request msr
+    INNER JOIN scholarship s ON msr.msr_scholarshipid = s.s_scholarship_id
+    WHERE msr.msr_status = 'Applied' AND s.s_status = 'Active'`;
+
+    Select(sql, (err, result) => {  
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+      
+      if (result != 0) {
+        let data = DataModeling(result, "msr_");
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+router.get("/loadverified", (req, res) => {
+  try {
+    let sql = `SELECT COUNT(*) AS msr_VerifiedStudentsCount
+    FROM master_students ms
+    INNER JOIN scholarship s ON ms.ms_scholarshipid = s.s_scholarship_id
+    WHERE ms.ms_status = 'Verified' AND s.s_status = 'Active';
+    `;
+
+    Select(sql, (err, result) => {  
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+      
+      if (result != 0) {
+        let data = DataModeling(result, "msr_");
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
