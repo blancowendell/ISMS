@@ -1,110 +1,162 @@
 <script>
-    $(document).ready(function () {
-      console.log("Initialize");
-      
-      LoadAccess();
-      // const loginUrlDropdown = document.getElementById("loginUrl");
-  
-      // loginUrlDropdown.addEventListener("change", (e) => {
-      //   const selectedUrl = e.target.value;
-      //   if (selectedUrl) {
-      //     window.location.href = selectedUrl;
-      //   }
-      // });
-  
-      function LoadAccess() {
+  $(document).ready(function () {
+    console.log("Initialize");
+
+    LoadAccess();
+    // const loginUrlDropdown = document.getElementById("loginUrl");
+
+    // loginUrlDropdown.addEventListener("change", (e) => {
+    //   const selectedUrl = e.target.value;
+    //   if (selectedUrl) {
+    //     window.location.href = selectedUrl;
+    //   }
+    // });
+
+    function LoadAccess() {
+      $.ajax({
+        type: "GET",
+        url: "/access/load",
+        success: function (result) {
+          var data = result.data;
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.accessid, item.accessid);
+            $(options).html(item.accessname);
+            $("#loginUrl").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+
+    $(document).on("click", "#loginBtn", function () {
+      let username = $("#username").val();
+      let password = $("#password").val();
+
+
+      var message = "";
+
+      if (username === "") {
+        message += "Username ";
+      }
+
+
+      if (password === "") {
+        message += ". ";
+      }
+
+      if (message !== "") {
+        showSweetAlert("Required", `Please fill up ${message}`);
+      } else {
         $.ajax({
-          type: "GET",
-          url: "/access/load",
-          success: function (result) {
-            var data = result.data;
-  
-            $.each(data, function (key, item) {
-              var options = new Option(item.accessid, item.accessid);
-              $(options).html(item.accessname);
-              $("#loginUrl").append(options);
-            });
+          type: "POST",
+          url: "/login/login",
+          data: {
+            username: username,
+            password: password,
           },
-          error: function (result) {
-            alert("error: " + result.data);
+          success: function (result) {
+            if (result.msg === "success") {
+              swal(
+                "Save Successfully",
+                "You clicked the button!",
+                "success"
+              ).then((results) => {
+                if (result.data[0]) {
+                  location.replace("/studentindex");
+                } else {
+                  location.replace("/");
+                }
+              });
+            } else if (result.msg === "graduated") {
+              showSweetAlert(
+                "Graduated",
+                "Your account is inactive. Please be guided accordingly.",
+                "error",
+                "Ok"
+              );
+            } else if (result.msg === "incorrect") {
+              showSweetAlert(
+                "Incorrect",
+                "Incorrect Credentials. Please try again!",
+                "error",
+                "AWW NO!!"
+              );
+            }
+          },
+          error: function (err) {
+            swal("Error", "An error occurred while saving data.", "error");
           },
         });
       }
-  
-  
-      $(document).on("click", "#loginBtn", function () {
-        let username = $("#username").val();
-        let password = $("#password").val();
-  
-  
-        var message = "";
-  
-        if (username === "") {
-          message += "Username ";
-        }
-  
-  
-        if (password === "") {
-          message += ". ";
-        }
-  
-        if (message !== "") {
-          showSweetAlert("Required", `Please fill up ${message}`);
-        } else {
-          $.ajax({
-            type: "POST",
-            url: "/login/login",
-            data: {
-              username: username,
-              password: password,
-            },
-            success: function (result) {
-              if (result.msg === "success") {
-                swal(
-                  "Save Successfully",
-                  "You clicked the button!",
-                  "success"
-                ).then((results) => {
-                  if (result.data[0]) {
-                    location.replace("/studentindex");
-                  } else {
-                    location.replace("/");
-                  }
-                });
-              } else if (result.msg === "graduated") {
-                showSweetAlert(
-                  "Graduated",
-                  "Your account is inactive. Please be guided accordingly.",
-                  "error",
-                  "Ok"
-                );
-              } else if (result.msg === "incorrect") {
-                showSweetAlert(
-                  "Incorrect",
-                  "Incorrect Credentials. Please try again!",
-                  "error",
-                  "AWW NO!!"
-                );
-              }
-            },
-            error: function (err) {
-              swal("Error", "An error occurred while saving data.", "error");
-            },
-          });
-        }
-      });
-  
-      $(".toggle-password").on("click", function () {
-        const passwordInput = $("#password");
-        const passwordFieldType = passwordInput.attr("type");
-        if (passwordFieldType === "password") {
-          passwordInput.attr("type", "text");
-          $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
-        } else {
-          passwordInput.attr("type", "password");
-          $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
-        }
-      });
     });
-  </script>
-  
+
+    $(document).on("click", "#forgotPasswordBtn", function (event) {
+      event.preventDefault(); // Prevent the default form submission
+
+      let email = $("#forgotEmail").val();
+
+      if (email === "") {
+        swal({
+          icon: 'warning',
+          title: 'Required',
+          text: 'Please fill up email',
+        });
+      } else {
+        $.ajax({
+          type: "POST",
+          url: "/login/forgotpassword",
+          data: {
+            email: email,
+          },
+          success: function (result) {
+            if (result.msg === "success") {
+              swal({
+                icon: 'success',
+                title: 'Success',
+                text: 'Password reset link sent to your email!',
+              }).then(() => {
+                window.location.reload();
+              });
+            } else if (result.msg === "notexist") {
+              swal({
+                icon: 'error',
+                title: 'Error',
+                text: 'Email does not exist. Please try again!',
+              });
+            } else {
+              swal({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while processing your request.',
+              });
+            }
+          },
+          error: function (err) {
+            swal({
+              icon: 'error',
+              title: 'Error',
+              text: 'A server error occurred.',
+            });
+          },
+        });
+      }
+    });
+
+
+    $(".toggle-password").on("click", function () {
+      const passwordInput = $("#password");
+      const passwordFieldType = passwordInput.attr("type");
+      if (passwordFieldType === "password") {
+        passwordInput.attr("type", "text");
+        $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+      } else {
+        passwordInput.attr("type", "password");
+        $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+      }
+    });
+  });
+</script>

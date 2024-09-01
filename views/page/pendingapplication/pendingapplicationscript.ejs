@@ -264,13 +264,15 @@
                             $("#phonereq").text(item.phone);
                             $("#schholenamereq").text(item.schoolname);
                             $("#coursereq").text(item.course_code);
+                            $("#firstSemGrade").val(item.first_sem_grade);
+                            $("#secondSemGrade").val(item.second_sem_grade);
                             $("#acadstatusreq").text(item.academic_status);
                             $("#agereq").text(item.age);
                             $("#statusreq").text(item.status);
                             $("#fathersnamereq").text(item.fathers_name);
                             $("#fathersoccupationreq").text(item.fathers_occupation);
                             $("#mothersnamereq").text(item.mothers_name);
-                            $("#mothersoccupationreq").text(item.mothers_occupation);
+                            $("#mothersoccupationreq").text(item.mothers_occupation);  
                             $("#truecopypreview").attr("src", "data:image/jpg;base64," + item.grade_copy);
                             $("#regformpreview").attr("src", "data:image/jpg;base64," + item.registration_form);
                             $("#certrespreview").attr("src", "data:image/jpg;base64," + item.certificate_residency);

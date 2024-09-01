@@ -120,6 +120,8 @@ router.post("/save", function (req, res, next) {
       imageFileItr,
       imageFileNfi,
       scholarshipid,
+      firstSemGrade,
+      secondSemGrade,
     } = req.body;
 
     console.log(studentid,'id');
@@ -291,6 +293,16 @@ router.post("/save", function (req, res, next) {
       columns.push("scholarshipid");
     }
 
+    if (firstSemGrade) {                      // New field
+      data.push(firstSemGrade);
+      columns.push("first_sem_grade");
+    }
+
+    if (secondSemGrade) {                      // New field
+      data.push(secondSemGrade);
+      columns.push("second_sem_grade");
+    }
+
     if (studentid) {                      // New field
       data.push(studentid);                      // New field
       arguments.push("studentid");                      // New field
@@ -337,7 +349,9 @@ router.post("/save", function (req, res, next) {
       "certificate_residency",   // New field
       "itr",                     // New field
       "nfi",
-      "scholarshipid"           // New field
+      "scholarshipid",
+      "first_sem_grade",
+      "second_sem_grade"         // New field
     ]);
 
     let insrtData = [
@@ -374,6 +388,8 @@ router.post("/save", function (req, res, next) {
       imageFileItr,
       imageFileNfi,
       scholarshipid,
+      firstSemGrade,
+      secondSemGrade,
     ];
     
     let checkStatement = SelectStatement(

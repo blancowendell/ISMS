@@ -78,12 +78,12 @@
 
 
     // Trigger LoadCourses when an institution is selected
-    $("#school").change(function () {
-      var institutionId = $(this).val(); // Get the selected institution ID
-      if (institutionId) {
-        LoadCourses(institutionId);
-      }
-    });
+    // $("#school").change(function () {
+    //   var institutionId = $(this).val(); // Get the selected institution ID
+    //   if (institutionId) {
+    //     LoadCourses(institutionId);
+    //   }
+    // });
 
     function LoadInstitutions() {
       $.ajax({
@@ -91,15 +91,126 @@
         url: "/institutions/loadinstitutions",
         success: function (result) {
           var data = result.data;
+          $("#school").empty(); // Clear existing options
 
           $.each(data, function (key, item) {
             var options = new Option(item.institutionsid, item.institutionsid);
             $(options).html(item.name);
             $("#school").append(options);
           });
+
+          // Add the "Others" option at the end
+          $("#school").append('<option value="others">Others</option>');
         },
         error: function (result) {
           alert("error: " + result.data);
+        },
+      });
+    }
+
+    // Function to load courses based on selected institution
+    function LoadCourses(institutionId) {
+      $.ajax({
+        type: "POST",
+        url: "/institutions/loadcourses",
+        data: { institutionsid: institutionId },
+        success: function (result) {
+          var data = result.data;
+          $("#course").empty(); // Clear existing options
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.course_id, item.course_id);
+            $(options).html(item.name_code);
+            $("#course").append(options);
+          });
+
+          // Add the "Others" option at the end
+          $("#course").append('<option value="others">Others</option>');
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+    // Handle institution dropdown change
+    $("#school").change(function () {
+      var institutionId = $(this).val(); // Get the selected institution ID
+
+      if (institutionId === 'others') {
+        promptNewInstitutionAndCourse(); // Show swal for new institution and course
+      } else {
+        LoadCourses(institutionId); // Load courses for the selected institution
+      }
+    });
+
+    // Handle course dropdown change
+    $("#course").change(function () {
+      var courseId = $(this).val(); // Get the selected course ID
+
+      if (courseId === 'others') {
+        promptNewInstitutionAndCourse(); // Show swal for new course if "Others" is selected
+      }
+    });
+
+    // Prompt for new institution and course using SweetAlert with custom content
+    function promptNewInstitutionAndCourse() {
+      const content = document.createElement('div');
+      const inputInstitution = document.createElement('input');
+      const inputCourse = document.createElement('input');
+
+      inputInstitution.setAttribute('type', 'text');
+      inputInstitution.setAttribute('id', 'swal-input1');
+      inputInstitution.setAttribute('class', 'swal2-input');
+      inputInstitution.setAttribute('placeholder', 'Institution Name');
+
+      inputCourse.setAttribute('type', 'text');
+      inputCourse.setAttribute('id', 'swal-input2');
+      inputCourse.setAttribute('class', 'swal2-input');
+      inputCourse.setAttribute('placeholder', 'Course Name');
+
+      content.appendChild(inputInstitution);
+      content.appendChild(inputCourse);
+
+      swal({
+        title: "Add New Institution and Course",
+        content: content,
+        buttons: {
+          cancel: "Cancel",
+          confirm: "Save",
+        },
+      }).then(function (isConfirmed) {
+        if (isConfirmed) {
+          var newInstitutionName = document.getElementById('swal-input1').value;
+          var newCourseName = document.getElementById('swal-input2').value;
+
+          // Validate input
+          if (newInstitutionName && newCourseName) {
+            // Trigger the API to save the new institution and course
+            submitNewInstitutionAndCourse(newInstitutionName, newCourseName);
+          } else {
+            swal("Error", "Please enter both institution and course names.", "error");
+          }
+        }
+      });
+    }
+
+    // Function to submit new institution and course
+    function submitNewInstitutionAndCourse(institutionName, courseName) {
+      $.ajax({
+        type: "POST",
+        url: "/landingpage/addInstitutionAndCourse",
+        data: {
+          institutionsname: institutionName,
+          coursename: courseName
+        },
+        success: function (result) {
+          swal("Success", "Institution and Course added successfully You May now select them", "success");
+          // Optionally, reload the institution dropdowns to include the new entry
+          LoadInstitutions();
+        },
+        error: function (result) {
+          swal("Error", result.msg, "error");
         },
       });
     }
@@ -115,27 +226,6 @@
             var options = new Option(item.scholarship_id, item.scholarship_id);
             $(options).html(item.name);
             $("#scholarshipid").append(options);
-          });
-        },
-        error: function (result) {
-          alert("error: " + result.data);
-        },
-      });
-    }
-
-    function LoadCourses(institutionId) {
-      $.ajax({
-        type: "POST",
-        url: "/institutions/loadcourses",
-        data: { institutionsid: institutionId },
-        success: function (result) {
-          var data = result.data;
-          $("#course").empty();
-
-          $.each(data, function (key, item) {
-            var options = new Option(item.course_id, item.course_id);
-            $(options).html(item.name_code);
-            $("#course").append(options);
           });
         },
         error: function (result) {
@@ -181,6 +271,16 @@
       if (message !== "") {
         swal("Validation Error", message, "error");
       } else {
+        // Show a "please wait" dialog
+        swal({
+          title: "Please wait",
+          text: "Processing your request...",
+          icon: "info",
+          buttons: false,
+          closeOnClickOutside: false,
+          closeOnEsc: false
+        });
+
         $.ajax({
           type: "POST",
           url: "/landingpage/save",
@@ -201,6 +301,9 @@
             scholarshipid: scholarshipid,
           },
           success: function (result) {
+            // Close the "please wait" dialog
+            swal.close();
+
             if (result.msg === "noscholarid") {
               swal(
                 "Scholarship Error",
@@ -210,7 +313,7 @@
             } else if (result.msg === "success") {
               function promptOTP() {
                 return swal({
-                  text: "Enter the OTP sent to your email",
+                  title: "Enter OTP",
                   content: {
                     element: "input",
                     attributes: {
@@ -310,11 +413,13 @@
             }
           },
           error: function (err) {
+            swal.close(); // Close the "please wait" dialog on error
             swal("Error", "Something went wrong. Please try again later.", "error");
           },
         });
       }
     });
+
 
 
     document.addEventListener('DOMContentLoaded', function () {

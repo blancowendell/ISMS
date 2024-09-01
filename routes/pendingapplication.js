@@ -242,7 +242,9 @@ router.post("/approved", async (req, res) => {
         ms_registration_form = ?, 
         ms_certificate_residency = ?, 
         ms_itr = ?, 
-        ms_nfi = ?
+        ms_nfi = ?,
+        ms_first_sem_grade = ?,
+        ms_second_sem_grade = ?
       WHERE ms_studentid = ?`;
 
     const updateValues = [
@@ -279,6 +281,8 @@ router.post("/approved", async (req, res) => {
       requestData.msr_itr,
       requestData.msr_nfi,
       studentid,
+      requestData.msr_first_sem_grade,
+      requestData.msr_second_sem_grade,
     ];
 
     await mysql.mysqlQueryPromise({ sql: updateQuery, values: updateValues });

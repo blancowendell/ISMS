@@ -13,8 +13,28 @@
         LoadCoursesOnly();
         LoadScholarshipId();
 
+        function validateGradeInput(input) {
+            // Match numbers with up to 2 digits and 2 decimal places
+            const regex = /^\d{0,2}(\.\d{0,2})?$/;
+            const value = input.value;
+
+            if (!regex.test(value)) {
+                // If input doesn't match, reset it
+                input.value = value.slice(0, -1);
+            }
+        }
+
+        // Apply the validation function on input event
+        document.getElementById("firstSemGrade").addEventListener("input", function () {
+            validateGradeInput(this);
+        });
+
+        document.getElementById("secondSemGrade").addEventListener("input", function () {
+            validateGradeInput(this);
+        });
+
         console.log(studentId, 'id');
-        
+
 
         $("#school_name").change(function () {
             var institutionId = $(this).val();
@@ -128,6 +148,8 @@
             let mothersoccupation = $("#mothersoccupation").val();
             let mothersmonthly = $("#mothersmonthly").val();
             let scholarshipid = $("#scholarshipidchoice").val();
+            let firstSemGrade = $("#firstSemGrade").val();
+            let secondSemGrade = $("#secondSemGrade").val();
             let imageFile = base64profileImage;
             let imageFileGradeCopy = base64StringGradeCopy;
             let imageFileRegForm = base64StringRegForm;
@@ -172,6 +194,8 @@
                 || imageFileRegForm == ""
                 || imageFileItr == ""
                 || imageFileNfi == ""
+                || firstSemGrade == ""
+                || secondSemGrade == ""
             ) {
                 message = "Please fill all the fields";
             }
@@ -226,6 +250,8 @@
                         imageFileItr: imageFileItr,
                         imageFileNfi: imageFileNfi,
                         scholarshipid: scholarshipid,
+                        firstSemGrade: firstSemGrade,
+                        secondSemGrade: secondSemGrade,
                     },
                     success: function (result) {
                         // Close loading state
@@ -282,8 +308,8 @@
                             if (result.msg === "success") {
                                 const existingData = result.data;
 
-                                console.log(existingData,'data');
-                                
+                                console.log(existingData, 'data');
+
 
                                 $.each(existingData, (key, item) => {
                                     $("#first_name").val(item.first_name);
@@ -312,6 +338,8 @@
                                     $("#mothersname").val(item.mothers_name);
                                     $("#mothersoccupation").val(item.mothers_occupation);
                                     $("#mothersmonthly").val(item.mothers_salary);
+                                    $("#firstSemGrade").val(item.first_sem_grade);
+                                    $("#secondSemGrade").val(item.second_sem_grade);
                                     $("#profileimagepreview").attr("src", "data:image/jpg;base64," + item.image);
                                     base64profileImage = item.image;
                                     $("#truecopypreview").attr("src", "data:image/jpg;base64," + item.grade_copy);
@@ -350,7 +378,7 @@
 
         //#region File Upload
 
-        
+
 
         $(document).on("change", "#profileImage", function (e) {
             const input = document.getElementById("profileImage");

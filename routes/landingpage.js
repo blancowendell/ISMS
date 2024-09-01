@@ -173,7 +173,6 @@ router.post("/save", async (req, res) => {
   }
 });
 
-
 router.post("/verify-otp", (req, res) => {
   const { email, otp } = req.body;
 
@@ -388,235 +387,76 @@ router.get("/loadsignuppage", (req, res) => {
   }
 });
 
+router.post("/addInstitutionAndCourse", (req, res) => {
+  try {
+    const {
+      institutionsname,
+      coursename,
+    } = req.body;
+
+    // Insert statement for master_institutions
+    let sqlInstitution = InsertStatement("master_institutions", "mi", [
+      "name",
+    ]);
+
+    let institutionData = [
+      [
+        institutionsname,
+      ],
+    ];
+    let checkInstitutionStatement = SelectStatement(
+      "SELECT * FROM master_institutions WHERE mi_name=?",
+      [institutionsname]
+    );
+
+    Check(checkInstitutionStatement)
+      .then((institutionResult) => {
+        if (institutionResult.length > 0) {
+          return res.json(JsonWarningResponse(MessageStatus.EXIST));
+        } else {
+          InsertTable(sqlInstitution, institutionData, (err, institutionInsertResult) => {
+            if (err) {
+              console.log(err);
+              return res.json(JsonErrorResponse(err));
+            }
+            const newInstitutionId = institutionInsertResult[0].id;
+            let sqlCourse = InsertStatement("master_courses", "mc", [
+              "name_code",     // Course name or code
+              "institutionsid",
+            ]);
+
+            let courseData = [
+              [
+                coursename,
+                newInstitutionId,
+              ]
+            ];
+
+            // Insert the new course
+            InsertTable(sqlCourse, courseData, (err, courseInsertResult) => {
+              if (err) {
+                console.log(err);
+                return res.json(JsonErrorResponse(err));
+              }
+
+              // Successfully inserted both the institution and the course
+              res.json(JsonSuccess());
+            });
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json(JsonErrorResponse(error));
+      });
+  } catch (error) {
+    console.log(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
 
 
 
-// router.post("/save", async (req, res) => {
-//   try {
-//     let status = "UnVerified";
-//     let registerDate = GetCurrentDatetime();
-//     const {
-//       firstname,
-//       middlename,
-//       lastname,
-//       date_of_birth,
-//       email,
-//       gender,
-//       phone,
-//       institutionid,
-//       courseid,
-//       academic_status,
-//       yearlevel,
-//       birthplace,
-//       age,
-//       fathers_name,
-//       fathers_occupation,
-//       fathers_salary,
-//       mothers_name,
-//       mothers_occupation,
-//       mothers_salary,
-//     } = req.body;
-
-//     const currentYear = new Date().getFullYear();
-//     const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
-
-//     let newStudentID = await generateStudentId(currentYear, currentMonth);
-
-//     let sql = InsertStatement("master_students", "ms", [
-//       "studentid",  // Adjusted column name to match the database field
-//       "first_name",
-//       "middle_name",
-//       "last_name",
-//       "date_of_birth",
-//       "email",
-//       "gender",
-//       "phone",
-//       "status",
-//       "institutionid",
-//       "courseid",
-//       "academic_status",
-//       "yearlevel",
-//       "birthplace",
-//       "age",
-//       "fathers_name",
-//       "fathers_occupation",
-//       "fathers_salary",
-//       "mothers_name",
-//       "mothers_occupation",
-//       "mothers_salary",
-//       "registerdate",
-//     ]);
-
-//     let data = [
-//       [
-//         newStudentID,
-//         firstname,
-//         middlename,
-//         lastname,
-//         date_of_birth,
-//         email,
-//         gender,
-//         phone,
-//         status,
-//         institutionid,
-//         courseid,
-//         academic_status,
-//         yearlevel,
-//         birthplace,
-//         age,
-//         fathers_name,
-//         fathers_occupation,
-//         fathers_salary,
-//         mothers_name,
-//         mothers_occupation,
-//         mothers_salary,
-//         registerDate,
-//       ],
-//     ];
-
-//     let checkStatement = SelectStatement(
-//       "select * from master_students where ms_email=?",
-//       [email]
-//     );
-
-//     let result = await Check(checkStatement);
-
-//     if (result.length > 0) {
-//       return res.json(JsonWarningResponse(MessageStatus.EXIST));
-//     } else {
-//       InsertTable(sql, data, (err, result) => {
-//         if (err) {
-//           console.log(err);
-//           res.json(JsonErrorResponse(err));
-//         } else {
-//           res.json(JsonSuccess());
-//         }
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     res.json(JsonErrorResponse(error));
-//   }
-// });
-
-// router.post("/save", (req, res) => {
-//   try {
-//     let status = "UnVerified";
-//     let registerDate = GetCurrentDatetime();
-//     const {
-//       firstname,
-//       middlename,
-//       lastname,
-//       date_of_birth,
-//       email,
-//       gender,
-//       phone,
-//       institutionid,
-//       courseid,
-//       academic_status,
-//       yearlevel,
-//       birthplace,
-//       age,
-//       fathers_name,
-//       fathers_occupation,
-//       fathers_salary,
-//       mothers_name,
-//       mothers_occupation,
-//       mothers_salary,
-//     } = req.body;
-//     let newStudentID;
-
-//     console.log(req.body);
-
-//     newStudentID = generateStudentId(currentYear, currentMonth);
-    
-
-//     let sql = InsertStatement("master_students", "ms", [
-//       "studentid",
-//       "first_name",
-//       "middle_name",
-//       "last_name",
-//       "date_of_birth",
-//       "email",
-//       "gender",
-//       "phone",
-//       "status",
-//       "institutionid",
-//       "courseid",
-//       "academic_status",
-//       "yearlevel",
-//       "birthplace",
-//       "age",
-//       "fathers_name",
-//       "fathers_occupation",
-//       "fathers_salary",
-//       "mothers_name",
-//       "mothers_occupation",
-//       "mothers_salary",
-//       "registerdate",
-//     ]);
-
-//     console.log(sql);
-    
-//     let data = [
-//       [
-//         newStudentID,
-//         firstname,
-//         middlename,
-//         lastname,
-//         date_of_birth,
-//         email,
-//         gender,
-//         phone,
-//         status,
-//         institutionid,
-//         courseid,
-//         academic_status,
-//         yearlevel,
-//         birthplace,
-//         age,
-//         fathers_name,
-//         fathers_occupation,
-//         fathers_salary,
-//         mothers_name,
-//         mothers_occupation,
-//         mothers_salary,
-//         registerDate,
-//       ],
-//     ];
-//     console.log(data);
-
-
-//     let checkStatement = SelectStatement(
-//       "select * from master_students where ms_email=?",
-//       [email]
-//     );
-
-//     Check(checkStatement)
-//       .then((result) => {
-//         console.log(result);
-//         if (result != 0) {
-//           return res.json(JsonWarningResponse(MessageStatus.EXIST));
-//         } else {
-//           InsertTable(sql, data, (err, result) => {
-//             if (err) {
-//               console.log(err);
-//               res.json(JsonErrorResponse(err));
-//             }
-
-//             res.json(JsonSuccess());
-//           });
-//         }
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//         res.json(JsonErrorResponse(error));
-//       });
-//   } catch (error) {
-//     //console.log(error);
-//     res.json(JsonErrorResponse(error));
-//   }
-// });
 
 
 //#region FUNCTION

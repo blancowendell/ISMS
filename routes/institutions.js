@@ -57,7 +57,9 @@ router.post("/loadcourses", (req, res) => {
 
 router.get("/loadinstitutions", (req, res) => {
   try {
-    let sql = `SELECT * FROM master_institutions`;
+    let sql = `SELECT * 
+    FROM master_institutions
+    ORDER BY SUBSTRING(mi_name, 1, 1)`;
 
     Select(sql, (err, result) => {
       if (err) {

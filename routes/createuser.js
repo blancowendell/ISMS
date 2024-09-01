@@ -20,51 +20,70 @@ module.exports = router;
 router.post("/save", async (req, res) => {
   try {
     const { studentid } = req.body;
-    let username = req.body.username;
-    let password = req.body.password;
-    let status = "Active";
-    let accesstype = "2";
+    const username = req.body.username;
+    const password = req.body.password;
+    const status = "Active";
+    const accesstype = "2";
     const createdate = GetCurrentDatetime();
 
+    // Retrieve the email associated with the studentid
+    const emailSql = SelectStatement(
+      "SELECT ms_email FROM master_students WHERE ms_studentid = ?",
+      [studentid]
+    );
+
+    const emailResult = await Check(emailSql);
+    if (emailResult.length === 0) {
+      // No email found for the given studentid
+      return res.json(JsonWarningResponse(MessageStatus.NOTEXIST));
+    }
+
+    const email = emailResult[0].ms_email;
+
+    // Encrypt the password
     Encrypter(password, async (err, encrypted) => {
       if (err) {
         console.error("Error: ", err);
-        res.json({ msg: "error" });
-      } else {
-        let sql = InsertStatement("master_user", "mu", [
-          "studentid",
-          "accesstypeid",
-          "username",
-          "password",
-          "createdate",
-          "status",
-        ]);
+        return res.json({ msg: "error" });
+      }
 
-        let data = [[studentid, accesstype, username, encrypted, createdate, status]];
-        let checkStatement = SelectStatement(
-          "select * from master_user where mu_studentid=?",
-          [studentid]
-        );
-        Check(checkStatement)
-        .then((result) => {
-          console.log(result);
-          if (result != 0) {
-            return res.json(JsonWarningResponse(MessageStatus.EXIST));
-          } else {
-            InsertTable(sql, data, (err, result) => {
-              if (err) {
-                console.log(err);
-                res.json(JsonErrorResponse(err));
-              }
+      // Prepare the insert statement
+      const insertSql = InsertStatement("master_user", "mu", [
+        "studentid",
+        "accesstypeid",
+        "username",
+        "password",
+        "createdate",
+        "status",
+        "email"  // Adding email column to the insert statement
+      ]);
 
-              res.json(JsonSuccess());
-            });
+      const data = [[studentid, accesstype, username, encrypted, createdate, status, email]];
+
+      // Check if the user already exists
+      const checkStatement = SelectStatement(
+        "SELECT * FROM master_user WHERE mu_studentid = ?",
+        [studentid]
+      );
+
+      try {
+        const result = await Check(checkStatement);
+        if (result.length > 0) {
+          return res.json(JsonWarningResponse(MessageStatus.EXIST));
+        }
+
+        // Insert the new user
+        InsertTable(insertSql, data, (err, result) => {
+          if (err) {
+            console.log(err);
+            return res.json(JsonErrorResponse(err));
           }
-        })
-      .catch((error) => {
+
+          res.json(JsonSuccess());
+        });
+      } catch (error) {
         console.log(error);
         res.json(JsonErrorResponse(error));
-      });
       }
     });
   } catch (error) {
