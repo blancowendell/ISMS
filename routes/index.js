@@ -2,7 +2,10 @@ const mysql = require("./repository/ismsdb");
 //const moment = require('moment');
 var express = require("express");
 const { Validator } = require("./controller/middleware");
-const { JsonErrorResponse, JsonDataResponse } = require("./repository/response");
+const {
+  JsonErrorResponse,
+  JsonDataResponse,
+} = require("./repository/response");
 const { Select, Update, InsertTable } = require("./repository/dbconnect");
 const { DataModeling } = require("./model/ismsdb");
 var router = express.Router();
@@ -56,12 +59,12 @@ router.get("/loadtotal", (req, res) => {
     INNER JOIN scholarship s ON ms.ms_scholarshipid = s.s_scholarship_id
     WHERE s.s_status = 'Active'`;
 
-    Select(sql, (err, result) => {  
+    Select(sql, (err, result) => {
       if (err) {
         console.error(err);
         res.json(JsonErrorResponse(err));
       }
-      
+
       if (result != 0) {
         let data = DataModeling(result, "msr_");
         res.json(JsonDataResponse(data));
@@ -74,8 +77,6 @@ router.get("/loadtotal", (req, res) => {
     res.json(JsonErrorResponse(error));
   }
 });
-
-
 
 router.get("/loadpending", (req, res) => {
   try {
@@ -84,12 +85,12 @@ router.get("/loadpending", (req, res) => {
     INNER JOIN scholarship s ON msr.msr_scholarshipid = s.s_scholarship_id
     WHERE msr.msr_status = 'Applied' AND s.s_status = 'Active'`;
 
-    Select(sql, (err, result) => {  
+    Select(sql, (err, result) => {
       if (err) {
         console.error(err);
         res.json(JsonErrorResponse(err));
       }
-      
+
       if (result != 0) {
         let data = DataModeling(result, "msr_");
         res.json(JsonDataResponse(data));
@@ -102,7 +103,6 @@ router.get("/loadpending", (req, res) => {
     res.json(JsonErrorResponse(error));
   }
 });
-
 
 router.get("/loadverified", (req, res) => {
   try {
@@ -112,14 +112,49 @@ router.get("/loadverified", (req, res) => {
     WHERE ms.ms_status = 'Verified' AND s.s_status = 'Active';
     `;
 
-    Select(sql, (err, result) => {  
+    Select(sql, (err, result) => {
       if (err) {
         console.error(err);
         res.json(JsonErrorResponse(err));
       }
-      
+
       if (result != 0) {
         let data = DataModeling(result, "msr_");
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+router.get("/loadperbarranggay", (req, res) => {
+  try {
+    let sql = `SELECT 
+        ms_baranggay, 
+        COUNT(*) AS ms_count
+    FROM 
+        master_students
+    WHERE 
+        ms_status = 'Verified'
+    GROUP BY 
+        ms_baranggay`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "ms_");
+
+        //console.log(data);
         res.json(JsonDataResponse(data));
       } else {
         res.json(JsonDataResponse(result));

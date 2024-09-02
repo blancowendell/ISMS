@@ -1,0 +1,195 @@
+<script>
+    let scholarshipid = "";
+    let base64String = "";
+    let currentPassword = "";
+
+    $(document).ready(function () {
+        LoadTable();
+        searchTable();
+        LoadSchoolYear();
+
+        $(document).on("keyup", "#myInput", function () {
+            searchTable();
+        });
+
+        function LoadTable() {
+            $("#dataTableGrades").DataTable({
+                destroy: true,
+                processing: true,
+                serverSide: true,
+                paging: false,
+                searching: false,
+                info: false,
+                scrollY: 600,
+                scrollCollapse: true,
+                serverMethod: "GET",
+                ajax: {
+                    url: "/master_grades/load",
+                    dataSrc: (json) => {
+                        var finalData = [];
+                        var data = json.data;
+
+                        $.each(data, (key, item) => {
+                            var action = "";
+                            var status = item.status;
+
+                            action = `
+                        <button id="editBtn" class="btn text-primary" name="editBtn" data-bs-toggle="modal" data-bs-target="#editscholarshipmodal"><i class="fas fa-fw fa-pen"></i></button>
+                       `;
+
+
+                            finalData.push({
+                                studentid: item.studentid,
+                                fullname: item.fullname,
+                                status: item.status,
+                                school: item.school,
+                                scholarship: item.scholarship,
+                                first_sem_grade: item.first_sem_grade,
+                                second_sem_grade: item.second_sem_grade,
+                            });
+                        });
+
+                        return finalData;
+                    },
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        className: "td-indent",
+                    },
+                ],
+                columns: [
+                    { data: "studentid" },
+                    { data: "fullname" },
+                    { data: "status" },
+                    { data: "school" },
+                    { data: "scholarship" },
+                    { data: "first_sem_grade" },
+                    { data: "second_sem_grade" }
+                ],
+                createdRow: function (row, data, dataIndex) {
+                    $("td", row).each(function (index) {
+                        this.style.textAlign = "center";
+                        this.style.verticalAlign = "middle";
+                    });
+                },
+                initComplete: function () { },
+            });
+        }
+
+        function LoadSchoolYear() {
+            $.ajax({
+                type: "GET",
+                url: "/scholarship/load",
+                success: function (result) {
+                    var data = result.data;
+                    console.log(data);
+
+
+                    $.each(data, function (key, item) {
+                        var options = new Option(item.scholarship_id, item.scholarship_id);
+                        $(options).html(item.name);
+                        $("#selectSchoolYear").append(options);
+                    });
+                },
+                error: function (result) {
+                    alert("error: " + result.data);
+                },
+            });
+        }
+
+        
+        $(document).on("click", "#exportpendingapplication", function () {
+            let scholarship_id = $("#selectSchoolYear").val();
+
+            let message = "";
+
+            if (!scholarship_id) {
+                message += "Scholarship School Year is required. ";
+            }
+
+            if (message) {
+                swal("Validation Error", message, "error");
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/master_grades/export",
+                    data: {
+                        schoolyear: scholarship_id,
+                    },
+                    xhrFields: {
+                        responseType: 'blob' // Set the response type to 'blob' for file download
+                    },
+                    success: function (blob, status, xhr) {
+                        if (xhr.status !== 200 || blob.size === 0) {
+                            // Handle case where the response is an error or no data is available
+                            swal("No Available Data", "No data available for the selected school year.", "info");
+                        } else {
+                            const downloadUrl = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = downloadUrl;
+
+                            // Extract filename from Content-Disposition header
+                            const disposition = xhr.getResponseHeader('Content-Disposition');
+                            const filename = disposition.split('filename=')[1].replace(/"/g, '');
+                            a.download = filename;
+
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                            window.URL.revokeObjectURL(downloadUrl);
+
+                            swal({
+                                title: "Export Successful",
+                                text: "The file has been exported successfully!",
+                                icon: "success",
+                                button: "OK!",
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        }
+                    },
+                    error: function (err) {
+                        swal("Error", "No data available for the selected school year.", "error");
+                    }
+                });
+            }
+        });
+
+
+        function searchTable() {
+            var input, filter, found, table, tr, td, i, j;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("dataTableGrades");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                    found = false;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+        $(".toggle-password").on("click", function () {
+            const targetSelector = $(this).data("target");
+            const passwordInput = $(targetSelector);
+            const passwordFieldType = passwordInput.attr("type");
+            if (passwordFieldType === "password") {
+                passwordInput.attr("type", "text");
+                $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+            } else {
+                passwordInput.attr("type", "password");
+                $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+            }
+        });
+    });
+</script>

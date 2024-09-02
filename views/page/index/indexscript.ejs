@@ -6,6 +6,52 @@
         LoadTotal();
         LoadPending();
         LoadVerified();
+        LoadChart();
+
+
+        function LoadChart() {
+            $.ajax({
+                url: '/loadperbarranggay',
+                type: 'GET',
+                success: function (response) {
+                    // Assuming the data is returned in the format: [{ ms_baranggay: 'XYZ', ms_count: 5 }, ...]
+                    let labels = [];
+                    let data = [];
+
+                    // Extract data from the response
+                    response.data.forEach(item => {
+                        labels.push(item.baranggay);  // Barangay names
+                        data.push(item.count);        // Counts of verified students
+                    });
+
+                    // Create the bar chart
+                    let ctx = document.getElementById('barChart').getContext('2d');
+                    let barChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Verified Students per Barangay',
+                                data: data,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function (err) {
+                    console.error('Error loading data:', err);
+                }
+            });
+        };
 
         function updateTime() {
             const now = new Date();
@@ -77,7 +123,8 @@
             });
         }
 
-        function LoadVerified() {1
+        function LoadVerified() {
+            1
             $.ajax({
                 url: '/loadverified',
                 method: 'GET',

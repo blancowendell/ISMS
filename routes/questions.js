@@ -70,7 +70,7 @@ router.post("/save", async (req, res) => {
   try {
     let question = req.body.question;
     let response = req.body.response;
-    let createdBy = GetCurrentDatetime(); // Get current datetime
+    let createdBy = req.session.fullname; // Get current datetime
 
     // Insert response into master_response table
     let insertResponseSql = `INSERT INTO master_response (mr_description) VALUES ('${response}')`;

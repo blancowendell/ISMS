@@ -272,7 +272,7 @@
                             $("#fathersnamereq").text(item.fathers_name);
                             $("#fathersoccupationreq").text(item.fathers_occupation);
                             $("#mothersnamereq").text(item.mothers_name);
-                            $("#mothersoccupationreq").text(item.mothers_occupation);  
+                            $("#mothersoccupationreq").text(item.mothers_occupation);
                             $("#truecopypreview").attr("src", "data:image/jpg;base64," + item.grade_copy);
                             $("#regformpreview").attr("src", "data:image/jpg;base64," + item.registration_form);
                             $("#certrespreview").attr("src", "data:image/jpg;base64," + item.certificate_residency);
@@ -429,6 +429,66 @@
             }
         });
 
+        // $(document).on("click", "#applicationRejectBtn", function () {
+        //     let id = studentid;
+
+        //     if (studentid === "") {
+        //         swal("Validation Error", "Student Id is required.", "error");
+        //     } else {
+        //         swal({
+        //             title: "Are you sure?",
+        //             text: "Do you want to reject this application?",
+        //             icon: "warning",
+        //             buttons: true,
+        //             dangerMode: true,
+        //         }).then((willReject) => {
+        //             if (willReject) {
+        //                 // Close the view application modal
+        //                 $('#viewapplicationmodal').modal('hide');
+
+        //                 // Show the rejection modal
+        //                 $('#rejectionModal').modal('show');
+
+        //                 // Handle rejection submission
+        //                 $('#sendRejectionBtn').off('click').on('click', function () {
+        //                     let rejectionMessage = $('#rejectionMessage').val().trim();
+
+        //                     if (rejectionMessage) {
+        //                         $.ajax({
+        //                             type: "POST",
+        //                             url: "/pendingapplication/reject",
+        //                             data: {
+        //                                 studentid: id,
+        //                                 message: rejectionMessage,
+        //                             },
+        //                             success: function (result) {
+        //                                 if (result.msg === "success") {
+        //                                     swal({
+        //                                         title: "Rejected Successfully",
+        //                                         text: "The application has been rejected.",
+        //                                         icon: "success",
+        //                                         button: "OK!",
+        //                                     }).then(() => {
+        //                                         window.location.reload();
+        //                                     });
+        //                                 } else {
+        //                                     swal("Error", "An error occurred while rejecting the application.", "error");
+        //                                 }
+        //                             },
+        //                             error: function () {
+        //                                 swal("Error", "An error occurred while sending the rejection.", "error");
+        //                             }
+        //                         });
+        //                         $('#rejectionModal').modal('hide');
+        //                     } else {
+        //                         swal("Cancelled", "Rejection message was not provided.", "error");
+        //                     }
+        //                 });
+        //             }
+        //         });
+        //     }
+        // });
+
         $(document).on("click", "#applicationRejectBtn", function () {
             let id = studentid;
 
@@ -452,6 +512,11 @@
                         // Handle rejection submission
                         $('#sendRejectionBtn').off('click').on('click', function () {
                             let rejectionMessage = $('#rejectionMessage').val().trim();
+                            let selectedRequirements = [];
+
+                            $('#requirementCheckboxes input:checked').each(function () {
+                                selectedRequirements.push($(this).val());
+                            });
 
                             if (rejectionMessage) {
                                 $.ajax({
@@ -460,6 +525,7 @@
                                     data: {
                                         studentid: id,
                                         message: rejectionMessage,
+                                        requirements: selectedRequirements // send selected checkboxes
                                     },
                                     success: function (result) {
                                         if (result.msg === "success") {
@@ -488,6 +554,7 @@
                 });
             }
         });
+
 
         $(document).on("change", "#announcementimage", function (e) {
             const input = document.getElementById("announcementimage");

@@ -453,22 +453,54 @@
 
 <!-- Modal HTML -->
 <div class="modal fade" id="rejectionModal" tabindex="-1" aria-labelledby="rejectionModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="rejectionModalLabel">Rejection Message</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="rejectionMessage" class="form-label">Please enter the message to be sent:</label>
-          <textarea class="form-control" id="rejectionMessage" rows="3" placeholder="Type your message here"></textarea>
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rejectionModalLabel">Rejection Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="sendRejectionBtn">Send</button>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="rejectionMessage" class="form-label">Please enter the message to be sent:</label>
+            <textarea class="form-control" id="rejectionMessage" rows="3" placeholder="Type your message here"></textarea>
+          </div>
+  
+          <div class="mb-3">
+            <label class="form-label">Select the requirements that have not been submitted:</label>
+            <div id="requirementCheckboxes">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Certified True Copy ng inyong grado (mula sa nakaraang markahan)" id="requirement1">
+                <label class="form-check-label" for="requirement1">
+                    Certified True Copy ng inyong grado (mula sa nakaraang markahan) 
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Orihinal at kopya ng inyong enrolment/registration form ng 1st semester" id="requirement2">
+                <label class="form-check-label" for="requirement2">
+                    Orihinal at kopya ng inyong enrolment/registration form ng 1st semester
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Kapag nagtatrabaho ang mga magulang - Income Tax Return (ITR) mula sa BIR " id="requirement3">
+                <label class="form-check-label" for="requirement3">
+                    Kapag nagtatrabaho ang mga magulang - Income Tax Return (ITR) mula sa BIR 
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="Kapag walang trabaho ang mga magulang - Affidavit of No Fix Income  (makukuha sa City Legal Office ang sertipikasyon o katunayan bago dalhin sa BIR)" id="requirement4">
+                <label class="form-check-label" for="requirement4">
+                    Kapag walang trabaho ang mga magulang - Affidavit of No Fix Income  (makukuha sa City Legal Office ang sertipikasyon o katunayan bago dalhin sa BIR) 
+                </label>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="sendRejectionBtn">Send</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+  

@@ -23,7 +23,7 @@ router.get("/load", function (req, res, next) {
     let studentid = req.session.studentid;
     let sql = `
     SELECT * FROM master_students_request
-    WHERE msr_studentid = '${studentid}' AND msr_status = 'Applied'`;
+    WHERE msr_studentid = '${studentid}' AND msr_status = 'Verified'`;
 
     Select(sql, (err, result) => {
       if (err) {
@@ -60,7 +60,7 @@ router.post("/loadexistingrecord", (req, res) => {
         DATE_FORMAT(msr_date_of_birth, '%Y-%m-%d') AS msr_date_of_birth,
         DATE_FORMAT(msr_registerdate, '%Y-%m-%d') AS msr_registerdate
       FROM master_students_request
-      WHERE msr_studentid = '${studentid}' AND msr_status = 'Applied'`;
+      WHERE msr_studentid = '${studentid}'`;
   
       Select(sql, (err, result) => {
         if (err) {
@@ -123,6 +123,7 @@ router.post("/save", function (req, res, next) {
       firstSemGrade,
       secondSemGrade,
     } = req.body;
+    let status = 'Applied';
 
     console.log(studentid,'id');
     
@@ -221,6 +222,11 @@ router.post("/save", function (req, res, next) {
     if (houseno) {
       data.push(houseno);
       columns.push("house_no");
+    }
+
+    if (status) {
+      data.push(status);
+      columns.push("status");
     }
 
     if (fathersname) {

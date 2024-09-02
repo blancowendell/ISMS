@@ -261,7 +261,9 @@
       if (gender === "") message += "Gender ";
       if (phone === "") message += "Phone ";
       if (institutionid === "") message += "Institution ";
+      if (institutionid === "others") message += "Others is not a Institution ";
       if (courseid === "") message += "Course ";
+      if (courseid === "others") message += "Others is not a Course ";
       if (academic_status === "") message += "Academic Status ";
       if (yearlevel === "") message += "Year Level ";
       if (birthplace === "") message += "Birth Place ";
@@ -269,7 +271,10 @@
       if (scholarshipid === "") message += "Scholarship is required ";
 
       if (message !== "") {
-        swal("Validation Error", message, "error");
+        swal("Validation Error", message, "error").then(() => {
+          // This function is executed when the "OK" button is clicked
+          window.location.reload();
+        });
       } else {
         // Show a "please wait" dialog
         swal({

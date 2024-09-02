@@ -38,6 +38,9 @@ var roleacess = [
       {
         layout: "approvedapplicationlayout",
       },
+      {
+        layout: "master_gradeslayout",
+      },
     ],
   },
   {

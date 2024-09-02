@@ -117,9 +117,11 @@ router.post("/loadstudentrequest", (req, res) => {
   }
 });
 
+
 router.post("/reject", async (req, res) => {
   const studentid = req.body.studentid;
   const rejectionMessage = req.body.message;
+  const requirements = req.body.requirements || []; // get the selected requirements
 
   if (!studentid) {
     return res.status(400).json({ error: "Student ID is required" });
@@ -147,19 +149,30 @@ router.post("/reject", async (req, res) => {
 
     const studentEmail = studentResults[0].ms_email;
 
-    // Delete the request from master_students_request
-    const deleteQuery = `
-      DELETE FROM master_students_request 
-      WHERE msr_studentid = ?`;
+    // Update the request from master_students_request
+    const updateQuery = `
+          UPDATE master_students_request SET
+          msr_status = 'Rejected'
+          WHERE msr_studentid = ?`;
 
-    await mysql.mysqlQueryPromise({ sql: deleteQuery, values: [studentid] });
+    await mysql.mysqlQueryPromise({ sql: updateQuery, values: [studentid] });
+
+    // Prepare the rejection email content
+    let emailContent = `${rejectionMessage}\n\n`;
+
+    if (requirements.length > 0) {
+      emailContent += "The following requirements were not submitted:\n";
+      requirements.forEach((requirement) => {
+        emailContent += `- ${requirement}\n`;
+      });
+    }
 
     // Send rejection email
     let mailOptions = {
       from: "ilsp.test.dev@gmail.com", // your email
       to: studentEmail,
       subject: "Application Rejected",
-      text: rejectionMessage,
+      text: emailContent,
     };
 
     await transporter.sendMail(mailOptions);
@@ -170,6 +183,61 @@ router.post("/reject", async (req, res) => {
     res.json(JsonErrorResponse(error));
   }
 });
+
+
+// router.post("/reject", async (req, res) => {
+//   const studentid = req.body.studentid;
+//   const rejectionMessage = req.body.message;
+
+//   if (!studentid) {
+//     return res.status(400).json({ error: "Student ID is required" });
+//   }
+
+//   if (!rejectionMessage) {
+//     return res.status(400).json({ error: "Rejection message is required" });
+//   }
+
+//   try {
+//     // Fetch the student's email address
+//     const fetchStudentQuery = `
+//       SELECT ms_email 
+//       FROM master_students 
+//       WHERE ms_studentid = ?`;
+
+//     const studentResults = await mysql.mysqlQueryPromise({
+//       sql: fetchStudentQuery,
+//       values: [studentid],
+//     });
+
+//     if (studentResults.length === 0) {
+//       return res.status(404).json({ error: "Student not found" });
+//     }
+
+//     const studentEmail = studentResults[0].ms_email;
+
+//     // Delete the request from master_students_request
+//     const deleteQuery = `
+//       DELETE FROM master_students_request 
+//       WHERE msr_studentid = ?`;
+
+//     await mysql.mysqlQueryPromise({ sql: deleteQuery, values: [studentid] });
+
+//     // Send rejection email
+//     let mailOptions = {
+//       from: "ilsp.test.dev@gmail.com", // your email
+//       to: studentEmail,
+//       subject: "Application Rejected",
+//       text: rejectionMessage,
+//     };
+
+//     await transporter.sendMail(mailOptions);
+
+//     res.json(JsonSuccess());
+//   } catch (error) {
+//     console.error(error);
+//     res.json(JsonErrorResponse(error));
+//   }
+// });
 
 router.post("/approved", async (req, res) => {
   const studentid = req.body.studentid;
@@ -247,6 +315,9 @@ router.post("/approved", async (req, res) => {
         ms_second_sem_grade = ?
       WHERE ms_studentid = ?`;
 
+      console.log(updateQuery,'updatequery');
+      
+
     const updateValues = [
       requestData.msr_image,
       requestData.msr_first_name,
@@ -280,10 +351,13 @@ router.post("/approved", async (req, res) => {
       requestData.msr_certificate_residency,
       requestData.msr_itr,
       requestData.msr_nfi,
-      studentid,
       requestData.msr_first_sem_grade,
       requestData.msr_second_sem_grade,
+      studentid,
     ];
+
+    console.log(updateValues,'updatevalues');
+    
 
     await mysql.mysqlQueryPromise({ sql: updateQuery, values: updateValues });
 

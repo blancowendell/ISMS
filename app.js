@@ -30,6 +30,7 @@ var scholarshipRouter = require("./routes/scholarship");
 var approvedapplicationRouter = require("./routes/approvedapplication");
 var testpermitRouter = require("./routes/testpermit");
 var forgotpasswordRouter = require("./routes/forgotpassword");
+var master_gradesRouter = require("./routes/master_grades");
 
 var app = express();
 
@@ -72,6 +73,7 @@ app.use("/scholarship", scholarshipRouter);
 app.use("/approvedapplication", approvedapplicationRouter);
 app.use("/testpermit", testpermitRouter);
 app.use("/forgotpassword", forgotpasswordRouter);
+app.use("/master_grades", master_gradesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
