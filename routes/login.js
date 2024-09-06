@@ -9,7 +9,7 @@ var router = express.Router();
 //const currentDate = moment();
 require("dotenv").config();
 const nodemailer = require('nodemailer');
-crypto = require('crypto');
+const crypto = require('crypto');
 const { JsonErrorResponse, JsonWarningResponse, MessageStatus, JsonSuccess } = require("./repository/response");
 const { SelectStatement } = require("./repository/customhelper");
 
