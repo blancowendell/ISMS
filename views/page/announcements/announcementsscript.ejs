@@ -101,24 +101,40 @@
           });
         },
 
-        initComplete: function () { },
+        initComplete: function () {},
       });
     }
 
-    $('#announcementdescription').summernote({
-      placeholder: 'Enter the description here...',
+    $("#announcementdescription").summernote({
+      placeholder: "Enter the description here...",
       tabsize: 2,
       height: 200,
       toolbar: [
-        ['style', ['style']],
-        ['font', ['bold', 'italic', 'underline', 'clear']],
-        ['fontname', ['fontname']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['table', ['table']],
-        ['insert', ['link', 'picture', 'video']],
-        ['view', ['fullscreen', 'codeview', 'help']]
-      ]
+        ["style", ["style"]],
+        ["font", ["bold", "italic", "underline", "clear"]],
+        ["fontname", ["fontname"]],
+        ["color", ["color"]],
+        ["para", ["ul", "ol", "paragraph"]],
+        ["table", ["table"]],
+        ["insert", ["link", "picture", "video"]],
+        ["view", ["fullscreen", "codeview", "help"]],
+        ["custom", ["responsive"]],
+      ],
+      buttons: {
+        responsive: function (context) {
+          var ui = $.summernote.ui;
+          var button = ui.button({
+            contents: '<i class="fa fa-mobile"></i> Responsive',
+            tooltip: "Add responsive styles",
+            click: function () {
+              var currentContent = context.invoke("code");
+              var responsiveContent = `<div class="responsive">${currentContent}</div>`;
+              context.invoke("code", responsiveContent);
+            },
+          });
+          return button.render();
+        },
+      },
     });
 
     $(document).on("click", "#announcementsavebtn", function () {
@@ -127,7 +143,7 @@
       let type = $("#announcementtype").val();
       let targetdate = $("#targetdate").val();
       let enddate = $("#enddate").val();
-      let description = $('#announcementdescription').summernote('code'); // Capture the HTML content
+      let description = $("#announcementdescription").summernote("code"); // Capture the HTML content
 
       var message = "";
 
@@ -220,8 +236,14 @@
 
             $.each(existingData, (key, item) => {
               $("#editannouncementtittle").val(item.tittle);
-              $("#editpreview").attr("src", "data:image/jpg;base64," + item.image);
-              $("#editannouncementdescription").summernote('code', item.description); // Load the description into Summernote
+              $("#editpreview").attr(
+                "src",
+                "data:image/jpg;base64," + item.image
+              );
+              $("#editannouncementdescription").summernote(
+                "code",
+                item.description
+              ); // Load the description into Summernote
               $("#editannouncementstatus").val(item.status);
               $("#editannouncementtype").val(item.type);
               $("#edittargetdate").val(item.targetdate);
@@ -233,31 +255,51 @@
           }
         },
         error: function (err) {
-          swal("An error occurred while fetching employee data", err.message, "error");
+          swal(
+            "An error occurred while fetching employee data",
+            err.message,
+            "error"
+          );
         },
       });
     });
 
-    $('#editannouncementdescription').summernote({
-      placeholder: 'Enter the description here...',
+    $("#editannouncementdescription").summernote({
+      placeholder: "Enter the description here...",
       tabsize: 2,
       height: 200,
       toolbar: [
-        ['style', ['style']],
-        ['font', ['bold', 'italic', 'underline', 'clear']],
-        ['fontname', ['fontname']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['table', ['table']],
-        ['insert', ['link', 'picture', 'video']],
-        ['view', ['fullscreen', 'codeview', 'help']]
-      ]
+        ["style", ["style"]],
+        ["font", ["bold", "italic", "underline", "clear"]],
+        ["fontname", ["fontname"]],
+        ["color", ["color"]],
+        ["para", ["ul", "ol", "paragraph"]],
+        ["table", ["table"]],
+        ["insert", ["link", "picture", "video"]],
+        ["view", ["fullscreen", "codeview", "help"]],
+        ["custom", ["responsive"]],
+      ],
+      buttons: {
+        responsive: function (context) {
+          var ui = $.summernote.ui;
+          var button = ui.button({
+            contents: '<i class="fa fa-mobile"></i> Responsive',
+            tooltip: "Add responsive styles",
+            click: function () {
+              var currentContent = context.invoke("code");
+              var responsiveContent = `<div class="responsive">${currentContent}</div>`;
+              context.invoke("code", responsiveContent);
+            },
+          });
+          return button.render();
+        },
+      },
     });
 
     $(document).on("click", "#editannouncementsavebtn", function () {
       let id = bulletinid;
       let tittle = $("#editannouncementtittle").val();
-      let description = $('#editannouncementdescription').summernote('code');
+      let description = $("#editannouncementdescription").summernote("code");
       let status = $("#editannouncementstatus").val();
       let type = $("#editannouncementtype").val();
       let targetdate = $("#edittargetdate").val();

@@ -1,3 +1,66 @@
+.announcement-content {
+  word-wrap: break-word; /* Ensure long words or URLs break */
+  overflow-wrap: break-word;
+}
+
+.carousel-item {
+  max-height: 100%; /* Ensure it doesn't exceed parent container height */
+  overflow: hidden; /* Ensure no overflow */
+}
+
+.a-des {
+  white-space: normal; /* Ensure text wraps in smaller screens */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Show ellipsis if content overflows */
+}
+
+.eportal-img-announce {
+  max-width: 100%;
+  height: auto; /* Ensure images scale down properly */
+}
+
+@media (max-width: 768px) {
+  .announcement-content {
+    font-size: 14px; /* Reduce font size for mobile */
+    padding: 5px; /* Add some padding for better mobile visibility */
+  }
+
+  .carousel-item {
+    padding: 10px; /* Add padding for mobile view */
+  }
+}
+
+
+/* Ensure images and tables are responsive */
+.responsive img {
+  max-width: 100%;
+  height: auto;
+}
+
+.responsive table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.responsive td, .responsive th {
+  padding: 8px;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .responsive {
+    font-size: 14px; /* Adjust font size on smaller screens */
+  }
+}
+
+
+
+
+
+
+
+
+
 .receipt-card {
   background-color: #feffaa; /* Light background color */
   border: 1px solid #dee2e6; /* Border similar to a receipt */
