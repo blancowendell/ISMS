@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
--- Host: localhost    Database: isms
+-- Host: 127.0.0.1    Database: isms
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.0.36
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,27 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `signup_page`
+-- Table structure for table `master_courses`
 --
 
-DROP TABLE IF EXISTS `signup_page`;
+DROP TABLE IF EXISTS `master_courses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `signup_page` (
-  `sp_id` int NOT NULL AUTO_INCREMENT,
-  `sp_status` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`sp_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `master_courses` (
+  `mc_course_id` int NOT NULL AUTO_INCREMENT,
+  `mc_name_code` varchar(50) DEFAULT NULL,
+  `mc_description` text,
+  `mc_institutionsid` int NOT NULL,
+  `mc_type` varchar(50) DEFAULT NULL,
+  `mc_term` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`mc_course_id`),
+  KEY `mc_institutionsid` (`mc_institutionsid`),
+  CONSTRAINT `master_courses_ibfk_1` FOREIGN KEY (`mc_institutionsid`) REFERENCES `master_institutions` (`mi_institutionsid`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `signup_page`
+-- Dumping data for table `master_courses`
 --
 
-LOCK TABLES `signup_page` WRITE;
-/*!40000 ALTER TABLE `signup_page` DISABLE KEYS */;
-INSERT INTO `signup_page` VALUES (1,'Active');
-/*!40000 ALTER TABLE `signup_page` ENABLE KEYS */;
+LOCK TABLES `master_courses` WRITE;
+/*!40000 ALTER TABLE `master_courses` DISABLE KEYS */;
+INSERT INTO `master_courses` VALUES (1,'BSIT','Bachelor of Science in Information Technology',1,'Bachelors Degree','4 Years'),(2,'Pschology',NULL,3,NULL,NULL),(3,'Criminology',NULL,4,NULL,NULL),(4,'BSMT',NULL,5,NULL,NULL);
+/*!40000 ALTER TABLE `master_courses` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -48,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-02 16:27:33
+-- Dump completed on 2024-09-07 11:26:32

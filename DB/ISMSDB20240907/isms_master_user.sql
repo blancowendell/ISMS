@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
--- Host: localhost    Database: isms
+-- Host: 127.0.0.1    Database: isms
 -- ------------------------------------------------------
--- Server version	8.0.39
+-- Server version	8.0.36
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -48,7 +48,7 @@ CREATE TABLE `master_user` (
 
 LOCK TABLES `master_user` WRITE;
 /*!40000 ALTER TABLE `master_user` DISABLE KEYS */;
-INSERT INTO `master_user` VALUES (15,'240901',2,'johndoe','b4aed424cd9a72e754f8b9051ea112d6',NULL,'2024-09-02 14:14','Active',NULL,NULL,'blanco.wendell15@gmail.com');
+INSERT INTO `master_user` VALUES (15,'240901',2,'johndoe','dd31acb53859316fc1163101032898ac',NULL,'2024-09-02 14:14','Active',NULL,NULL,'blanco.wendell15@gmail.com');
 /*!40000 ALTER TABLE `master_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -61,4 +61,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-02 16:27:33
+-- Dump completed on 2024-09-07 11:26:32
