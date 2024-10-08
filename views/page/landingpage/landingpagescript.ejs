@@ -4,7 +4,7 @@
   $(document).ready(function () {
     console.log("Initializing");
     loadAnnouncements();
-    LoadInstitutions();
+    // LoadInstitutions();
     LoadScholarships();
     checkSignupPageStatus();
 
@@ -85,135 +85,135 @@
     //   }
     // });
 
-    function LoadInstitutions() {
-      $.ajax({
-        type: "GET",
-        url: "/institutions/loadinstitutions",
-        success: function (result) {
-          var data = result.data;
-          $("#school").empty(); // Clear existing options
+    // function LoadInstitutions() {
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "/institutions/loadinstitutions",
+    //     success: function (result) {
+    //       var data = result.data;
+    //       $("#school").empty(); // Clear existing options
 
-          $.each(data, function (key, item) {
-            var options = new Option(item.institutionsid, item.institutionsid);
-            $(options).html(item.name);
-            $("#school").append(options);
-          });
+    //       $.each(data, function (key, item) {
+    //         var options = new Option(item.institutionsid, item.institutionsid);
+    //         $(options).html(item.name);
+    //         $("#school").append(options);
+    //       });
 
-          // Add the "Others" option at the end
-          $("#school").append('<option value="others">Others</option>');
-        },
-        error: function (result) {
-          alert("error: " + result.data);
-        },
-      });
-    }
+    //       // Add the "Others" option at the end
+    //       $("#school").append('<option value="others">Others</option>');
+    //     },
+    //     error: function (result) {
+    //       alert("error: " + result.data);
+    //     },
+    //   });
+    // }
 
-    // Function to load courses based on selected institution
-    function LoadCourses(institutionId) {
-      $.ajax({
-        type: "POST",
-        url: "/institutions/loadcourses",
-        data: { institutionsid: institutionId },
-        success: function (result) {
-          var data = result.data;
-          $("#course").empty(); // Clear existing options
+    // // Function to load courses based on selected institution
+    // function LoadCourses(institutionId) {
+    //   $.ajax({
+    //     type: "POST",
+    //     url: "/institutions/loadcourses",
+    //     data: { institutionsid: institutionId },
+    //     success: function (result) {
+    //       var data = result.data;
+    //       $("#course").empty(); // Clear existing options
 
-          $.each(data, function (key, item) {
-            var options = new Option(item.course_id, item.course_id);
-            $(options).html(item.name_code);
-            $("#course").append(options);
-          });
+    //       $.each(data, function (key, item) {
+    //         var options = new Option(item.course_id, item.course_id);
+    //         $(options).html(item.name_code);
+    //         $("#course").append(options);
+    //       });
 
-          // Add the "Others" option at the end
-          $("#course").append('<option value="others">Others</option>');
-        },
-        error: function (result) {
-          alert("error: " + result.data);
-        },
-      });
-    }
+    //       // Add the "Others" option at the end
+    //       $("#course").append('<option value="others">Others</option>');
+    //     },
+    //     error: function (result) {
+    //       alert("error: " + result.data);
+    //     },
+    //   });
+    // }
 
-    // Handle institution dropdown change
-    $("#school").change(function () {
-      var institutionId = $(this).val(); // Get the selected institution ID
+    // // Handle institution dropdown change
+    // $("#school").change(function () {
+    //   var institutionId = $(this).val(); // Get the selected institution ID
 
-      if (institutionId === 'others') {
-        promptNewInstitutionAndCourse(); // Show swal for new institution and course
-      } else {
-        LoadCourses(institutionId); // Load courses for the selected institution
-      }
-    });
+    //   if (institutionId === 'others') {
+    //     promptNewInstitutionAndCourse(); // Show swal for new institution and course
+    //   } else {
+    //     LoadCourses(institutionId); // Load courses for the selected institution
+    //   }
+    // });
 
-    // Handle course dropdown change
-    $("#course").change(function () {
-      var courseId = $(this).val(); // Get the selected course ID
+    // // Handle course dropdown change
+    // $("#course").change(function () {
+    //   var courseId = $(this).val(); // Get the selected course ID
 
-      if (courseId === 'others') {
-        promptNewInstitutionAndCourse(); // Show swal for new course if "Others" is selected
-      }
-    });
+    //   if (courseId === 'others') {
+    //     promptNewInstitutionAndCourse(); // Show swal for new course if "Others" is selected
+    //   }
+    // });
 
-    // Prompt for new institution and course using SweetAlert with custom content
-    function promptNewInstitutionAndCourse() {
-      const content = document.createElement('div');
-      const inputInstitution = document.createElement('input');
-      const inputCourse = document.createElement('input');
+    // // Prompt for new institution and course using SweetAlert with custom content
+    // function promptNewInstitutionAndCourse() {
+    //   const content = document.createElement('div');
+    //   const inputInstitution = document.createElement('input');
+    //   const inputCourse = document.createElement('input');
 
-      inputInstitution.setAttribute('type', 'text');
-      inputInstitution.setAttribute('id', 'swal-input1');
-      inputInstitution.setAttribute('class', 'swal2-input');
-      inputInstitution.setAttribute('placeholder', 'Institution Name');
+    //   inputInstitution.setAttribute('type', 'text');
+    //   inputInstitution.setAttribute('id', 'swal-input1');
+    //   inputInstitution.setAttribute('class', 'swal2-input');
+    //   inputInstitution.setAttribute('placeholder', 'Institution Name');
 
-      inputCourse.setAttribute('type', 'text');
-      inputCourse.setAttribute('id', 'swal-input2');
-      inputCourse.setAttribute('class', 'swal2-input');
-      inputCourse.setAttribute('placeholder', 'Course Name');
+    //   inputCourse.setAttribute('type', 'text');
+    //   inputCourse.setAttribute('id', 'swal-input2');
+    //   inputCourse.setAttribute('class', 'swal2-input');
+    //   inputCourse.setAttribute('placeholder', 'Course Name');
 
-      content.appendChild(inputInstitution);
-      content.appendChild(inputCourse);
+    //   content.appendChild(inputInstitution);
+    //   content.appendChild(inputCourse);
 
-      swal({
-        title: "Add New Institution and Course",
-        content: content,
-        buttons: {
-          cancel: "Cancel",
-          confirm: "Save",
-        },
-      }).then(function (isConfirmed) {
-        if (isConfirmed) {
-          var newInstitutionName = document.getElementById('swal-input1').value;
-          var newCourseName = document.getElementById('swal-input2').value;
+    //   swal({
+    //     title: "Add New Institution and Course",
+    //     content: content,
+    //     buttons: {
+    //       cancel: "Cancel",
+    //       confirm: "Save",
+    //     },
+    //   }).then(function (isConfirmed) {
+    //     if (isConfirmed) {
+    //       var newInstitutionName = document.getElementById('swal-input1').value;
+    //       var newCourseName = document.getElementById('swal-input2').value;
 
-          // Validate input
-          if (newInstitutionName && newCourseName) {
-            // Trigger the API to save the new institution and course
-            submitNewInstitutionAndCourse(newInstitutionName, newCourseName);
-          } else {
-            swal("Error", "Please enter both institution and course names.", "error");
-          }
-        }
-      });
-    }
+    //       // Validate input
+    //       if (newInstitutionName && newCourseName) {
+    //         // Trigger the API to save the new institution and course
+    //         submitNewInstitutionAndCourse(newInstitutionName, newCourseName);
+    //       } else {
+    //         swal("Error", "Please enter both institution and course names.", "error");
+    //       }
+    //     }
+    //   });
+    // }
 
-    // Function to submit new institution and course
-    function submitNewInstitutionAndCourse(institutionName, courseName) {
-      $.ajax({
-        type: "POST",
-        url: "/landingpage/addInstitutionAndCourse",
-        data: {
-          institutionsname: institutionName,
-          coursename: courseName
-        },
-        success: function (result) {
-          swal("Success", "Institution and Course added successfully You May now select them", "success");
-          // Optionally, reload the institution dropdowns to include the new entry
-          LoadInstitutions();
-        },
-        error: function (result) {
-          swal("Error", result.msg, "error");
-        },
-      });
-    }
+    // // Function to submit new institution and course
+    // function submitNewInstitutionAndCourse(institutionName, courseName) {
+    //   $.ajax({
+    //     type: "POST",
+    //     url: "/landingpage/addInstitutionAndCourse",
+    //     data: {
+    //       institutionsname: institutionName,
+    //       coursename: courseName
+    //     },
+    //     success: function (result) {
+    //       swal("Success", "Institution and Course added successfully You May now select them", "success");
+    //       // Optionally, reload the institution dropdowns to include the new entry
+    //       LoadInstitutions();
+    //     },
+    //     error: function (result) {
+    //       swal("Error", result.msg, "error");
+    //     },
+    //   });
+    // }
 
     function LoadScholarships() {
       $.ajax({
@@ -322,7 +322,7 @@
                   content: {
                     element: "input",
                     attributes: {
-                      placeholder: "Enter OTP",
+                      placeholder: "Check your Gmail Inbox for OTP sent to your email.",
                       type: "text",
                     },
                   },
@@ -378,7 +378,7 @@
                     if (response && response.msg === "success") {
                       return swal({
                         title: "OTP Verified!",
-                        text: "Check your email for creating your username and password.",
+                        text: "Please check your Gmail Inbox both your OTP and Application ID. Click the provided link to complete your registration.",
                         icon: "success",
                       }).then(() => {
                         // Send email with link to create username/password
