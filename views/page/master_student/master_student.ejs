@@ -7,7 +7,7 @@
       <div class="col">
         <input id='myInput' type='text' placeholder="  Search....">
       </div>
-      <div class="col-sm-2">
+      <!-- <div class="col-sm-2">
         <button class="btn btn-color" id="total1year" data-bs-toggle="modal" data-bs-target="#total1YearModal">
             <i class="fas fa-filter"><b>Filter</b></i>
         </button>
@@ -31,7 +31,7 @@
         <button class="btn btn-color" id="downloadalphalist" name="downloadalphalist">
           <b>Dowload Alpha List</b>
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Upload Modal -->
@@ -65,7 +65,10 @@
         <thead>
           <tr>
             <!-- <th>Image</th> -->
-            <th class="col-sm-1">ID</th>
+            <th class="col-sm-1">ID 
+              <i id="sort-asc" class="fas fa-sort-up" style="cursor: pointer;"></i>
+              <i id="sort-desc" class="fas fa-sort-down" style="cursor: pointer;"></i>
+            </th>
             <th class="col-25">Name</th>
             <th>Contact</th>
             <th class="col-25">Email</th>
@@ -81,6 +84,7 @@
       </table>
     </div>
   </div>
+  
 
 </div>
 

@@ -9,8 +9,8 @@
 
     $(document).ready(function () {
         loadStudentData();
-        LoadInstitutions();
-        LoadCoursesOnly();
+        //LoadInstitutions();
+        //LoadCoursesOnly();
         LoadScholarshipId();
 
         function validateGradeInput(input) {
@@ -36,71 +36,71 @@
         console.log(studentId, 'id');
 
 
-        $("#school_name").change(function () {
-            var institutionId = $(this).val();
-            if (institutionId) {
-                LoadCourses(institutionId);
-            }
-        });
+        // $("#school_name").change(function () {
+        //     var institutionId = $(this).val();
+        //     if (institutionId) {
+        //         LoadCourses(institutionId);
+        //     }
+        // });
 
 
-        function LoadInstitutions() {
-            $.ajax({
-                type: "GET",
-                url: "/institutions/loadinstitutions",
-                success: function (result) {
-                    var data = result.data;
+        // function LoadInstitutions() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/institutions/loadinstitutions",
+        //         success: function (result) {
+        //             var data = result.data;
 
-                    $.each(data, function (key, item) {
-                        var options = new Option(item.institutionsid, item.institutionsid);
-                        $(options).html(item.name);
-                        $("#school_name").append(options);
-                    });
-                },
-                error: function (result) {
-                    alert("error: " + result.data);
-                },
-            });
-        }
+        //             $.each(data, function (key, item) {
+        //                 var options = new Option(item.institutionsid, item.institutionsid);
+        //                 $(options).html(item.name);
+        //                 $("#school_name").append(options);
+        //             });
+        //         },
+        //         error: function (result) {
+        //             alert("error: " + result.data);
+        //         },
+        //     });
+        // }
 
-        function LoadCourses(institutionId) {
-            $.ajax({
-                type: "POST",
-                url: "/institutions/loadcourses",
-                data: { institutionsid: institutionId },
-                success: function (result) {
-                    var data = result.data;
-                    $("#course_strand").empty();
+        // function LoadCourses(institutionId) {
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "/institutions/loadcourses",
+        //         data: { institutionsid: institutionId },
+        //         success: function (result) {
+        //             var data = result.data;
+        //             $("#course_strand").empty();
 
-                    $.each(data, function (key, item) {
-                        var options = new Option(item.course_id, item.course_id);
-                        $(options).html(item.name_code);
-                        $("#course_strand").append(options);
-                    });
-                },
-                error: function (result) {
-                    alert("error: " + result.data);
-                },
-            });
-        }
+        //             $.each(data, function (key, item) {
+        //                 var options = new Option(item.course_id, item.course_id);
+        //                 $(options).html(item.name_code);
+        //                 $("#course_strand").append(options);
+        //             });
+        //         },
+        //         error: function (result) {
+        //             alert("error: " + result.data);
+        //         },
+        //     });
+        // }
 
-        function LoadCoursesOnly() {
-            $.ajax({
-                type: "GET",
-                url: "/courses/loadcourses",
-                success: function (result) {
-                    var data = result.data;
-                    $.each(data, function (key, item) {
-                        var options = new Option(item.course_id, item.course_id);
-                        $(options).html(item.name_code);
-                        $("#course_strand").append(options);
-                    });
-                },
-                error: function (result) {
-                    alert("error: " + result.data);
-                },
-            });
-        }
+        // function LoadCoursesOnly() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/courses/loadcourses",
+        //         success: function (result) {
+        //             var data = result.data;
+        //             $.each(data, function (key, item) {
+        //                 var options = new Option(item.course_id, item.course_id);
+        //                 $(options).html(item.name_code);
+        //                 $("#course_strand").append(options);
+        //             });
+        //         },
+        //         error: function (result) {
+        //             alert("error: " + result.data);
+        //         },
+        //     });
+        // }
 
         function LoadScholarshipId() {
             $.ajax({
@@ -117,6 +117,12 @@
                 error: function (result) {
                     alert("error: " + result.data);
                 },
+            });
+        }
+
+        function capitalizeFirstLetter(input) {
+            return input.toLowerCase().replace(/\b\w/g, function (char) {
+                return char.toUpperCase();
             });
         }
 
@@ -158,6 +164,10 @@
             let imageFileNfi = base64StringNfi;
             let studentid = studentId;
             var message = "";
+
+
+            school_name = capitalizeFirstLetter(school_name);
+            //course_strand = capitalizeFirstLetter(course_strand);
 
             console.log(imageFileGradeCopy, 'image');
             console.log(studentId, 'id');
