@@ -65,83 +65,157 @@ router.get("/load", (req, res) => {
 });
 
 
-router.post("/export", async (req, res) => {
-    try {
-      let schoolyear = req.body.schoolyear;
+// router.post("/export", async (req, res) => {
+//     try {
+//       let schoolyear = req.body.schoolyear;
   
-      let sql = `SELECT
-        ms_studentid,
-        CONCAT(ms_last_name,' ',ms_first_name,' ',ms_middle_name) as ms_fullname,
-        ms_status,
-        s_name as ms_scholarship,
-        ms_institutionid as ms_school,
-        ms_first_sem_grade,
-        ms_second_sem_grade 
-        FROM master_students
-        INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
-        WHERE ms_scholarshipid = '${schoolyear}'`;
+//       let sql = `SELECT
+//         ms_studentid,
+//         CONCAT(ms_last_name,' ',ms_first_name,' ',ms_middle_name) as ms_fullname,
+//         ms_status,
+//         s_name as ms_scholarship,
+//         ms_institutionid as ms_school,
+//         ms_first_sem_grade,
+//         ms_second_sem_grade 
+//         FROM master_students
+//         INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
+//         WHERE ms_scholarshipid = '${schoolyear}'`;
 
-        console.log(sql);
+//         console.log(sql);
         
   
-      Select(sql, async (err, result) => {
-        if (err) {
-          console.error(err);
-          res.json(JsonErrorResponse(err));
-          return;
-        }
+//       Select(sql, async (err, result) => {
+//         if (err) {
+//           console.error(err);
+//           res.json(JsonErrorResponse(err));
+//           return;
+//         }
   
-        if (result.length > 0) {
+//         if (result.length > 0) {
   
-          let s_name = result[3].ms_scholarship;
+//           let s_name = result[3].ms_scholarship;
 
-          console.log(result, 'result');
-          console.log(s_name, 'sname');
+//           console.log(result, 'result');
+//           console.log(s_name, 'sname');
           
           
-          let workbook = new ExcelJS.Workbook();
-          let worksheet = workbook.addWorksheet("Students");
-          worksheet.columns = [
-            { header: "Applicant ID", key: "ms_studentid", width: 15 },
-            { header: "Full Name", key: "ms_fullname", width: 40 },
-            { header: "Status", key: "ms_status", width: 15 },
-            { header: "School", key: "ms_school", width: 50 },
-            { header: "Scholarship", key: "ms_scholarship", width: 20 },
-            { header: "1st Sem Grade", key: "ms_first_sem_grade", width: 20 },
-            { header: "2nd Sem Grade", key: "ms_second_sem_grade", width: 20 },
-          ];
+//           let workbook = new ExcelJS.Workbook();
+//           let worksheet = workbook.addWorksheet("Students");
+//           worksheet.columns = [
+//             { header: "Applicant ID", key: "ms_studentid", width: 15 },
+//             { header: "Full Name", key: "ms_fullname", width: 40 },
+//             { header: "Status", key: "ms_status", width: 15 },
+//             { header: "School", key: "ms_school", width: 50 },
+//             { header: "Scholarship", key: "ms_scholarship", width: 20 },
+//             { header: "1st Sem Grade", key: "ms_first_sem_grade", width: 20 },
+//             { header: "2nd Sem Grade", key: "ms_second_sem_grade", width: 20 },
+//           ];
   
-          worksheet.getRow(1).font = { bold: true };
-          worksheet.getRow(1).alignment = {
-            vertical: "middle",
-            horizontal: "center",
-          };
+//           worksheet.getRow(1).font = { bold: true };
+//           worksheet.getRow(1).alignment = {
+//             vertical: "middle",
+//             horizontal: "center",
+//           };
   
-          result.forEach((row) => {
-            worksheet.addRow(row);
-          });
+//           result.forEach((row) => {
+//             worksheet.addRow(row);
+//           });
   
-          worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
-            row.alignment = { vertical: "middle", horizontal: "center" };
-          });
+//           worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+//             row.alignment = { vertical: "middle", horizontal: "center" };
+//           });
   
-          const filename = `Students_Grades_${s_name}.xlsx`;
+//           const filename = `Students_Grades_${s_name}.xlsx`;
   
-          res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-          res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+//           res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+//           res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   
-          await workbook.xlsx.write(res);
-          res.end();
+//           await workbook.xlsx.write(res);
+//           res.end();
   
-          await workbook.xlsx.write(res);
-          res.end();
-        } else {
-          res.json(JsonDataResponse([]));
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      res.json(JsonErrorResponse(error));
-    }
-  });
+//           await workbook.xlsx.write(res);
+//           res.end();
+//         } else {
+//           res.json(JsonDataResponse([]));
+//         }
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       res.json(JsonErrorResponse(error));
+//     }
+//   });
   
+router.post("/export", async (req, res) => {
+  try {
+    let schoolyear = req.body.schoolyear;
+
+    let sql = `SELECT
+      ms_studentid,
+      CONCAT(ms_last_name,' ',ms_first_name,' ',ms_middle_name) as ms_fullname,
+      ms_status,
+      s_name as ms_scholarship,
+      ms_institutionid as ms_school,
+      ms_first_sem_grade,
+      ms_second_sem_grade 
+      FROM master_students
+      INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
+      WHERE ms_scholarshipid = '${schoolyear}'`;
+
+    console.log(sql);
+
+    Select(sql, async (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+        return;
+      }
+
+      if (result.length > 0) {
+        // Safely access the first element's ms_scholarship, assuming all rows have the same scholarship name
+        let s_name = result[0]?.ms_scholarship || 'Unknown Scholarship';
+
+        console.log(result, 'result');
+        console.log(s_name, 'sname');
+
+        let workbook = new ExcelJS.Workbook();
+        let worksheet = workbook.addWorksheet("Students");
+        worksheet.columns = [
+          { header: "Applicant ID", key: "ms_studentid", width: 15 },
+          { header: "Full Name", key: "ms_fullname", width: 40 },
+          { header: "Status", key: "ms_status", width: 15 },
+          { header: "School", key: "ms_school", width: 50 },
+          { header: "Scholarship", key: "ms_scholarship", width: 20 },
+          { header: "1st Sem Grade", key: "ms_first_sem_grade", width: 20 },
+          { header: "2nd Sem Grade", key: "ms_second_sem_grade", width: 20 },
+        ];
+
+        worksheet.getRow(1).font = { bold: true };
+        worksheet.getRow(1).alignment = {
+          vertical: "middle",
+          horizontal: "center",
+        };
+
+        result.forEach((row) => {
+          worksheet.addRow(row);
+        });
+
+        worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+          row.alignment = { vertical: "middle", horizontal: "center" };
+        });
+
+        const filename = `Students_Grades_${s_name}.xlsx`;
+
+        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        await workbook.xlsx.write(res);
+        res.end();
+      } else {
+        res.json(JsonDataResponse([]));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});

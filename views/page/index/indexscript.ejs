@@ -180,10 +180,8 @@
         method: "GET",
         success: function (response) {
           if (response && response.data && response.data.length > 0) {
-            // Assuming response.data[0].msr_VerifiedStudentsCount contains the count
             let totalStudentsCount = response.data[0].TotalStudentsCount;
 
-            // Update the corresponding div with the retrieved count
             $(".verified-students-count").text(
               totalStudentsCount.toLocaleString()
             );

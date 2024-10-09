@@ -84,7 +84,7 @@
           });
         },
 
-        initComplete: function () {},
+        initComplete: function () { },
       });
     }
 
@@ -112,6 +112,7 @@
       let fullname = $("#fullname").val();
       let username = $("#username").val();
       let password = $("#password").val();
+      let email = $("#emailadmin").val();
       let confirmpassword = $("#confirmpassword").val();
       let image = base64String;
 
@@ -119,6 +120,10 @@
 
       if (accesstype == "") {
         message += "accesstype is required. ";
+      }
+
+      if (email == "") {
+        message += "email is required. ";
       }
 
       if (fullname == "") {
@@ -150,6 +155,7 @@
           data: {
             accesstype: accesstype,
             fullname: fullname,
+            email: email,
             username: username,
             password: password,
             image: image,
@@ -168,18 +174,19 @@
             } else {
               swal({
                 title: "Exist",
-                text: "Data already exists!",
+                text: result.msg, // Display the specific message returned by the server
                 icon: "warning",
                 button: "OK!",
               });
             }
           },
           error: function (err) {
-            swal("Data already exists!", "You clicked the button!", "warning");
+            swal("Error!", "An unexpected error occurred.", "error");
           },
         });
       }
     });
+
 
     $("#dataTableAdminUsers tbody").on("click", "tr", function () {
       var dataRow = [];

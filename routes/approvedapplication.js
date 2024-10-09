@@ -130,8 +130,8 @@ router.get("/load", function (req, res, next) {
         ms_street,
         ms_house_no,
         ms_status,
-        mi_name,
-        mc_name_code,
+        ms_institutionid as mi_name,
+        ms_courseid as mc_name_code,
         ms_academic_status,
         ms_yearlevel,
         ms_birthplace,
@@ -144,9 +144,7 @@ router.get("/load", function (req, res, next) {
         ms_mothers_salary,
         ms_registerdate
         FROM master_students
-        INNER JOIN master_institutions ON master_students.ms_institutionid = mi_institutionsid
         INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
-        INNER JOIN master_courses ON master_students.ms_courseid = mc_course_id
         WHERE ms_baranggay = '${barranggay}'
         AND ms_scholarshipid = '${schoolyear}'`;
   

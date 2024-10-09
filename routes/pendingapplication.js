@@ -390,13 +390,30 @@ router.post("/approved", async (req, res) => {
     const studentEmail = studentResults[0].ms_email;
 
     // Send email notification
+    // Assuming requestData contains the first and last name
+    const firstName = requestData.msr_first_name;
+    const lastName = requestData.msr_last_name;
+    const host = process.env._EMAIL_HOST;
+    const port = process.env._PORT_ADMIN;
+
+    // Send email notification
     let mailOptions = {
-      from: "ilsp.test.dev@gmail.com",
-      to: studentEmail,
-      subject: "Congratulations!",
-      text: "Congratulations! You are now a Verified Scholar ng Lungsod ng Sanpedro Laguna.",
+    from: "ilsp.test.dev@gmail.com",
+    to: studentEmail,
+    subject: "Verified Application",
+    text: `Dear ${firstName} ${lastName},
+
+    We are pleased to inform you that your application has been successfully verified. Please find your Application ID and further instructions below.
+
+    Next Step: Upload Required Documents
+    To complete your application process, please upload the necessary documents.
+    
+    link = http://${host}:${port}/login
+
+    Ensure that all documents are clear and meet the submission requirements.`,
     };
 
+    // Send the email
     await transporter.sendMail(mailOptions);
 
     // Update status in master_students_request
@@ -466,8 +483,8 @@ router.post("/export", async (req, res) => {
       msr_street,
       msr_house_no,
       msr_status,
-      mi_name,
-      mc_name_code,
+      msr_institutionid as mi_name,
+      msr_courseid as mc_name_code,
       msr_academic_status,
       msr_yearlevel,
       msr_birthplace,
@@ -480,9 +497,7 @@ router.post("/export", async (req, res) => {
       msr_mothers_salary,
       msr_registerdate
       FROM master_students_request
-      INNER JOIN master_institutions ON master_students_request.msr_institutionid = mi_institutionsid
       INNER JOIN scholarship ON master_students_request.msr_scholarshipid = s_scholarship_id
-      INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
       WHERE msr_baranggay = '${barranggay}'
       AND msr_scholarshipid = '${schoolyear}'
       AND msr_status = 'Applied'`;

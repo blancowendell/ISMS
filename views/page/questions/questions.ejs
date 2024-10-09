@@ -73,85 +73,37 @@
 </div>
 
   <!-- Edit Modal -->
-<div class="modal fade" id="editadminusersmodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="editquestionsmodal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header" id="modal-header">
           <lord-icon src="https://cdn.lordicon.com/pdsourfn.json" stroke="bold"
         colors="primary:#9cf4a7,secondary:#109121,tertiary:#ebfad1" class="db-hrmis"></lord-icon>
-          <h3 class="modal-title" id="exampleModalLabel">Edit Users Admin</h3>
+          <h3 class="modal-title" id="exampleModalLabel">Edit Questions</h3>
           <i class='bx bx-x' data-bs-dismiss="modal" aria-label="CLose"></i>
         </div>
         <div class="modal-body" id="modal-body">
             <form>
-              <div class="col">
-                <div class="form-floating">
-                  <select type="text" class="form-control border-form-modal" id="editaccesstype" name="editaccesstype" placeholder="First Name">
-                    <option selected disabled>Access Type</option>
-                  </select>
-                  <label for="floatingInput">Access Type</label>
-                  </div>
-              </div>
-              <br>
-              <div class="col">
-                <div class="form-floating">
-                  <input type="text" class="form-control border-form-modal" id="editfullname" name="editfullname" placeholder="First Name">
-                  <label for="floatingInput">Full Name</label>
-                  </div>
-              </div>
-              <br>
-              <div class="col">
-                <div class="form-floating">
-                  <input type="text" class="form-control border-form-modal" id="editusername" name="editusername" placeholder="First Name">
-                  <label for="floatingInput">Username</label>
-                  </div>
-              </div>
-              <br>
-              <div class="col">
-                <div class="form-floating">
-                  <select type="text" class="form-control border-form-modal" id="editstatus" name="editstatus" placeholder="First Name">
-                    <option>Active</option>
-                    <option>Inactive</option>
-                  </select>
-                  <label for="floatingInput">Status</label>
-                  </div>
-              </div>
-              <br>
-              <div class="col">
-                <div class="form-floating position-relative">
-                  <input type="password" class="form-control border-form-modal" id="currentPassword" name="currentPassword" placeholder="Password">
-                  <button class="btn btn-ojt-pw toggle-password position-absolute" type="button" data-target="#currentPassword" style="right: 10px; top: 50%; transform: translateY(-50%);">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <label for="password">Current Password</label>
-                </div>
-              </div>
-              <br>
-              <div class="col">
-                <div class="form-floating position-relative">
-                  <input type="password" class="form-control border-form-modal" id="newpassword" name="newpassword" placeholder="Confirm Password">
-                  <button class="btn btn-ojt-pw toggle-password position-absolute" type="button" data-target="#newpassword" style="right: 10px; top: 50%; transform: translateY(-50%);">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <label for="confirmpassword">New Password</label>
-                </div>
-              </div>              
-              <br>
-              <div class="col">
-                <div class="form-floating">
-                  <label class="form-label" for="customFile"></label>
-                  <input type="file" name="editannouncementimage" id="editannouncementimage" class="form-control border-form-modal" accept="image/*">
-                  <div class="text-center">
-                    <img id="editpreview" src="https://via.placeholder.com/250" class="rounded border-form-modal" alt="placeholder">
+                <div class="col">
+                  <div class="form-floating">
+                    <input type="text" class="form-control border-form-modal" id="editquestions" name="editquestions" placeholder="First Name">
+                    <label for="floatingInput">Questions</label>
                   </div>
                 </div>
+              <br>
+              <div class="col">
+                <div class="form-floating">
+                  <input type="text" class="form-control border-form-modal" id="editresponses" name="editresponses" placeholder="First Name">
+                  <label for="floatingInput">Response</label>
+                  </div>
               </div>
               <br>
             </form>
         </div>
         <div class="modal-footer" id="modal-footer">
-          <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-modal-save" id="adminUserEditBtn">Save</button>
+          <!-- <button type="button" class="btn btn-modal-close" data-bs-dismiss="modal">Close</button> -->
+          <button type="button" class="btn btn-modal-save" id="editquestionSaveBtn">Save</button>
+          <button type="button" class="btn btn-modal-close" id="addquestionDeleteBtn">Delete Question</button>
         </div>
       </div>
     </div>

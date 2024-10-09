@@ -65,66 +65,145 @@ router.get("/load", (req, res) => {
   }
 });
 
+// router.post("/save", async (req, res) => {
+//     try {
+//     //   const { studentid } = req.body;
+//       let image = req.body.image;
+//       let fullname = req.body.fullname;
+//       let username = req.body.username;
+//       let password = req.body.password;
+//       let email = req.body.email;
+//       let status = "Active";
+//       let accesstype = req.body.accesstype;
+//       const createdate = GetCurrentDatetime();
+//       let createby = req.session.fullname;
+  
+//       Encrypter(password, async (err, encrypted) => {
+//         if (err) {
+//           console.error("Error: ", err);
+//           res.json({ msg: "error" });
+//         } else {
+//           let sql = InsertStatement("admin_user", "au", [
+//             "image",
+//             "fullname",
+//             "accesstype",
+//             "username",
+//             "password",
+//             "status",
+//             "createby",
+//             "createdate",
+//             "email",
+//           ]);
+  
+//           let data = [[image, fullname, accesstype, username, encrypted, status, createby, createdate, email]];
+//           let checkStatement = SelectStatement(
+//             "select * from  admin_user where au_fullname=? and au_accesstype=? and au_status=?",
+//             [fullname, accesstype, status]
+//           );
+//           Check(checkStatement)
+//           .then((result) => {
+//             console.log(result);
+//             if (result != 0) {
+//               return res.json(JsonWarningResponse(MessageStatus.EXIST));
+//             } else {
+//               InsertTable(sql, data, (err, result) => {
+//                 if (err) {
+//                   console.log(err);
+//                   res.json(JsonErrorResponse(err));
+//                 }
+  
+//                 res.json(JsonSuccess());
+//               });
+//             }
+//           })
+//         .catch((error) => {
+//           console.log(error);
+//           res.json(JsonErrorResponse(error));
+//         });
+//         }
+//       });
+//     } catch (error) {
+//       console.error("Error: ", error);
+//       res.json({ msg: "error" });
+//     }
+//   });
+
 router.post("/save", async (req, res) => {
-    try {
-    //   const { studentid } = req.body;
-      let image = req.body.image;
-      let fullname = req.body.fullname;
-      let username = req.body.username;
-      let password = req.body.password;
-      let status = "Active";
-      let accesstype = req.body.accesstype;
-      const createdate = GetCurrentDatetime();
-      let createby = req.session.fullname;
-  
-      Encrypter(password, async (err, encrypted) => {
-        if (err) {
-          console.error("Error: ", err);
-          res.json({ msg: "error" });
-        } else {
-          let sql = InsertStatement("admin_user", "au", [
-            "image",
-            "fullname",
-            "accesstype",
-            "username",
-            "password",
-            "status",
-            "createby",
-            "createdate",
-          ]);
-  
-          let data = [[image, fullname, accesstype, username, encrypted, status, createby, createdate]];
-          let checkStatement = SelectStatement(
-            "select * from  admin_user where au_fullname=? and au_accesstype=? and au_status=?",
-            [fullname, accesstype, status]
-          );
-          Check(checkStatement)
-          .then((result) => {
-            console.log(result);
-            if (result != 0) {
-              return res.json(JsonWarningResponse(MessageStatus.EXIST));
-            } else {
-              InsertTable(sql, data, (err, result) => {
-                if (err) {
-                  console.log(err);
-                  res.json(JsonErrorResponse(err));
-                }
-  
-                res.json(JsonSuccess());
-              });
-            }
-          })
-        .catch((error) => {
-          console.log(error);
-          res.json(JsonErrorResponse(error));
-        });
+  try {
+    let image = req.body.image;
+    let fullname = req.body.fullname;
+    let username = req.body.username;
+    let password = req.body.password;
+    let email = req.body.email;
+    let status = "Active";
+    let accesstype = req.body.accesstype;
+    const createdate = GetCurrentDatetime();
+    let createby = req.session.fullname;
+
+    Encrypter(password, async (err, encrypted) => {
+      if (err) {
+        console.error("Error: ", err);
+        res.json({ msg: "error" });
+      } else {
+        // Check for existing fullname
+        let checkFullnameStatement = SelectStatement(
+          "SELECT * FROM admin_user WHERE au_fullname=? AND au_accesstype=? AND au_status=?",
+          [fullname, accesstype, status]
+        );
+
+        // Check for existing email
+        let checkEmailStatement = SelectStatement(
+          "SELECT * FROM admin_user WHERE au_email=?",
+          [email]
+        );
+
+        // Execute both checks in parallel
+        const [fullnameCheck, emailCheck] = await Promise.all([
+          Check(checkFullnameStatement),
+          Check(checkEmailStatement)
+        ]);
+
+        if (fullnameCheck.length > 0) {
+          return res.json(JsonWarningResponse(MessageStatus.EXIST)); // Fullname exists
         }
-      });
-    } catch (error) {
-      console.error("Error: ", error);
-      res.json({ msg: "error" });
-    }
-  });
+
+        if (emailCheck.length > 0) {
+          return res.json(JsonWarningResponse("Email already exists")); // Email exists
+        }
+
+        // Proceed to insert new record
+        let sql = InsertStatement("admin_user", "au", [
+          "image",
+          "fullname",
+          "accesstype",
+          "username",
+          "password",
+          "status",
+          "createby",
+          "createdate",
+          "email",
+        ]);
+
+        let data = [[image, fullname, accesstype, username, encrypted, status, createby, createdate, email]];
+        
+        InsertTable(sql, data, (err, result) => {
+          if (err) {
+            console.log(err);
+            return res.json(JsonErrorResponse(err));
+          }
+
+          res.json(JsonSuccess());
+        });
+      }
+    });
+  } catch (error) {
+    console.error("Error: ", error);
+    res.json({ msg: "error" });
+  }
+});
+
+
+
 router.put("/status", (req, res) => {
   try {
     let id = req.body.id;

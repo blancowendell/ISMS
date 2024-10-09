@@ -136,7 +136,11 @@ router.post("/save", async (req, res) => {
                   from: 'your-email@gmail.com',
                   to: email,
                   subject: 'Your OTP Code and Student ID',
-                  text: `Your OTP code is ${otp}. Please enter this code to verify your email. Your Applicant ID is ${newStudentID}.`,
+                  text: `
+                  For your security, please use the following One-Time Password (OTP) to complete your application process on our platform.
+
+                  OTP: [${otp}]  
+                  If you did not request this OTP, please disregard this message.`,
                 };
 
                 transporter.sendMail(mailOptions, (error, info) => {
@@ -195,32 +199,81 @@ router.post("/verify-otp", (req, res) => {
     });
 });
 
-router.post("/send-create-account-link", (req, res) => {
+// router.post("/send-create-account-link", (req, res) => {
+//   const { email } = req.body;
+
+//   const host = process.env._HOST_ADMIN;
+//   const port = process.env._PORT_ADMIN;
+  
+//   console.log('Host:', host);
+//   console.log('Port:', port);
+
+//   let link = `http://${host}:${port}/createuser?email=${email}`;
+
+//   let mailOptions = {
+//     from: 'ilsp.test.dev@gmail.com',
+//     to: email,
+//     subject: 'Create Your Account',
+//     text: `Click the link to create your account: ${link}`,
+//   };
+
+//   transporter.sendMail(mailOptions, (error, info) => {
+//     if (error) {
+//       console.log(error);
+//       res.json(JsonErrorResponse("Failed to send account creation link"));
+//     } else {
+//       res.json(JsonSuccess({ message: "Account creation link sent" }));
+//     }
+//   });
+// });
+
+router.post("/send-create-account-link", async (req, res) => {
   const { email } = req.body;
 
   const host = process.env._HOST_ADMIN;
   const port = process.env._PORT_ADMIN;
-  
+
   console.log('Host:', host);
   console.log('Port:', port);
 
-  let link = `http://${host}:${port}/createuser?email=${email}`;
+  try {
+    // Step 1: Query the database to find the student ID based on the email
+    const fetchStudentIdQuery = `SELECT ms_studentid FROM master_students WHERE ms_email = ?`;
+    const studentResults = await mysql.mysqlQueryPromise({
+      sql: fetchStudentIdQuery,
+      values: [email],
+    });
 
-  let mailOptions = {
-    from: 'ilsp.test.dev@gmail.com',
-    to: email,
-    subject: 'Create Your Account',
-    text: `Click the link to create your account: ${link}`,
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-      res.json(JsonErrorResponse("Failed to send account creation link"));
-    } else {
-      res.json(JsonSuccess({ message: "Account creation link sent" }));
+    if (studentResults.length === 0) {
+      return res.json(JsonErrorResponse("No student found with this email"));
     }
-  });
+
+    const studentId = studentResults[0].ms_studentid;
+
+    // Step 2: Create the link for account creation
+    let link = `http://${host}:${port}/createuser?email=${email}`;
+
+    // Step 3: Define the email options
+    let mailOptions = {
+      from: 'ilsp.test.dev@gmail.com',
+      to: email,
+      subject: 'Create Your Account',
+      text: `Application ID: ${studentId}\n\nTo continue setting up your account, please click the link below to create your username and password.\n\nCreate Account & Set Password: ${link}\n\nThank you for creating and ensuring the security of your account.`,
+    };
+
+    // Step 4: Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        res.json(JsonErrorResponse("Failed to send account creation link"));
+      } else {
+        res.json(JsonSuccess({ message: "Account creation link sent" }));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse("An error occurred while processing your request"));
+  }
 });
 
 
