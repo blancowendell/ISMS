@@ -32,7 +32,7 @@
               var status = item.status;
 
               action = `
-            <button id="edit-btn" class="btn text-primary" name="edit-btn" data-bs-toggle="modal" data-bs-target="#viewmodal"><i class="fas fa-fw fa-eye"></i></button>
+            <button id="edit-btn" class="btn text-primary" name="edit-btn" data-bs-toggle="modal" data-bs-target="#viewapplicationmodal"><i class="fas fa-fw fa-eye"></i></button>
           `;
 
               finalData.push({
@@ -84,9 +84,7 @@
               StatusClass = "";
           }
 
-          StatusCell.html(
-            `<span class="${StatusClass}">${StatusText}</span>`
-          );
+          StatusCell.html(`<span class="${StatusClass}">${StatusText}</span>`);
 
           $("td", row).each(function (index) {
             this.style.textAlign = "center";
@@ -97,16 +95,15 @@
         initComplete: function () {
           // Bind click events to sorting icons for ascending and descending sort
           $("#sort-asc").on("click", function () {
-            table.order([0, "asc"]).draw();  // Sort by studentid ascending
+            table.order([0, "asc"]).draw(); // Sort by studentid ascending
           });
 
           $("#sort-desc").on("click", function () {
-            table.order([0, "desc"]).draw();  // Sort by studentid descending
+            table.order([0, "desc"]).draw(); // Sort by studentid descending
           });
         },
       });
     }
-
 
     // function LoadTable() {
     //   $("#dataTableVerifiedStudents").DataTable({
@@ -207,10 +204,22 @@
     //   });
     // }
 
+    $("#dataTableVerifiedStudents tbody").on("click", "tr", function () {
+      var dataRow = [];
+      $(this)
+        .closest("tr")
+        .find("td")
+        .each(function () {
+          dataRow.push($(this).text());
+        });
+      studentid = dataRow[0];
+      console.log(dataRow);
+    });
+
     $(document).on("click", "#edit-btn", function () {
       $.ajax({
         type: "POST",
-        url: `/master_student/getstudents`,
+        url: "/master_student/getstudents",
         data: {
           studentid: studentid,
         },
@@ -219,53 +228,147 @@
             const existingData = result.data;
 
             $.each(existingData, (key, item) => {
-              $("#editemployeeid").val(item.studentid);
-              $("#editemployeefname").val(item.first_name);
-              $("#editemployeemname").val(item.middle_name);
-              $("#editemployeelname").val(item.last_name);
-              $("#editemployeebday").val(item.birthday);
-              $("#editemployeegender").val(`${item.gender}`);
-              $("#editemployeecivilstatus").val(`${item.civilstatus}`);
-              $('#editemployeegender').append(`<option selected value="${item.gender}">${item.gender}</option>`);
-              $("#editemployeephone").val(item.phone);
-              $("#editemployeeemail").val(item.email);
-              $("#editemployeehiredate").val(item.hiredate);
-              $("#editemployeejobstatus").val(`${item.jobstatus}`);
-              $('#editemployeejobstatus').append(`<option selected value="${item.jobstatus}">${item.jobstatus}</option>`);
-              $("#editemployeeemergencyname").val(item.ercontactname);
-              $("#editemployeeemergencyphone").val(item.ercontactphone);
-              $("#editemployeedepartment").val(item.department);
-              $('#editemployeeposition').append(`<option selected value="${item.position}">${item.position}</option>`);
-              $("#editemployeeaddress").val(item.address);
               $("#editpreview").attr(
                 "src",
-                "data:image/jpg;base64," + item.profilePicturePath
+                "data:image/jpg;base64," + item.image
               );
-              $("#").val(item.totalleaveofdays);
-              $("#editemployeeposition").val(`${item.position}`);
-              base64String = item.profilePicturePath;
-            });
+              $("#dateregisteredreq").text(item.registerdate);
+              $("#applicantid").text(item.studentid);
+              $("#schoolyear").text(item.scholarname);
+              $("#cityreq").text(item.city);
+              $("#barranggayreq").text(item.baranggay);
+              $("#villagepurokreq").text(item.village);
+              $("#streetreq").text(item.street);
+              $("#fullnamereq").text(item.fullname);
+              $("#emailreq").text(item.email);
+              $("#dobreq").text(item.date_of_birth);
+              $("#birthplacereq").text(item.birthplace);
+              $("#phonereq").text(item.phone);
+              $("#schholenamereq").text(item.institutionid);
+              $("#coursereq").text(item.courseid);
+              $("#acadstatusreq").text(item.academic_status);
+              $("#agereq").text(item.age);
+              $("#statusreq").text(item.status);
+              $("#fathersnamereq").text(item.fathers_name);
+              $("#fathersoccupationreq").text(item.fathers_occupation);
+              $("#mothersnamereq").text(item.mothers_name);
+              $("#mothersoccupationreq").text(item.mothers_occupation);
+              $("#truecopypreview").attr(
+                "src",
+                "data:image/jpg;base64," + item.grade_copy
+              );
+              $("#regformpreview").attr(
+                "src",
+                "data:image/jpg;base64," + item.registration_form
+              );
+              $("#certrespreview").attr(
+                "src",
+                "data:image/jpg;base64," + item.certificate_residency
+              );
+              $("#itipreview").attr("src", "data:image/jpg;base64," + item.itr);
+              $("#nfipreview").attr("src", "data:image/jpg;base64," + item.nfi);
 
-            $.ajax({
-              type: "POST",
-              url: "/employee/getemployeeprofile",
-              data: {
-                employeeid: employeeid,
-              },
-              success: function (result) {
-                if (result.msg === "success") {
-                  const employeeprofile = result.data;
+              function handleFileButtons(
+                base64String,
+                downloadButtonId,
+                previewId,
+                previewButtonId,
+                fileName
+              ) {
+                const fileHeader = base64String.substring(0, 10);
+                let fileType = "";
+                let blobType = "";
+                let fileExtension = "";
 
-                  $.each(employeeprofile, (key, item) => {
-                    $("#employeeprofileid").text(item.employeeid);
-                    $("#employeeprofilename").text(item.firstname);
-                    $("#employeeprofiledepartment").text(item.department);
-                    $("#employeeprofileposition").text(item.position);
-                    $("#employeeprofilephone").text(item.contact);
-                    $("#employeework").text(item.tenure);
-                  });
+                if (fileHeader.includes("JVBER")) {
+                  // PDF file
+                  fileType = "pdf";
+                  blobType = "application/pdf";
+                  fileExtension = ".pdf";
+                } else if (fileHeader.includes("/9j/4")) {
+                  // JPEG file
+                  fileType = "image/jpeg";
+                  blobType = "image/jpeg";
+                  fileExtension = ".jpg";
+                } else if (fileHeader.includes("iVBORw0KG")) {
+                  // PNG file
+                  fileType = "image/png";
+                  blobType = "image/png";
+                  fileExtension = ".png";
                 }
-              },
+
+                if (fileType && blobType) {
+                  const byteCharacters = atob(base64String);
+                  const byteNumbers = new Array(byteCharacters.length);
+                  for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                  }
+                  const byteArray = new Uint8Array(byteNumbers);
+                  const blob = new Blob([byteArray], { type: blobType });
+                  const downloadLink = URL.createObjectURL(blob);
+
+                  // Set the preview image and download link
+                  if (fileType.startsWith("image")) {
+                    $(`#${previewId}`).attr("src", downloadLink);
+                    $(`#${previewId}`).show();
+                  } else if (fileType === "application/pdf") {
+                    $(`#${previewId}`).attr(
+                      "src",
+                      "https://via.placeholder.com/250?text=PDF"
+                    ); // Placeholder for PDF
+                    $(`#${previewId}`).hide(); // Hide the preview image for PDF
+                  }
+
+                  $(`#${downloadButtonId}`)
+                    .attr("href", downloadLink)
+                    .attr("download", `${fileName}${fileExtension}`)
+                    .show();
+
+                  // Handle preview button click
+                  $(`#${previewButtonId}`)
+                    .on("click", function () {
+                      window.open(downloadLink, "_blank");
+                    })
+                    .show();
+                }
+              }
+
+              // Apply the function to each file preview and button
+              handleFileButtons(
+                item.grade_copy,
+                "downloadTrueCopy",
+                "truecopypreview",
+                "previewTrueCopy",
+                "TrueCopy"
+              );
+              handleFileButtons(
+                item.registration_form,
+                "downloadRegForm",
+                "regformpreview",
+                "previewRegForm",
+                "RegistrationForm"
+              );
+              handleFileButtons(
+                item.certificate_residency,
+                "downloadCertRes",
+                "certrespreview",
+                "previewCertRes",
+                "CertificateOfResidency"
+              );
+              handleFileButtons(
+                item.itr,
+                "downloadItr",
+                "itipreview",
+                "previewItr",
+                "IncomeTaxReturn"
+              );
+              handleFileButtons(
+                item.nfi,
+                "downloadNfi",
+                "nfipreview",
+                "previewNfi",
+                "AffidavitOfNoFixIncome"
+              );
             });
           } else {
             swal("Error fetching employee data", message, "error");
@@ -280,5 +383,27 @@
         },
       });
     });
+
+    function searchTable() {
+      var input, filter, found, table, tr, td, i, j;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("dataTableVerifiedStudents");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+          if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+            found = true;
+          }
+        }
+        if (found) {
+          tr[i].style.display = "";
+          found = false;
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
   });
 </script>

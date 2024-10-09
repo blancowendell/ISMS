@@ -1,163 +1,256 @@
 <script>
-    $(document).ready(function () {
-        console.log("hello");
-        updateTime();
-        loadNewApplicants();
-        LoadTotal();
-        LoadPending();
-        LoadVerified();
-        LoadChart();
+  $(document).ready(function () {
+    console.log("hello");
+    updateTime();
+    loadNewApplicants();
+    LoadTotal();
+    LoadPending();
+    LoadVerified();
+    LoadPerBarranggay();
+    LoadPerCourse();
+    LoadPerSchool();
 
+    function LoadPerBarranggay() {
+      $.ajax({
+        url: "/loadperbarranggay",
+        type: "GET",
+        success: function (response) {
+          // Assuming the data is returned in the format: [{ ms_baranggay: 'XYZ', ms_count: 5 }, ...]
+          let labels = [];
+          let data = [];
 
-        function LoadChart() {
-            $.ajax({
-                url: '/loadperbarranggay',
-                type: 'GET',
-                success: function (response) {
-                    // Assuming the data is returned in the format: [{ ms_baranggay: 'XYZ', ms_count: 5 }, ...]
-                    let labels = [];
-                    let data = [];
+          // Extract data from the response
+          response.data.forEach((item) => {
+            labels.push(item.baranggay); // Barangay names
+            data.push(item.total_students); // Counts of verified students
+          });
 
-                    // Extract data from the response
-                    response.data.forEach(item => {
-                        labels.push(item.baranggay);  // Barangay names
-                        data.push(item.count);        // Counts of verified students
-                    });
-
-                    // Create the bar chart
-                    let ctx = document.getElementById('barChart').getContext('2d');
-                    let barChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Verified Students per Barangay',
-                                data: data,
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
-                            }
-                        }
-                    });
+          // Create the bar chart
+          let ctx = document.getElementById("barChart").getContext("2d");
+          let barChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Verified Students per Barangay",
+                  data: data,
+                  backgroundColor: "rgba(75, 192, 192, 0.2)",
+                  borderColor: "rgba(75, 192, 192, 1)",
+                  borderWidth: 1,
                 },
-                error: function (err) {
-                    console.error('Error loading data:', err);
-                }
-            });
-        };
-
-        function updateTime() {
-            const now = new Date();
-
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            let seconds = now.getSeconds();
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-
-            const strTime = `${hours}:${minutes}:${seconds} ${ampm}`;
-
-            const day = now.getDate();
-            const month = now.toLocaleString('default', { month: 'short' });
-            const year = now.getFullYear();
-            const strDate = `${day} ${month} ${year}`;
-
-            document.getElementById('dynamic-time').innerHTML = `${strTime} / ${strDate}`;
-        }
-
-        setInterval(updateTime, 1000);
-
-
-        function LoadTotal() {
-            console.log("Fetching new applicants...");
-            $.ajax({
-                url: '/loadtotal',
-                method: 'GET',
-                success: function (response) {
-                    if (response && response.data && response.data.length > 0) {
-                        // Assuming response.data[0].msr_VerifiedStudentsCount contains the count
-                        let totalStudentsCount = response.data[0].TotalStudentsCount;
-
-                        // Update the corresponding div with the retrieved count
-                        $('.verified-students-count').text(totalStudentsCount.toLocaleString());
-                    } else {
-                        console.error('No data found');
-                    }
+              ],
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
                 },
-                error: function (error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
+              },
+            },
+          });
+        },
+        error: function (err) {
+          console.error("Error loading data:", err);
+        },
+      });
+    }
 
-        function LoadPending() {
-            console.log("Fetching new applicants...");
-            $.ajax({
-                url: '/loadpending',
-                method: 'GET',
-                success: function (response) {
-                    if (response && response.data && response.data.length > 0) {
-                        // Assuming response.data[0].msr_PendinApplication contains the count
-                        let pendingApplicationsCount = response.data[0].PendinApplication;
+    function LoadPerSchool() {
+      $.ajax({
+        url: "/loadperschool",
+        type: "GET",
+        success: function (response) {
+          let labels = [];
+          let data = [];
 
-                        // Update the corresponding div with the retrieved count
-                        $('.pending-applications-count').text(pendingApplicationsCount.toLocaleString());
-                    } else {
-                        console.error('No data found');
-                    }
+          // Extract data from the response
+          response.data.forEach((item) => {
+            labels.push(item.institutionid); // Institution IDs
+            data.push(item.total_students); // Counts of verified students per school
+          });
+
+          // Create the bar chart for schools
+          let ctx = document.getElementById("schoolBarChart").getContext("2d");
+          let schoolBarChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Verified Students per School",
+                  data: data,
+                  backgroundColor: "rgba(153, 102, 255, 0.2)",
+                  borderColor: "rgba(153, 102, 255, 1)",
+                  borderWidth: 1,
                 },
-                error: function (error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-
-        function LoadVerified() {
-            1
-            $.ajax({
-                url: '/loadverified',
-                method: 'GET',
-                success: function (response) {
-                    if (response && response.data && response.data.length > 0) {
-                        // Assuming response.data[0].msr_VerifiedStudentsCount contains the count
-                        let verifiedStudentsCount = response.data[0].VerifiedStudentsCount;
-
-                        // Update the corresponding div with the retrieved count
-                        $('.approved-students-count').text(verifiedStudentsCount.toLocaleString());
-                    } else {
-                        console.error('No data found');
-                    }
+              ],
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
                 },
-                error: function (error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
+              },
+            },
+          });
+        },
+        error: function (err) {
+          console.error("Error loading data:", err);
+        },
+      });
+    }
 
-        function loadNewApplicants() {
-            console.log("Fetching new applicants...");
+    function LoadPerCourse() {
+      $.ajax({
+        url: "/loadpercourse",
+        type: "GET",
+        success: function (response) {
+          let labels = [];
+          let data = [];
 
-            $.ajax({
-                url: "/loadnewapplicants",
-                type: "GET",
-                success: function (response) {
-                    console.log("Data fetched:", response);
+          // Extract data from the response
+          response.data.forEach((item) => {
+            labels.push(item.courseid); // Course IDs
+            data.push(item.total_students); // Counts of verified students per course
+          });
 
-                    if (response.data && response.data.length > 0) {
-                        let applicantsHtml = '';
-                        response.data.forEach((applicant, index) => {
-                            applicantsHtml += `
+          // Create the bar chart for courses
+          let ctx = document.getElementById("courseBarChart").getContext("2d");
+          let courseBarChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Verified Students per Course",
+                  data: data,
+                  backgroundColor: "rgba(255, 159, 64, 0.2)",
+                  borderColor: "rgba(255, 159, 64, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            },
+          });
+        },
+        error: function (err) {
+          console.error("Error loading data:", err);
+        },
+      });
+    }
+
+    function updateTime() {
+      const now = new Date();
+
+      let hours = now.getHours();
+      let minutes = now.getMinutes();
+      let seconds = now.getSeconds();
+      const ampm = hours >= 12 ? "PM" : "AM";
+
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      const strTime = `${hours}:${minutes}:${seconds} ${ampm}`;
+
+      const day = now.getDate();
+      const month = now.toLocaleString("default", { month: "short" });
+      const year = now.getFullYear();
+      const strDate = `${day} ${month} ${year}`;
+
+      document.getElementById(
+        "dynamic-time"
+      ).innerHTML = `${strTime} / ${strDate}`;
+    }
+
+    setInterval(updateTime, 1000);
+
+    function LoadTotal() {
+      console.log("Fetching new applicants...");
+      $.ajax({
+        url: "/loadtotal",
+        method: "GET",
+        success: function (response) {
+          if (response && response.data && response.data.length > 0) {
+            // Assuming response.data[0].msr_VerifiedStudentsCount contains the count
+            let totalStudentsCount = response.data[0].TotalStudentsCount;
+
+            // Update the corresponding div with the retrieved count
+            $(".verified-students-count").text(
+              totalStudentsCount.toLocaleString()
+            );
+          } else {
+            console.error("No data found");
+          }
+        },
+        error: function (error) {
+          console.error("Error fetching data:", error);
+        },
+      });
+    }
+
+    function LoadPending() {
+      console.log("Fetching new applicants...");
+      $.ajax({
+        url: "/loadpending",
+        method: "GET",
+        success: function (response) {
+          if (response && response.data && response.data.length > 0) {
+            let pendingApplicationsCount = response.data[0].PendinApplication;
+            $(".pending-applications-count").text(
+              pendingApplicationsCount.toLocaleString()
+            );
+          } else {
+            console.error("No data found");
+          }
+        },
+        error: function (error) {
+          console.error("Error fetching data:", error);
+        },
+      });
+    }
+
+    function LoadVerified() {
+      $.ajax({
+        url: "/loadverified",
+        method: "GET",
+        success: function (response) {
+          if (response && response.data && response.data.length > 0) {
+            let verifiedStudentsCount = response.data[0].VerifiedStudentsCount;
+            $(".approved-students-count").text(
+              verifiedStudentsCount.toLocaleString()
+            );
+          } else {
+            console.error("No data found");
+          }
+        },
+        error: function (error) {
+          console.error("Error fetching data:", error);
+        },
+      });
+    }
+
+    function loadNewApplicants() {
+      console.log("Fetching new applicants...");
+
+      $.ajax({
+        url: "/loadnewapplicants",
+        type: "GET",
+        success: function (response) {
+          console.log("Data fetched:", response);
+
+          if (response.data && response.data.length > 0) {
+            let applicantsHtml = "";
+            response.data.forEach((applicant, index) => {
+              applicantsHtml += `
                         <div class="applicant" id="applicant-${index}">
                             <div class="row">
                                 <div class="col-md-2">
@@ -171,20 +264,17 @@
                             </div>
                             <hr>
                         </div>`;
-                        });
-                        $('#applicants').html(applicantsHtml);
-                    } else {
-                        $('#applicants').html('<p>No new applicants found.</p>');
-                    }
-                },
-                error: function (err) {
-                    console.error("Error fetching applicants:", err);
-                    $('#applicants').html('<p>Failed to load applicants.</p>');
-                }
             });
-        }
-
-
-
-    });
+            $("#applicants").html(applicantsHtml);
+          } else {
+            $("#applicants").html("<p>No new applicants found.</p>");
+          }
+        },
+        error: function (err) {
+          console.error("Error fetching applicants:", err);
+          $("#applicants").html("<p>Failed to load applicants.</p>");
+        },
+      });
+    }
+  });
 </script>

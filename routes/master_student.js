@@ -35,12 +35,10 @@ router.get("/load", (req, res) => {
         ms_phone,
         ms_email,
         ms_status,
-        mi_name AS ms_schoolname,
-        mc_name_code AS ms_coursecode,
+        ms_institutionid AS ms_schoolname,
+        ms_courseid AS ms_coursecode,
         ms_baranggay
-        FROM master_students
-        INNER JOIN master_institutions ON master_students.ms_institutionid = mi_institutionsid
-        INNER JOIN master_courses ON master_students.ms_courseid = mc_course_id`;
+        FROM master_students`;
 
         Select(sql, (err, result) => {
             if (err) {
@@ -68,8 +66,17 @@ router.get("/load", (req, res) => {
 router.post("/getstudents", (req, res) => {
     try {
         let studentid = req.body.studentid;
-        let sql = `SELECT * FROM master_students
+        let sql = `SELECT
+        *,
+        CONCAT(ms_first_name,' ',ms_last_name) as ms_fullname,
+        DATE_FORMAT(ms_registerdate, '%Y-%m-%d') AS ms_registerdate,
+        s_name as ms_scholarname
+        FROM master_students
+        INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
         WHERE ms_studentid = '${studentid}'`;
+
+        console.log(sql);
+        
 
         Select(sql, (err, result) => {
             if (err) {

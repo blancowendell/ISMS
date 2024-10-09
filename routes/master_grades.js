@@ -34,12 +34,11 @@ router.get("/load", (req, res) => {
         ms_studentid,
         CONCAT(ms_last_name,' ',ms_first_name,' ',ms_middle_name) as ms_fullname,
         ms_status,
-        mi_name as ms_school,
+        ms_institutionid as ms_school,
         s_name as ms_scholarship,
         ms_first_sem_grade,
         ms_second_sem_grade 
         FROM master_students
-        INNER JOIN master_institutions ON master_students.ms_institutionid = mi_institutionsid
         INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id`;
 
         Select(sql, (err, result) => {
@@ -75,13 +74,15 @@ router.post("/export", async (req, res) => {
         CONCAT(ms_last_name,' ',ms_first_name,' ',ms_middle_name) as ms_fullname,
         ms_status,
         s_name as ms_scholarship,
-        mi_name as ms_school,
+        ms_institutionid as ms_school,
         ms_first_sem_grade,
         ms_second_sem_grade 
         FROM master_students
-        INNER JOIN master_institutions ON master_students.ms_institutionid = mi_institutionsid
         INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
         WHERE ms_scholarshipid = '${schoolyear}'`;
+
+        console.log(sql);
+        
   
       Select(sql, async (err, result) => {
         if (err) {
@@ -93,6 +94,10 @@ router.post("/export", async (req, res) => {
         if (result.length > 0) {
   
           let s_name = result[3].ms_scholarship;
+
+          console.log(result, 'result');
+          console.log(s_name, 'sname');
+          
           
           let workbook = new ExcelJS.Workbook();
           let worksheet = workbook.addWorksheet("Students");
@@ -120,7 +125,7 @@ router.post("/export", async (req, res) => {
             row.alignment = { vertical: "middle", horizontal: "center" };
           });
   
-          const filename = `Stidents_Grades_${s_name}.xlsx`;
+          const filename = `Students_Grades_${s_name}.xlsx`;
   
           res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
           res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

@@ -1,6 +1,68 @@
 <script>
   $(document).ready(function () {
     console.log("Initialize");
+
+    // $(document).on("click", "#createbtn", function () {
+    //   let studentId = $("#studentid").val();
+    //   let userName = $("#username").val();
+    //   let passWord = $("#password").val();
+    //   let confirmPassWord = $("#confirmpassword").val();
+
+    //   var message = "";
+
+    //   if (studentId == "") {
+    //     message += "Student ID is required. ";
+    //   }
+
+    //   if (userName == "") {
+    //     message += "Username is required. ";
+    //   }
+
+    //   if (passWord == "") {
+    //     message += "Password is required. ";
+    //   }
+
+    //   if (confirmPassWord == "") {
+    //     message += "Confirm Password is required. ";
+    //   }
+
+    //   if (message !== "") {
+    //     swal("Validation Error", message, "error");
+    //   } else {
+    //     $.ajax({
+    //       type: "POST",
+    //       url: "/createuser/save",
+    //       data: {
+    //         studentid: studentId,
+    //         username: userName,
+    //         password: passWord,
+    //       },
+    //       success: function (result) {
+    //         if (result.msg == "success") {
+    //           swal({
+    //             title: "Saved Successfully",
+    //             text: "You clicked the button!",
+    //             icon: "success",
+    //             button: "OK!",
+    //           }).then((results) => {
+    //             window.location.reload();
+    //           });
+    //         } else {
+    //           swal({
+    //             title: "Exist",
+    //             text: "Data already exists!",
+    //             icon: "warning",
+    //             button: "OK!",
+    //           });
+    //         }
+    //       },
+    //       error: function (err) {
+    //         swal("Data already exist!", "You clicked the button!", "warning");
+    //       },
+    //     });
+    //   }
+    // });
+
     $(document).on("click", "#createbtn", function () {
       let studentId = $("#studentid").val();
       let userName = $("#username").val();
@@ -9,6 +71,7 @@
 
       var message = "";
 
+      // Form validation
       if (studentId == "") {
         message += "Student ID is required. ";
       }
@@ -25,9 +88,14 @@
         message += "Confirm Password is required. ";
       }
 
+      if (passWord !== confirmPassWord) {
+        message += "Passwords do not match. ";
+      }
+
       if (message !== "") {
         swal("Validation Error", message, "error");
       } else {
+        // Ajax request to create user
         $.ajax({
           type: "POST",
           url: "/createuser/save",
@@ -40,23 +108,28 @@
             if (result.msg == "success") {
               swal({
                 title: "Saved Successfully",
-                text: "You clicked the button!",
+                text: "Account created successfully!",
                 icon: "success",
                 button: "OK!",
               }).then((results) => {
-                window.location.reload();
+                window.location.href = "/login";
               });
             } else {
               swal({
-                title: "Exist",
-                text: "Data already exists!",
+                title: "Mukang Mag Kakilala na Tayo?",
+                text: "you already have an account!",
                 icon: "warning",
                 button: "OK!",
               });
             }
           },
           error: function (err) {
-            swal("Data already exist!", "You clicked the button!", "warning");
+            // Handle error during user creation
+            swal(
+              "Error",
+              "An error occurred while creating the account!",
+              "warning"
+            );
           },
         });
       }

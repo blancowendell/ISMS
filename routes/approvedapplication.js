@@ -36,8 +36,8 @@ router.get("/load", function (req, res, next) {
           msr_image,
           msr_studentid,
           CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
-          mi_name as msr_institutionid,
-          mc_name_code as msr_courseid,
+          msr_institutionid as msr_institutionid,
+          msr_courseid as msr_courseid,
           msr_city,
           msr_baranggay,
           msr_academic_status,
@@ -45,8 +45,6 @@ router.get("/load", function (req, res, next) {
           msr_email,
           msr_phone
           FROM master_students_request
-          INNER JOIN master_institutions ON master_students_request.msr_institutionid = mi_institutionsid
-          INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
           WHERE msr_status = 'Verified'`;
   
       Select(sql, (err, result) => {
@@ -78,14 +76,12 @@ router.get("/load", function (req, res, next) {
       let sql = `SELECT 
           *,
           s_name as ms_scholarname,
-          mc_name_code as ms_course_code,
-          mi_name as ms_schoolname,
+          ms_courseid as ms_course_code,
+          ms_institutionid as ms_schoolname,
           CONCAT(ms_first_name,' ',ms_middle_name,' ',ms_last_name) as ms_fullname,
           DATE_FORMAT(ms_date_of_birth, '%Y-%m-%d') AS ms_date_of_birth,
           DATE_FORMAT(ms_registerdate, '%Y-%m-%d') AS ms_registerdate
           FROM master_students
-          INNER JOIN master_institutions ON master_students.ms_institutionid = mi_institutionsid
-          INNER JOIN master_courses ON master_students.ms_courseid = mc_course_id
           INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
           WHERE ms_studentid = '${studentid}'`;
   

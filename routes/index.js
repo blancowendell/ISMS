@@ -20,15 +20,14 @@ module.exports = router;
 
 router.get("/loadnewapplicants", (req, res) => {
   try {
-    let sql = ` SELECT 
+    let sql = `SELECT 
     msr_image,
     CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
-    mi_name as msr_schoolname,
-    mc_name_code as msr_corse_code
+    msr_institutionid as msr_schoolname,
+    msr_courseid as msr_corse_code
     FROM master_students_request
-    INNER JOIN master_institutions ON master_students_request.msr_institutionid = mi_institutionsid
-    INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
-    WHERE msr_status = 'Applied'`;
+    WHERE msr_status = 'Applied'
+    LIMIT 10`;
 
     Select(sql, (err, result) => {
       if (err) {
@@ -133,15 +132,80 @@ router.get("/loadverified", (req, res) => {
 
 router.get("/loadperbarranggay", (req, res) => {
   try {
-    let sql = `SELECT 
-        ms_baranggay, 
-        COUNT(*) AS ms_count
-    FROM 
-        master_students
-    WHERE 
-        ms_status = 'Verified'
-    GROUP BY 
-        ms_baranggay`;
+    let sql = `
+    SELECT ms_baranggay, COUNT(*) AS ms_total_students
+    FROM master_students
+    WHERE ms_baranggay IS NOT NULL AND ms_baranggay != ''
+    AND ms_status = 'Verified'
+    GROUP BY ms_baranggay
+    ORDER BY ms_total_students DESC`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "ms_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+router.get("/loadperschool", (req, res) => {
+  try {
+    let sql = `
+    SELECT ms_institutionid, COUNT(*) AS ms_total_students
+    FROM master_students
+    WHERE ms_institutionid IS NOT NULL AND ms_institutionid != ''
+    AND ms_status = 'Verified'
+    GROUP BY ms_institutionid
+    ORDER BY ms_total_students DESC`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+
+      console.log(result);
+
+      if (result != 0) {
+        let data = DataModeling(result, "ms_");
+
+        //console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+router.get("/loadpercourse", (req, res) => {
+  try {
+    let sql = `
+    SELECT ms_courseid, COUNT(*) AS ms_total_students
+    FROM master_students
+    WHERE ms_courseid IS NOT NULL AND ms_courseid != ''
+    AND ms_status = 'Verified'
+    GROUP BY ms_courseid
+    ORDER BY ms_total_students DESC`;
 
     Select(sql, (err, result) => {
       if (err) {

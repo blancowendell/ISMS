@@ -41,21 +41,19 @@ let transporter = nodemailer.createTransport({
 router.get("/load", function (req, res, next) {
   try {
     let sql = `SELECT
-        msr_image,
-        msr_studentid,
-        CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
-        mi_name as msr_institutionid,
-        mc_name_code as msr_courseid,
-        msr_city,
-        msr_baranggay,
-        msr_academic_status,
-        msr_yearlevel,
-        msr_email,
-        msr_phone
-        FROM master_students_request
-        INNER JOIN master_institutions ON master_students_request.msr_institutionid = mi_institutionsid
-        INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
-        WHERE msr_status = 'Applied'`;
+      msr_image,
+      msr_studentid,
+      CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
+      msr_institutionid,
+      msr_courseid,
+      msr_city,
+      msr_baranggay,
+      msr_academic_status,
+      msr_yearlevel,
+      msr_email,
+      msr_phone
+      FROM master_students_request
+      WHERE msr_status = 'Applied'`;
 
     Select(sql, (err, result) => {
       if (err) {
@@ -83,16 +81,14 @@ router.post("/loadstudentrequest", (req, res) => {
   try {
     let studentid = req.body.studentid;
     let sql = `SELECT 
-        *,
-        mc_name_code as msr_course_code,
-        mi_name as msr_schoolname,
-        CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
-        DATE_FORMAT(msr_date_of_birth, '%Y-%m-%d') AS msr_date_of_birth,
-        DATE_FORMAT(msr_registerdate, '%Y-%m-%d') AS msr_registerdate
-        FROM master_students_request
-        INNER JOIN master_institutions ON master_students_request.msr_institutionid = mi_institutionsid
-        INNER JOIN master_courses ON master_students_request.msr_courseid = mc_course_id
-        WHERE msr_studentid = '${studentid}'`;
+    *,
+    msr_courseid as msr_course_code,
+    msr_institutionid as msr_schoolname,
+    CONCAT(msr_first_name,' ',msr_middle_name,' ',msr_last_name) as msr_fullname,
+    DATE_FORMAT(msr_date_of_birth, '%Y-%m-%d') AS msr_date_of_birth,
+    DATE_FORMAT(msr_registerdate, '%Y-%m-%d') AS msr_registerdate
+    FROM master_students_request
+    WHERE msr_studentid = '${studentid}'`;
 
     Select(sql, (err, result) => {
       if (err) {

@@ -120,21 +120,9 @@
     <br>
     
     <!-- Content Row -->
-    <div class="row">
-        <!-- Content Column -->
-        <div class="col-lg-8 mb-8">
-            <!-- Project Card Example -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">By Barangay Applicants</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="barChart" width="400" height="200"></canvas>
-                    <script src="chart.js"></script>
-                </div>
-            </div>
-        </div>
 
+
+    <!-- <div class ="row">
         <div class="col-lg-4 mb-4">
             <div class="card shadow mb-4">
                 <div class="col">
@@ -147,5 +135,125 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-lg-8 mb-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">By Barangay Applicants</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="barChart" width="400" height="200"></canvas>
+                    <script src="chart.js"></script>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-lg-8 mb-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">By School Applicants</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="schoolBarChart" width="400" height="200"></canvas>
+                    <script src="chart.js"></script>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 mb-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">By Course Applicants</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="courseBarChart" width="400" height="200"></canvas>
+                    <script src="chart.js"></script>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <div class="row">
+        <div class="col-lg-8 mb-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">By Barangay Applicants</h6>
+                </div>
+                <div class="card-body">
+                    <!-- First Division for Barangay Chart -->
+                    <div id="chartSection1">
+                        <canvas id="barChart" width="400" height="200"></canvas>
+                    </div>
+    
+                    <!-- Second Division for Barangay Chart (if needed) -->
+                    <div id="chartSection2">
+                        <!-- Another chart or information can go here -->
+                        <canvas id="barChart2" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- By School Applicants -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">By School Applicants</h6>
+                </div>
+                <div class="card-body">
+                    <!-- First Division for School Chart -->
+                    <div id="schoolChartSection1">
+                        <canvas id="schoolBarChart" width="400" height="200"></canvas>
+                    </div>
+    
+                    <!-- Second Division for School Chart (if needed) -->
+                    <div id="schoolChartSection2">
+                        <!-- Another chart or information can go here -->
+                        <canvas id="schoolBarChart2" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- By Course Applicants -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">By Course Applicants</h6>
+                </div>
+                <div class="card-body">
+                    <!-- First Division for Course Chart -->
+                    <div id="courseChartSection1">
+                        <canvas id="courseBarChart" width="400" height="200"></canvas>
+                    </div>
+    
+                    <!-- Second Division for Course Chart (if needed) -->
+                    <div id="courseChartSection2">
+                        <!-- Another chart or information can go here -->
+                        <canvas id="courseBarChart2" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Pending Applications (on the right, smaller column) -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">New Applicants</h6>
+                </div>
+                <div class="card-body" id="applicants">
+                    <!-- First Division for Pending Applications -->
+                    <div id="pendingApplicationsSection1">
+                        <!-- Content for Division 1 -->
+                        <p>Pending Applicants Overview</p>
+                    </div>
+    
+                    <!-- Second Division for Pending Applications -->
+                    <div id="pendingApplicationsSection2">
+                        <!-- Content for Division 2 -->
+                        <p>Additional Pending Applicant Data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
 </div>
