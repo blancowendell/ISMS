@@ -234,6 +234,10 @@
       });
     }
 
+    $("#birthday").datepicker({
+      dateFormat: "mm/dd/yy"
+    });
+
     $(document).on("click", "#signupBtn", function () {
       let firstname = $("#firstname").val();
       let middlename = $("#middlename").val();
@@ -254,7 +258,7 @@
 
       // Validation checks
       if (firstname === "") message += "First Name ";
-      if (middlename === "") message += "Middle Name ";
+      // if (middlename === "") message += "Middle Name ";
       if (lastname === "") message += "Last Name ";
       if (date_of_birth === "") message += "Date of Birth ";
       if (email === "") message += "Email ";
@@ -271,10 +275,7 @@
       if (scholarshipid === "") message += "Scholarship is required ";
 
       if (message !== "") {
-        swal("Validation Error", message, "error").then(() => {
-          // This function is executed when the "OK" button is clicked
-          window.location.reload();
-        });
+        swal("Validation Error", message, "error");
       } else {
         // Show a "please wait" dialog
         swal({

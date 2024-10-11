@@ -41,7 +41,7 @@
               </div>
       
               <div class="col-md-4">
-                <input type="text" class="form-control" name="middlename" id="middlename" placeholder="Your Middle Name" required="">
+                <input type="text" class="form-control" name="middlename" id="middlename" placeholder="Your Middle Name">
               </div>
       
               <div class="col-md-4">
@@ -49,11 +49,11 @@
               </div>
 
               <div class="col-md-3">
-                <input type="text" class="form-control" name="school" id="school" placeholder="Input Your Complete School Name" required="">
+                <input type="text" class="form-control" name="school" id="school" placeholder="Complete Name of School" required="">
               </div>
 
               <div class="col-md-3">
-                <input type="text" class="form-control" name="course" id="course" placeholder="Input Your Complete Course Name" required="">
+                <input type="text" class="form-control" name="course" id="course" placeholder="Complete Name of Course" required="">
               </div>
       
               <!-- <div class="col-md-3">
@@ -104,8 +104,13 @@
               </div>
       
               <div class="col-md-3">
-                <input type="date" class="form-control" id="birthday" name="birthday" placeholder="Birth Day" required="">
+                <div class="form-floating">
+                  <input type="date" class="form-control" id="birthday" name="birthday" placeholder="Birthday" required="">
+                  <label for="birthday">Birthday</label>
+                </div>
               </div>
+              
+              
       
               <div class="col-md-3">
                 <input type="text" class="form-control" id="birthplace" name="birthplace" placeholder="Birth Place" required="">
