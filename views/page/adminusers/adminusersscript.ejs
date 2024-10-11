@@ -235,6 +235,7 @@
               $("#editaccesstype").val(item.accesstype);
               $("#editfullname").val(item.fullname);
               $("#editusername").val(item.username);
+              $("#editemailadmin").val(item.email);
               currentPassword = item.password;
               $("#editstatus").val(item.status);
               $("#editpreview").attr(
@@ -264,6 +265,7 @@
       let fullname = $("#editfullname").val();
       let username = $("#editusername").val();
       let status = $("#editstatus").val();
+      let email = $("#editemailadmin").val();
       let currentpassword = $("#currentPassword").val();
       let newpassword = $("#newpassword").val();
       let image = base64String;
@@ -282,6 +284,10 @@
 
       if (fullname === "") {
         message += "Fullname is required. ";
+      }
+
+      if (email === "") {
+        message += "Email is required. ";
       }
 
       if (username === "") {
@@ -307,6 +313,7 @@
             accesstype: accesstype,
             fullname: fullname,
             username: username,
+            email: email,
             status: status,
             currentpassword: currentpassword,
             newpassword: newpassword,
@@ -325,8 +332,8 @@
               LoadTable();
             } else if (result.msg === "exist") {
               swal({
-                title: "Exist",
-                text: "Data already exists!",
+                title: "Exist Email",
+                text: "Email already exists!",
                 icon: "warning",
                 button: "OK!",
               });

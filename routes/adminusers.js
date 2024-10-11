@@ -280,6 +280,7 @@ router.post("/getadminusers", (req, res) => {
           au_userid,
           au_accesstype,
           au_fullname,
+          au_email,
           au_username,
           au_password,
           au_status,
@@ -330,6 +331,7 @@ router.put("/edit", (req, res) => {
       fullname,
       username,
       status,
+      email,
       newpassword,
       image,
     } = req.body;
@@ -351,6 +353,11 @@ router.put("/edit", (req, res) => {
     if (username) {
       data.push(username);
       columns.push("username");
+    }
+
+    if (email) {
+      data.push(email);
+      columns.push("email");
     }
 
     if (status) {
@@ -390,14 +397,38 @@ router.put("/edit", (req, res) => {
 
     console.log(updateStatement);
 
-    Update(updateStatement, data, (updateErr, updateResult) => {
-      if (updateErr) {
-        console.error("Update Error: ", updateErr);
-        return res.json(JsonErrorResponse(updateErr));
-      }
+    let checkStatement = SelectStatement(
+      "select * from admin_user where au_email = ?",
+      [email]
+    );
 
-      res.json(JsonSuccess());
-    });
+    Check(checkStatement)
+      .then((result) => {
+        if (result != 0) {
+          return res.json(JsonWarningResponse(MessageStatus.EXIST));
+        } else {
+          Update(updateStatement, data, (err, result) => {
+            if (err) console.error("Error: ", err);
+
+            //console.log(result);
+
+            res.json(JsonSuccess());
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        res.json(JsonErrorResponse(error));
+      });
+
+    // Update(updateStatement, data, (updateErr, updateResult) => {
+    //   if (updateErr) {
+    //     console.error("Update Error: ", updateErr);
+    //     return res.json(JsonErrorResponse(updateErr));
+    //   }
+
+    //   res.json(JsonSuccess());
+    // });
   } catch (error) {
     console.error(error);
     res.json(JsonErrorResponse(error));

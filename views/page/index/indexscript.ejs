@@ -10,12 +10,166 @@
     LoadPerCourse();
     LoadPerSchool();
 
+    // function LoadPerBarranggay() {
+    //   $.ajax({
+    //     url: "/loadperbarranggay",
+    //     type: "GET",
+    //     success: function (response) {
+    //       // Assuming the data is returned in the format: [{ ms_baranggay: 'XYZ', ms_count: 5 }, ...]
+    //       let labels = [];
+    //       let data = [];
+
+    //       // Extract data from the response
+    //       response.data.forEach((item) => {
+    //         labels.push(item.baranggay); // Barangay names
+    //         data.push(item.total_students); // Counts of verified students
+    //       });
+
+    //       // Create the bar chart
+    //       let ctx = document.getElementById("barChart").getContext("2d");
+    //       let barChart = new Chart(ctx, {
+    //         type: "bar",
+    //         data: {
+    //           labels: labels,
+    //           datasets: [
+    //             {
+    //               label: "Verified Students per Barangay",
+    //               data: data,
+    //               backgroundColor: "rgba(75, 192, 192, 0.2)",
+    //               borderColor: "rgba(75, 192, 192, 1)",
+    //               borderWidth: 1,
+    //             },
+    //           ],
+    //         },
+    //         options: {
+    //           scales: {
+    //             y: {
+    //               beginAtZero: true,
+    //             },
+    //           },
+    //         },
+    //       });
+    //     },
+    //     error: function (err) {
+    //       console.error("Error loading data:", err);
+    //     },
+    //   });
+    // }
+
+    // function LoadPerSchool() {
+    //   $.ajax({
+    //     url: "/loadperschool",
+    //     type: "GET",
+    //     success: function (response) {
+    //       let labels = [];
+    //       let data = [];
+
+    //       // Extract data from the response
+    //       response.data.forEach((item) => {
+    //         labels.push(item.institutionid); // Institution IDs
+    //         data.push(item.total_students); // Counts of verified students per school
+    //       });
+
+    //       // Create the bar chart for schools
+    //       let ctx = document.getElementById("schoolBarChart").getContext("2d");
+    //       let schoolBarChart = new Chart(ctx, {
+    //         type: "bar",
+    //         data: {
+    //           labels: labels,
+    //           datasets: [
+    //             {
+    //               label: "Verified Students per School",
+    //               data: data,
+    //               backgroundColor: "rgba(153, 102, 255, 0.2)",
+    //               borderColor: "rgba(153, 102, 255, 1)",
+    //               borderWidth: 1,
+    //             },
+    //           ],
+    //         },
+    //         options: {
+    //           scales: {
+    //             y: {
+    //               beginAtZero: true,
+    //             },
+    //           },
+    //         },
+    //       });
+    //     },
+    //     error: function (err) {
+    //       console.error("Error loading data:", err);
+    //     },
+    //   });
+    // }
+
+    // function LoadPerCourse() {
+    //   $.ajax({
+    //     url: "/loadpercourse",
+    //     type: "GET",
+    //     success: function (response) {
+    //       let labels = [];
+    //       let data = [];
+
+    //       // Extract data from the response
+    //       response.data.forEach((item) => {
+    //         labels.push(item.courseid); // Course IDs
+    //         data.push(item.total_students); // Counts of verified students per course
+    //       });
+
+    //       // Create the bar chart for courses
+    //       let ctx = document.getElementById("courseBarChart").getContext("2d");
+    //       let courseBarChart = new Chart(ctx, {
+    //         type: "bar",
+    //         data: {
+    //           labels: labels,
+    //           datasets: [
+    //             {
+    //               label: "Verified Students per Course",
+    //               data: data,
+    //               backgroundColor: "rgba(255, 159, 64, 0.2)",
+    //               borderColor: "rgba(255, 159, 64, 1)",
+    //               borderWidth: 1,
+    //             },
+    //           ],
+    //         },
+    //         options: {
+    //           scales: {
+    //             y: {
+    //               beginAtZero: true,
+    //             },
+    //           },
+    //         },
+    //       });
+    //     },
+    //     error: function (err) {
+    //       console.error("Error loading data:", err);
+    //     },
+    //   });
+    // }
+
+    // Utility function to generate random colors
+    function getRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // Generate an array of random colors for the dataset
+    function generateColors(length) {
+      let colors = [];
+      for (let i = 0; i < length; i++) {
+        colors.push(getRandomColor());
+      }
+      return colors;
+    }
+
     function LoadPerBarranggay() {
       $.ajax({
         url: "/loadperbarranggay",
         type: "GET",
         success: function (response) {
-          // Assuming the data is returned in the format: [{ ms_baranggay: 'XYZ', ms_count: 5 }, ...]
           let labels = [];
           let data = [];
 
@@ -24,6 +178,10 @@
             labels.push(item.baranggay); // Barangay names
             data.push(item.total_students); // Counts of verified students
           });
+
+          // Generate random colors for each bar
+          const backgroundColors = generateColors(data.length);
+          const borderColors = backgroundColors.map((color) => color);
 
           // Create the bar chart
           let ctx = document.getElementById("barChart").getContext("2d");
@@ -35,8 +193,8 @@
                 {
                   label: "Verified Students per Barangay",
                   data: data,
-                  backgroundColor: "rgba(75, 192, 192, 0.2)",
-                  borderColor: "rgba(75, 192, 192, 1)",
+                  backgroundColor: backgroundColors,
+                  borderColor: borderColors,
                   borderWidth: 1,
                 },
               ],
@@ -70,6 +228,10 @@
             data.push(item.total_students); // Counts of verified students per school
           });
 
+          // Generate random colors for each bar
+          const backgroundColors = generateColors(data.length);
+          const borderColors = backgroundColors.map((color) => color);
+
           // Create the bar chart for schools
           let ctx = document.getElementById("schoolBarChart").getContext("2d");
           let schoolBarChart = new Chart(ctx, {
@@ -80,8 +242,8 @@
                 {
                   label: "Verified Students per School",
                   data: data,
-                  backgroundColor: "rgba(153, 102, 255, 0.2)",
-                  borderColor: "rgba(153, 102, 255, 1)",
+                  backgroundColor: backgroundColors,
+                  borderColor: borderColors,
                   borderWidth: 1,
                 },
               ],
@@ -115,6 +277,10 @@
             data.push(item.total_students); // Counts of verified students per course
           });
 
+          // Generate random colors for each bar
+          const backgroundColors = generateColors(data.length);
+          const borderColors = backgroundColors.map((color) => color);
+
           // Create the bar chart for courses
           let ctx = document.getElementById("courseBarChart").getContext("2d");
           let courseBarChart = new Chart(ctx, {
@@ -125,8 +291,8 @@
                 {
                   label: "Verified Students per Course",
                   data: data,
-                  backgroundColor: "rgba(255, 159, 64, 0.2)",
-                  borderColor: "rgba(255, 159, 64, 1)",
+                  backgroundColor: backgroundColors,
+                  borderColor: borderColors,
                   borderWidth: 1,
                 },
               ],
