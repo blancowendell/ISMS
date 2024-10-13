@@ -130,10 +130,11 @@
           url: "/login/logout",
           success: function (result) {
             swal({
-              title: "Ba Bye!!!",
-              text: "Log out Successfully",
+              title: "LogOut Successfully",
+              text: "You will be redirected shortly...",
               icon: "success",
-              button: "Ba bye!!",
+              buttons: false,   // Removes the button
+              timer: 500       // Automatically close after 2 seconds (2000 ms)
             }).then((results) => {
               window.location.reload();
               location.replace("/login");

@@ -33,21 +33,109 @@ router.get("/load", function (req, res, next) {
 
       console.log(result);
 
-      if (result.length > 0) {  // Check if the result length is greater than 0
+      if (result.length > 0) {  
         let data = DataModeling(result, "msr_");
         console.log(data);
         res.json({
-          status: "exists",    // Indicate that the record exists
+          status: "exists",    
           data: JsonDataResponse(data)
         });
       } else {
         res.json({
-          status: "not_found", // Indicate that no record was found
+          status: "not_found", 
           data: JsonDataResponse(result)
         });
       }
     });
   } catch (error) {
+    res.json(JsonErrorResponse(error));
+  }
+});
+
+
+// router.get("/getstudentdata", async function (req, res, next) {
+//   try {
+//     let studentid = req.session.studentid;
+    
+//     let sqlRequest = `
+//       SELECT * FROM master_students_request
+//       WHERE msr_studentid = '${studentid}' AND msr_status = 'Verified'`;
+    
+//     Check for data in master_students_request
+//     Select(sqlRequest, (err, requestResult) => {
+//       if (err) {
+//         console.error(err);
+//         return res.json(JsonErrorResponse(err));
+//       }
+
+//       if (requestResult.length > 0) {  
+//         Data found in master_students_request
+//         let data = DataModeling(requestResult, "msr_");
+//         return res.json({
+//           status: "exists",
+//           source: "master_students_request",    
+//           data: JsonDataResponse(data)
+//         });
+//       } else {
+//         If no data in master_students_request, fetch from master_students
+//         let sqlStudent = `
+//           SELECT * FROM master_students
+//           WHERE ms_studentid = '${studentid}'`;
+
+//         Select(sqlStudent, (err, studentResult) => {
+//           if (err) {
+//             console.error(err);
+//             return res.json(JsonErrorResponse(err));
+//           }
+
+//           if (studentResult.length > 0) {
+//             Data found in master_students
+//             let data = DataModeling(studentResult, "ms_");
+//             return res.json({
+//               status: "exists",
+//               source: "master_students",    
+//               data: JsonDataResponse(data)
+//             });
+//           } else {
+//             No data found in either table
+//             return res.json({
+//               status: "not_found",
+//               data: []
+//             });
+//           }
+//         });
+//       }
+//     });
+//   } catch (error) {
+//     res.json(JsonErrorResponse(error));
+//   }
+// });
+
+router.get("/signuppagedata", (req, res) => {
+  try {
+    let studentid = req.session.studentid;
+    let sql = `SELECT *,
+    DATE_FORMAT(ms_date_of_birth, '%Y-%m-%d') AS ms_date_of_birth,
+    DATE_FORMAT(ms_registerdate, '%Y-%m-%d') AS ms_registerdate
+    FROM master_students
+    WHERE ms_studentid = '${studentid}'`;
+
+    Select(sql, (err, result) => {
+      if (err) {
+        console.error(err);
+        res.json(JsonErrorResponse(err));
+      }
+      console.log(result);
+      if (result != 0) {
+        let data = DataModeling(result, "ms_");
+        console.log(data);
+        res.json(JsonDataResponse(data));
+      } else {
+        res.json(JsonDataResponse(result));
+      }
+    });
+  } catch (error) {
+    console.log(error);
     res.json(JsonErrorResponse(error));
   }
 });
@@ -83,6 +171,48 @@ router.post("/loadexistingrecord", (req, res) => {
       console.error(error);
       res.json(JsonErrorResponse(error));
     }
+});
+
+router.get("/checkStudentExistence", (req, res) => {
+  try {
+      let studentid = req.session.studentid;
+
+      // Check for the student ID in master_students
+      let sqlMasterStudent = `SELECT * FROM master_students WHERE ms_studentid = '${studentid}'`;
+      Select(sqlMasterStudent, (errMaster, resultMaster) => {
+          if (errMaster) {
+              console.error(errMaster);
+              return res.json(JsonErrorResponse(errMaster));
+          }
+
+          // Check for the student ID in master_students_request
+          let sqlMasterRequest = `SELECT * FROM master_students_request WHERE msr_studentid = '${studentid}'`;
+          Select(sqlMasterRequest, (errRequest, resultRequest) => {
+              if (errRequest) {
+                  console.error(errRequest);
+                  return res.json(JsonErrorResponse(errRequest));
+              }
+
+              // Determine which data to return
+              const existsInMaster = resultMaster.length > 0;
+              const existsInRequest = resultRequest.length > 0;
+
+              if (existsInMaster && existsInRequest) {
+                  // Exists in both tables
+                  res.json({ msg: "existsInBoth" });
+              } else if (existsInMaster) {
+                  // Exists only in master_students
+                  res.json({ msg: "existsInMasterOnly" });
+              } else {
+                  // Does not exist in either table
+                  res.json({ msg: "notFound" });
+              }
+          });
+      });
+  } catch (error) {
+      console.error(error);
+      res.json(JsonErrorResponse(error));
+  }
 });
   
 router.post("/save", function (req, res, next) {

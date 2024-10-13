@@ -109,9 +109,38 @@ router.get("/load", function (req, res, next) {
   });
 
 
+  router.get("/loadpermonth", (req, res) => {
+    try {
+      let sql = `SELECT DISTINCT DATE_FORMAT(ms_registerdate, '%M') AS ms_register_month
+      FROM master_students`;
+
+      Select(sql, (err, result) => {
+        if (err) {
+          console.error(err);
+          res.json(JsonErrorResponse(err));
+        }
+  
+        console.log(result);
+  
+        if (result != 0) {
+          let data = DataModeling(result, "ms_");
+  
+          console.log(data);
+          res.json(JsonDataResponse(data));
+        } else {
+          res.json(JsonDataResponse(result));
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      res.json(JsonErrorResponse(error));   
+    }
+  });
+
+
   router.post("/export", async (req, res) => {
     try {
-      let barranggay = req.body.barranggay;
+      let month = req.body.month;
       let schoolyear = req.body.schoolyear;
   
       let sql = `SELECT
@@ -145,7 +174,7 @@ router.get("/load", function (req, res, next) {
         ms_registerdate
         FROM master_students
         INNER JOIN scholarship ON master_students.ms_scholarshipid = s_scholarship_id
-        WHERE ms_baranggay = '${barranggay}'
+        WHERE DATE_FORMAT(ms_registerdate, '%M') = '${month}'
         AND ms_scholarshipid = '${schoolyear}'`;
   
       Select(sql, async (err, result) => {
@@ -214,7 +243,7 @@ router.get("/load", function (req, res, next) {
             row.alignment = { vertical: "middle", horizontal: "center" };
           });
   
-          const filename = `${s_name}_${barranggay}.xlsx`;
+          const filename = `${s_name}_${month}.xlsx`;
   
           res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
           res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

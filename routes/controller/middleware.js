@@ -44,6 +44,50 @@ var roleacess = [
     ],
   },
   {
+    role: "MAYOR",
+    routes: [
+      {
+        layout: "indexlayout",
+      },
+      {
+        layout: "accesslayout",
+      },
+      {
+        layout: "adminuserslayout",
+      },
+      {
+        layout: "institutionslayout",
+      },
+      {
+        layout: "courseslayout",
+      },
+      {
+        layout: "master_studentlayout",
+      },
+      {
+        layout: "announcementslayout",
+      },
+      {
+        layout: "pendingapplicationlayout",
+      },
+      {
+        layout: "calendarlayout",
+      },
+      {
+        layout: "questionslayout",
+      },
+      {
+        layout: "scholarshiplayout",
+      },
+      {
+        layout: "approvedapplicationlayout",
+      },
+      {
+        layout: "master_gradeslayout",
+      },
+    ],
+  },
+  {
     role: "STUDENT",
     routes: [
       {

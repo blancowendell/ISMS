@@ -1,15 +1,53 @@
+<style>
+  /* Hide the student ID initially */
+  #student_id {
+    display: none;
+    /* Hide initially */
+  }
+</style>
 <script>
+  //let globalstudentid = '<%= studentid %>';
   $(document).ready(function () {
     loadStudentData();
-    LoadInstitutions();
-    LoadCoursesOnly();
+    //LoadInstitutions();
+    //LoadCoursesOnly();
 
-    document
-      .getElementById("input-file-now")
-      .addEventListener("change", function (event) {
-        previewImage(event);
-      });
+    // document
+    //   .getElementById("input-file-now")
+    //   .addEventListener("change", function (event) {
+    //     previewImage(event);
+    //   });
+    const toggleEye = $("#toggleEye");
+    const studentIdElement = $("#student_id");
 
+    // Get student ID from server-side (replace with your actual ID)
+    let globalstudentid = '<%= studentid %>'; // This will be the actual student ID
+
+    // Initially hide the student ID
+    studentIdElement.text('******'); // Set to masked format
+    let isMasked = true; // Track if the ID is masked
+
+    toggleEye.on("click", function () {
+      if (isMasked) {
+        studentIdElement.text(globalstudentid); // Show the actual student ID
+        studentIdElement.show(); // Show the element
+        toggleEye.removeClass("fa-eye-slash").addClass("fa-eye"); // Change icon to eye
+      } else {
+        studentIdElement.text('******'); // Mask the student ID
+        toggleEye.removeClass("fa-eye").addClass("fa-eye-slash"); // Change icon to eye-slash
+      }
+      isMasked = !isMasked; // Toggle the state
+    });
+
+    // Ensure the ID is hidden on initial load
+    studentIdElement.hide(); // Initially hide the ID element
+
+    // Show the masked format when the toggle is clicked
+    toggleEye.on("click", function () {
+      studentIdElement.show(); // Show the masked value when clicked
+    });
+    // Ensure the ID is displayed as masked on initial load
+    studentIdElement.show();
     function previewImage(event) {
       const input = event.target;
       const reader = new FileReader();
@@ -25,42 +63,42 @@
       }
     }
 
-    function LoadInstitutions() {
-      $.ajax({
-        type: "GET",
-        url: "/institutions/loadinstitutions",
-        success: function (result) {
-          var data = result.data;
+    // function LoadInstitutions() {
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "/institutions/loadinstitutions",
+    //     success: function (result) {
+    //       var data = result.data;
 
-          $.each(data, function (key, item) {
-            var options = new Option(item.institutionsid, item.institutionsid);
-            $(options).html(item.name);
-            $("#school_name").append(options);
-          });
-        },
-        error: function (result) {
-          alert("error: " + result.data);
-        },
-      });
-    }
+    //       $.each(data, function (key, item) {
+    //         var options = new Option(item.institutionsid, item.institutionsid);
+    //         $(options).html(item.name);
+    //         $("#school_name").append(options);
+    //       });
+    //     },
+    //     error: function (result) {
+    //       alert("error: " + result.data);
+    //     },
+    //   });
+    // }
 
-    function LoadCoursesOnly() {
-      $.ajax({
-        type: "GET",
-        url: "/courses/loadcourses",
-        success: function (result) {
-          var data = result.data;
-          $.each(data, function (key, item) {
-            var options = new Option(item.course_id, item.course_id);
-            $(options).html(item.name_code);
-            $("#course_strand").append(options);
-          });
-        },
-        error: function (result) {
-          alert("error: " + result.data);
-        },
-      });
-    }
+    // function LoadCoursesOnly() {
+    //   $.ajax({
+    //     type: "GET",
+    //     url: "/courses/loadcourses",
+    //     success: function (result) {
+    //       var data = result.data;
+    //       $.each(data, function (key, item) {
+    //         var options = new Option(item.course_id, item.course_id);
+    //         $(options).html(item.name_code);
+    //         $("#course_strand").append(options);
+    //       });
+    //     },
+    //     error: function (result) {
+    //       alert("error: " + result.data);
+    //     },
+    //   });
+    // }
 
     function loadStudentData() {
       // Fetch initial application data
@@ -109,7 +147,8 @@
         $("#gender").val(item.gender);
         $("#age").val(item.age);
         $("#scholar_status").val(item.status);
-        $("#student_id").text(item.studentid);
+        $("#student_id").text('******'); // Mask the student ID
+        globalstudentid = item.studentid;
         $("#school_name").val(item.institutionid);
         $("#course_strand").val(item.courseid);
         $("#year_level").val(item.yearlevel);

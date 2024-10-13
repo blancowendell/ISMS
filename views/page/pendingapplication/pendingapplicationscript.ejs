@@ -6,8 +6,9 @@
     $(document).ready(function () {
         LoadTable();
         searchTable();
-        LoadBarrangay();
+        //LoadBarrangay();
         LoadSchoolYear();
+        LoadPerMonth();
 
         $(document).on("keyup", "#myInput", function () {
             searchTable();
@@ -142,18 +143,40 @@
         }
 
 
-        function LoadBarrangay() {
+        // function LoadBarrangay() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/pendingapplication/barranggaydistinct",
+        //         success: function (result) {
+        //             var data = result.data;
+        //             console.log(data);
+
+
+        //             $.each(data, function (key, item) {
+        //                 var options = new Option(item.baranggay, item.baranggay);
+        //                 $(options).html(item.baranggay);
+        //                 $("#selectBaranggay").append(options);
+        //             });
+        //         },
+        //         error: function (result) {
+        //             alert("error: " + result.data);
+        //         },
+        //     });
+        // }
+
+
+        function LoadPerMonth() {
             $.ajax({
                 type: "GET",
-                url: "/pendingapplication/barranggaydistinct",
+                url: "/approvedapplication/loadpermonth",
                 success: function (result) {
                     var data = result.data;
                     console.log(data);
 
 
                     $.each(data, function (key, item) {
-                        var options = new Option(item.baranggay, item.baranggay);
-                        $(options).html(item.baranggay);
+                        var options = new Option(item.register_month, item.register_month);
+                        $(options).html(item.register_month);
                         $("#selectBaranggay").append(options);
                     });
                 },
@@ -354,6 +377,81 @@
             });
         });
 
+        // $(document).on("click", "#applicationSaveBtn", function () {
+        //     let id = studentid;
+        //     var message = "";
+
+        //     if (studentid === "") {
+        //         message += "Student Id is required. ";
+        //     }
+
+        //     if (message !== "") {
+        //         swal("Validation Error", message, "error");
+        //     } else {
+        //         swal({
+        //             title: "Are you sure?",
+        //             text: "Do you want to approve this application?",
+        //             icon: "warning",
+        //             buttons: ["Cancel", "Yes, approve it!"],
+        //             dangerMode: true,
+        //         }).then((willApprove) => {
+        //             if (willApprove) {
+        //                 swal({
+        //                     title: "Processing",
+        //                     text: "Please wait while we process your request.",
+        //                     icon: "info",
+        //                     buttons: false,
+        //                     closeOnClickOutside: false,
+        //                     closeOnEsc: false,
+        //                     timer: 15000 // Optional: Duration of the loading state
+        //                 });
+
+        //                 $.ajax({
+        //                     type: "POST",
+        //                     url: "/pendingapplication/approved",
+        //                     data: {
+        //                         studentid: id,
+        //                     },
+        //                     success: function (result) {
+        //                         swal.close();
+
+        //                         if (result.msg === "success") {
+        //                             swal({
+        //                                 title: "Update Successfully",
+        //                                 text: "The application has been approved!",
+        //                                 icon: "success",
+        //                                 button: "OK!",
+        //                             }).then(() => {
+        //                                 window.location.reload();
+        //                             });
+        //                             LoadTable();
+        //                         } else if (result.msg === "exist") {
+        //                             swal({
+        //                                 title: "Exist",
+        //                                 text: "Data already exists!",
+        //                                 icon: "warning",
+        //                                 button: "OK!",
+        //                             });
+        //                         } else {
+        //                             swal(
+        //                                 "Data already exists!",
+        //                                 "You clicked the button!",
+        //                                 "warning"
+        //                             );
+        //                         }
+        //                     },
+        //                     error: function (err) {
+        //                         swal.close();
+        //                         swal("Error", "An error occurred while saving data.", "error");
+        //                     },
+        //                 });
+        //             } else {
+        //                 swal("Cancelled", "The approval was cancelled.", "info");
+        //             }
+        //         });
+        //     }
+        // });
+
         $(document).on("click", "#applicationSaveBtn", function () {
             let id = studentid;
             var message = "";
@@ -402,6 +500,14 @@
                                         window.location.reload();
                                     });
                                     LoadTable();
+                                } else if (result.msg === "validation_error") {
+                                    // Display validation error message
+                                    swal({
+                                        title: "Validation Error",
+                                        text: result.error, // The specific validation error returned from the server
+                                        icon: "warning",
+                                        button: "OK!",
+                                    });
                                 } else if (result.msg === "exist") {
                                     swal({
                                         title: "Exist",
@@ -411,8 +517,8 @@
                                     });
                                 } else {
                                     swal(
-                                        "Data already exists!",
-                                        "You clicked the button!",
+                                        "Unexpected Error",
+                                        "An unexpected error occurred!",
                                         "warning"
                                     );
                                 }
@@ -428,6 +534,7 @@
                 });
             }
         });
+
 
         // $(document).on("click", "#applicationRejectBtn", function () {
         //     let id = studentid;
@@ -503,13 +610,8 @@
                     dangerMode: true,
                 }).then((willReject) => {
                     if (willReject) {
-                        // Close the view application modal
                         $('#viewapplicationmodal').modal('hide');
-
-                        // Show the rejection modal
                         $('#rejectionModal').modal('show');
-
-                        // Handle rejection submission
                         $('#sendRejectionBtn').off('click').on('click', function () {
                             let rejectionMessage = $('#rejectionMessage').val().trim();
                             let selectedRequirements = [];
@@ -525,7 +627,7 @@
                                     data: {
                                         studentid: id,
                                         message: rejectionMessage,
-                                        requirements: selectedRequirements // send selected checkboxes
+                                        requirements: selectedRequirements
                                     },
                                     success: function (result) {
                                         if (result.msg === "success") {

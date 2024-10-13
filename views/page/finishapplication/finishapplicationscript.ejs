@@ -13,6 +13,14 @@
         //LoadCoursesOnly();
         LoadScholarshipId();
 
+        $(document).on("keydown", function (event) {
+            // Check if the Enter key is pressed
+            if (event.key === "Enter") {
+                // Trigger the button click
+                $("#submit").click();
+            }
+        });
+
         function validateGradeInput(input) {
             // Match numbers with up to 2 digits and 2 decimal places
             const regex = /^\d{0,2}(\.\d{0,2})?$/;
@@ -172,48 +180,114 @@
             console.log(imageFileGradeCopy, 'image');
             console.log(studentId, 'id');
 
-            if (
-                imageFile == ""
-                || first_name == ""
-                || middle_name == ""
-                || last_name == ""
-                || dob == ""
-                || birthplace == ""
-                || phone == ""
-                || gender == ""
-                || age == ""
-                || school_name == ""
-                || course_strand == ""
-                || year_level == ""
-                || academic_status == ""
-                || register_date == ""
-                || city == ""
-                || barangay == ""
-                || village == ""
-                || street_address == ""
-                || houseno == ""
-                || scholarshipid == ""
-                || fathersname == ""
-                || fathersmonthly == ""
-                || fathersoccupation == ""
-                || mothersname == ""
-                || mothersoccupation == ""
-                || mothersmonthly == ""
-                || imageFileGradeCopy == ""
-                || imageFileCertRes == ""
-                || imageFileRegForm == ""
-                || imageFileItr == ""
-                || imageFileNfi == ""
-                || firstSemGrade == ""
-                || secondSemGrade == ""
-            ) {
-                message = "Please fill all the fields";
+            if (first_name === "") {
+                message += "First name is required. ";
             }
+
+            if (middle_name === "") {
+                message += "Middle name is required. ";
+            }
+
+            if (last_name === "") {
+                message += "Last name is required. ";
+            }
+
+            if (dob === "") {
+                message += "Date of birth is required. ";
+            }
+
+            if (birthplace === "") {
+                message += "Birthplace is required. ";
+            }
+
+            if (phone === "") {
+                message += "Phone is required. ";
+            }
+
+            if (gender === "") {
+                message += "Gender is required. ";
+            }
+
+            if (age === "") {
+                message += "Age is required. ";
+            }
+
+            if (scholar_status === "") {
+                message += "Scholar status is required. ";
+            }
+
+            if (school_name === "") {
+                message += "School name is required. ";
+            }
+
+            if (course_strand === "") {
+                message += "Course strand is required. ";
+            }
+
+            if (year_level === "") {
+                message += "Year level is required. ";
+            }
+
+            if (academic_status === "") {
+                message += "Academic status is required. ";
+            }
+
+            if (register_date === "") {
+                message += "Register date is required. ";
+            }
+
+            if (city === "") {
+                message += "City is required. ";
+            }
+
+            if (barangay === "") {
+                message += "Barangay is required. ";
+            }
+
+            if (village === "") {
+                message += "Village is required. ";
+            }
+
+            if (street_address === "") {
+                message += "Street address is required. ";
+            }
+
+            if (houseno === "") {
+                message += "House number is required. ";
+            }
+
+            if (fathersname === "") {
+                message += "Father's name is required. ";
+            }
+
+            if (fathersmonthly === "") {
+                message += "Father's monthly salary is required. ";
+            }
+
+            if (fathersoccupation === "") {
+                message += "Father's occupation is required. ";
+            }
+
+            if (mothersname === "") {
+                message += "Mother's name is required. ";
+            }
+
+            if (mothersoccupation === "") {
+                message += "Mother's occupation is required. ";
+            }
+
+            if (mothersmonthly === "") {
+                message += "Mother's monthly salary is required. ";
+            }
+
+            if (scholarshipid === "") {
+                message += "Scholarship id is required. ";
+            }
+
 
             if (message !== "") {
                 swal("Validation Error", message, "error");
             } else {
-                // Show loading state
                 swal({
                     title: "Processing...",
                     text: "Please wait while your data is being saved.",
@@ -295,26 +369,21 @@
             }
         });
 
+
         function loadStudentData() {
             $.ajax({
                 type: "GET",
-                url: "/finishapplication/load",
+                url: "/finishapplication/checkStudentExistence", // New endpoint
                 success: function (result) {
-                    if (result.status === "exists") {
-                        swal("Already Submitted", "You have already submitted your application.", "info")
-                            .then(() => {
-                                window.location.href = "/studentindex";
-                            });
-                    } else {
+                    if (result.msg === "existsInBoth") {
                         $.ajax({
                             type: "POST",
-                            url: "/finishapplication/loadexistingrecord",
+                            url: "/finishapplication/loadexistingrecord", // Fetch from master_students_request
                             data: { studentid: studentId },
-                            success: function (result) {
-                                if (result.msg === "success") {
-                                    const existingData = result.data;
-
-                                    console.log(existingData, 'data');
+                            success: function (requestResult) {
+                                if (requestResult.msg === "success") {
+                                    const existingData = requestResult.data;
+                                    console.log(existingData, 'data from master_students_request');
 
                                     $.each(existingData, (key, item) => {
                                         $("#first_name").val(item.first_name);
@@ -359,20 +428,139 @@
                                         base64StringNfi = item.nfi;
                                     });
                                 } else {
+                                    swal("Error fetching student data", requestResult.message, "error");
+                                }
+                            },
+                            error: function (err) {
+                                swal("An error occurred while fetching student data from master_students_request", err.message, "error");
+                            }
+                        });
+                    } else if (result.msg === "existsInMasterOnly") {
+                        // Call signuppagedata
+                        $.ajax({
+                            type: "GET",
+                            url: "/finishapplication/signuppagedata", // Fetch from master_students
+                            success: function (result) {
+                                if (result.msg === "success") {
+                                    const existingData = result.data;
+                                    console.log(existingData, 'data from master_students');
+
+                                    $.each(existingData, (key, item) => {
+                                        $("#first_name").val(item.first_name);
+                                        $("#middle_name").val(item.middle_name);
+                                        $("#last_name").val(item.last_name);
+                                        $("#dob").val(item.date_of_birth);
+                                        $("#birthplace").val(item.birthplace);
+                                        $("#phone").val(item.phone);
+                                        $("#gender").val(item.gender);
+                                        $("#age").val(item.age);
+                                        $("#scholar_status").val(item.status);
+                                        $("#school_name").val(item.institutionid);
+                                        $("#course_strand").val(item.courseid);
+                                        $("#year_level").val(item.yearlevel);
+                                        $("#academic_status").val(item.academic_status);
+                                        $("#register_date").val(item.registerdate);
+                                        $("#scholarshipidchoice").val(item.scholarshipid);
+                                    });
+                                } else {
                                     swal("Error fetching student data", result.message, "error");
                                 }
                             },
                             error: function (err) {
-                                swal("An error occurred while fetching student data", err.message, "error");
+                                swal("An error occurred while checking application status", err.message, "error");
                             }
                         });
+                    } else {
+                        swal("No student record found", "Please check the student ID.", "error");
                     }
                 },
                 error: function (err) {
-                    swal("An error occurred while checking application status", err.message, "error");
+                    swal("An error occurred while checking student existence", err.message, "error");
                 }
             });
         }
+
+
+
+
+        // function loadStudentData() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/finishapplication/load",
+        //         success: function (result) {
+        //             if (result.status === "exists") {
+        //                 swal("Already Submitted", "You have already submitted your application.", "info")
+        //                     .then(() => {
+        //                         window.location.href = "/studentindex";
+        //                     });
+        //             } else {
+        //                 $.ajax({
+        //                     type: "POST",
+        //                     url: "/finishapplication/loadexistingrecord",
+        //                     data: { studentid: studentId },
+        //                     success: function (result) {
+        //                         if (result.msg === "success") {
+        //                             const existingData = result.data;
+
+        //                             console.log(existingData, 'data');
+
+        //                             $.each(existingData, (key, item) => {
+        //                                 $("#first_name").val(item.first_name);
+        //                                 $("#middle_name").val(item.middle_name);
+        //                                 $("#last_name").val(item.last_name);
+        //                                 $("#dob").val(item.date_of_birth);
+        //                                 $("#birthplace").val(item.birthplace);
+        //                                 $("#phone").val(item.phone);
+        //                                 $("#gender").val(item.gender);
+        //                                 $("#age").val(item.age);
+        //                                 $("#scholar_status").val(item.status);
+        //                                 $("#student_id").val(item.studentid);
+        //                                 $("#school_name").val(item.institutionid);
+        //                                 $("#course_strand").val(item.courseid);
+        //                                 $("#year_level").val(item.yearlevel);
+        //                                 $("#academic_status").val(item.academic_status);
+        //                                 $("#register_date").val(item.registerdate);
+        //                                 $("#city").val(item.city);
+        //                                 $("#barangay").val(item.baranggay);
+        //                                 $("#village").val(item.village);
+        //                                 $("#street_address").val(item.street);
+        //                                 $("#houseno").val(item.house_no);
+        //                                 $("#fathersname").val(item.fathers_name);
+        //                                 $("#fathersmonthly").val(item.fathers_salary);
+        //                                 $("#fathersoccupation").val(item.fathers_occupation);
+        //                                 $("#mothersname").val(item.mothers_name);
+        //                                 $("#mothersoccupation").val(item.mothers_occupation);
+        //                                 $("#mothersmonthly").val(item.mothers_salary);
+        //                                 $("#firstSemGrade").val(item.first_sem_grade);
+        //                                 $("#secondSemGrade").val(item.second_sem_grade);
+        //                                 $("#profileimagepreview").attr("src", "data:image/jpg;base64," + item.image);
+        //                                 base64profileImage = item.image;
+        //                                 $("#truecopypreview").attr("src", "data:image/jpg;base64," + item.grade_copy);
+        //                                 base64StringGradeCopy = item.grade_copy;
+        //                                 $("#regformpreview").attr("src", "data:image/jpg;base64," + item.registration_form);
+        //                                 base64StringRegForm = item.registration_form;
+        //                                 $("#certrespreview").attr("src", "data:image/jpg;base64," + item.certificate_residency);
+        //                                 base64StringCertRes = item.certificate_residency;
+        //                                 $("#itipreview").attr("src", "data:image/jpg;base64," + item.itr);
+        //                                 base64StringItr = item.itr;
+        //                                 $("#nfipreview").attr("src", "data:image/jpg;base64," + item.nfi);
+        //                                 base64StringNfi = item.nfi;
+        //                             });
+        //                         } else {
+        //                             swal("Error fetching student data", result.message, "error");
+        //                         }
+        //                     },
+        //                     error: function (err) {
+        //                         swal("An error occurred while fetching student data", err.message, "error");
+        //                     }
+        //                 });
+        //             }
+        //         },
+        //         error: function (err) {
+        //             swal("An error occurred while checking application status", err.message, "error");
+        //         }
+        //     });
+        // }
         //#region File Upload
 
 

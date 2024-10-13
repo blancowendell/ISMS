@@ -148,12 +148,9 @@
 
     // Utility function to generate random colors
     function getRandomColor() {
-      const letters = "0123456789ABCDEF";
-      let color = "#";
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
+      const colors = ["#fdf9b4", "#0d0be3"]; // Array containing the two colors
+      const randomIndex = Math.floor(Math.random() * colors.length); // Generate a random index (0 or 1)
+      return colors[randomIndex]; // Return the color at the random index
     }
 
     // Generate an array of random colors for the dataset

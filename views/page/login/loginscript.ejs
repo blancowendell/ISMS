@@ -2,6 +2,13 @@
   $(document).ready(function () {
     console.log("Initialize");
 
+    $(document).on("keydown", function (event) {
+      // Check if the Enter key is pressed
+      if (event.key === "Enter") {
+        $("#loginBtn").click();
+      }
+    });
+
     LoadAccess();
     function LoadAccess() {
       $.ajax({
@@ -51,11 +58,13 @@
           },
           success: function (result) {
             if (result.msg === "success") {
-              swal(
-                "Save Successfully",
-                "You clicked the button!",
-                "success"
-              ).then((results) => {
+              swal({
+                title: "Login Successfully",
+                text: "You will be redirected shortly...",
+                icon: "success",
+                buttons: false,   // Removes the button
+                timer: 500       // Automatically close after 2 seconds (2000 ms)
+              }).then((results) => {
                 if (result.data[0]) {
                   location.replace("/studentindex");
                 } else {

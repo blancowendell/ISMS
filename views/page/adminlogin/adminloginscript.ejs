@@ -1,113 +1,121 @@
 <script>
-    $(document).ready(function () {
-      console.log("Initialize");
-        
-      LoadAccess();
-      // const loginUrlDropdown = document.getElementById("loginUrl");
-  
-      // loginUrlDropdown.addEventListener("change", (e) => {
-      //   const selectedUrl = e.target.value;
-      //   if (selectedUrl) {
-      //     window.location.href = selectedUrl;
-      //   }
-      // });
-  
-      function LoadAccess() {
+  $(document).ready(function () {
+    console.log("Initialize");
+
+    LoadAccess();
+    // const loginUrlDropdown = document.getElementById("loginUrl");
+
+    // loginUrlDropdown.addEventListener("change", (e) => {
+    //   const selectedUrl = e.target.value;
+    //   if (selectedUrl) {
+    //     window.location.href = selectedUrl;
+    //   }
+    // });
+
+    $(document).on("keydown", function (event) {
+      // Check if the Enter key is pressed
+      if (event.key === "Enter") {
+        $("#loginBtn").click();
+      }
+    });
+
+    function LoadAccess() {
+      $.ajax({
+        type: "GET",
+        url: "/access/load",
+        success: function (result) {
+          var data = result.data;
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.accessid, item.accessid);
+            $(options).html(item.accessname);
+            $("#loginUrl").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
+      });
+    }
+
+
+    $(document).on("click", "#loginBtn", function () {
+      let username = $("#username").val();
+      let password = $("#password").val();
+      let accesstypeid = $("#loginUrl").val();
+
+      console.log(accesstypeid, 'id');
+
+      var message = "";
+
+      if (username === "") {
+        message += "Username ";
+      }
+
+      if (accesstypeid === "") {
+        message += "accesstypeid ";
+      }
+
+
+      if (password === "") {
+        message += ". ";
+      }
+
+      if (message !== "") {
+        showSweetAlert("Required", `Please fill up ${message}`);
+      } else {
         $.ajax({
-          type: "GET",
-          url: "/access/load",
-          success: function (result) {
-            var data = result.data;
-  
-            $.each(data, function (key, item) {
-              var options = new Option(item.accessid, item.accessid);
-              $(options).html(item.accessname);
-              $("#loginUrl").append(options);
-            });
+          type: "POST",
+          url: "/adminlogin/login",
+          data: {
+            username: username,
+            password: password,
+            accesstypeid: accesstypeid,
           },
-          error: function (result) {
-            alert("error: " + result.data);
+          success: function (result) {
+            if (result.msg === "success") {
+              swal({
+                title: "Login Successfully",
+                text: "You will be redirected shortly...",
+                icon: "success",
+                buttons: false,   // Removes the button
+                timer: 500       // Automatically close after 2 seconds (2000 ms)
+              }).then(() => {
+                location.replace("/");  // Redirect after the alert closes
+              });
+            } else if (result.msg === "inactive") {
+              showSweetAlert(
+                "Inactive",
+                "Your account is inactive. Please be guided accordingly.",
+                "error",
+                "Ok"
+              );
+            } else if (result.msg === "incorrect") {
+              showSweetAlert(
+                "Incorrect",
+                "Incorrect Credentials. Please try again!",
+                "error",
+                "AWW NO!!"
+              );
+            }
+          },
+          error: function (err) {
+            swal("Error", "An error occurred while saving data.", "error");
           },
         });
       }
-  
-  
-      $(document).on("click", "#loginBtn", function () {
-        let username = $("#username").val();
-        let password = $("#password").val();
-        let accesstypeid = $("#loginUrl").val();
-  
-        console.log(accesstypeid,'id');
-  
-        var message = "";
-  
-        if (username === "") {
-          message += "Username ";
-        }
-  
-        if (accesstypeid === "") {
-          message += "accesstypeid ";
-        }
-  
-  
-        if (password === "") {
-          message += ". ";
-        }
-  
-        if (message !== "") {
-          showSweetAlert("Required", `Please fill up ${message}`);
-        } else {
-          $.ajax({
-            type: "POST",
-            url: "/adminlogin/login",
-            data: {
-              username: username,
-              password: password,
-              accesstypeid: accesstypeid,
-            },
-            success: function (result) {
-              if (result.msg === "success") {
-                swal(
-                  "Save Successfully",
-                  "You clicked the button!",
-                  "success"
-                ).then((results) => {
-                    location.replace("/");
-                });
-              } else if (result.msg === "inactive") {
-                showSweetAlert(
-                  "Inactive",
-                  "Your account is inactive. Please be guided accordingly.",
-                  "error",
-                  "Ok"
-                );
-              } else if (result.msg === "incorrect") {
-                showSweetAlert(
-                  "Incorrect",
-                  "Incorrect Credentials. Please try again!",
-                  "error",
-                  "AWW NO!!"
-                );
-              }
-            },
-            error: function (err) {
-              swal("Error", "An error occurred while saving data.", "error");
-            },
-          });
-        }
-      });
-  
-      $(".toggle-password").on("click", function () {
-        const passwordInput = $("#password");
-        const passwordFieldType = passwordInput.attr("type");
-        if (passwordFieldType === "password") {
-          passwordInput.attr("type", "text");
-          $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
-        } else {
-          passwordInput.attr("type", "password");
-          $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
-        }
-      });
     });
-  </script>
-  
+
+    $(".toggle-password").on("click", function () {
+      const passwordInput = $("#password");
+      const passwordFieldType = passwordInput.attr("type");
+      if (passwordFieldType === "password") {
+        passwordInput.attr("type", "text");
+        $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+      } else {
+        passwordInput.attr("type", "password");
+        $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+      }
+    });
+  });
+</script>

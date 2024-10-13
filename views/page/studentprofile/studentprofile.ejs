@@ -17,7 +17,10 @@
                             <div class="col-sm-6">
                                 <p class="mb-0 p-work" id="headercourse">Applicant ID</p>
                             </div>
-                            <p class="mb-0 p-number" id="student_id"></p>
+                            <div class="d-flex align-items-center">
+                                <p class="mb-0 p-number" id="student_id"></p> <!-- Initially show masked format -->
+                                <i class="fas fa-eye-slash ml-3" id="toggleEye" style="cursor: pointer;"></i>
+                            </div>
                         </li>
                         <li
                             class="list-group-item d-flex justify-content-between align-items-center p-3 cell-rest">
@@ -99,15 +102,11 @@
                                     <div class="row g-3">
                                         <div class="col">
                                             <label for="school_name">Name Of School</label>
-                                            <select class="form-control" name="school_name" id="school_name" disabled>
-                                                <option selected disabled></option>
-                                            </select>
+                                            <input type="text" class="form-control" name="school_name" id="school_name" disabled>
                                         </div>
                                         <div class="col">
                                             <label for="course_strand">Course/Strand</label>
-                                            <select class="form-control" name="course_strand" id="course_strand" disabled>
-                                                <option selected disabled></option>
-                                            </select>
+                                            <input type="text" class="form-control" name="course_strand" id="course_strand" disabled>
                                         </div>
                                     </div>
                                     <br>

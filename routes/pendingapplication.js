@@ -19,7 +19,7 @@ var router = express.Router();
 const ExcelJS = require("exceljs");
 const nodemailer = require("nodemailer"); // Make sure to require nodemailer
 //const currentDate = moment();
-const QRCode = require('qrcode');
+const QRCode = require("qrcode");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -113,7 +113,6 @@ router.post("/loadstudentrequest", (req, res) => {
   }
 });
 
-
 router.post("/reject", async (req, res) => {
   const studentid = req.body.studentid;
   const rejectionMessage = req.body.message;
@@ -180,61 +179,6 @@ router.post("/reject", async (req, res) => {
   }
 });
 
-
-// router.post("/reject", async (req, res) => {
-//   const studentid = req.body.studentid;
-//   const rejectionMessage = req.body.message;
-
-//   if (!studentid) {
-//     return res.status(400).json({ error: "Student ID is required" });
-//   }
-
-//   if (!rejectionMessage) {
-//     return res.status(400).json({ error: "Rejection message is required" });
-//   }
-
-//   try {
-//     // Fetch the student's email address
-//     const fetchStudentQuery = `
-//       SELECT ms_email 
-//       FROM master_students 
-//       WHERE ms_studentid = ?`;
-
-//     const studentResults = await mysql.mysqlQueryPromise({
-//       sql: fetchStudentQuery,
-//       values: [studentid],
-//     });
-
-//     if (studentResults.length === 0) {
-//       return res.status(404).json({ error: "Student not found" });
-//     }
-
-//     const studentEmail = studentResults[0].ms_email;
-
-//     // Delete the request from master_students_request
-//     const deleteQuery = `
-//       DELETE FROM master_students_request 
-//       WHERE msr_studentid = ?`;
-
-//     await mysql.mysqlQueryPromise({ sql: deleteQuery, values: [studentid] });
-
-//     // Send rejection email
-//     let mailOptions = {
-//       from: "ilsp.test.dev@gmail.com", // your email
-//       to: studentEmail,
-//       subject: "Application Rejected",
-//       text: rejectionMessage,
-//     };
-
-//     await transporter.sendMail(mailOptions);
-
-//     res.json(JsonSuccess());
-//   } catch (error) {
-//     console.error(error);
-//     res.json(JsonErrorResponse(error));
-//   }
-// });
-
 router.post("/approved", async (req, res) => {
   const studentid = req.body.studentid;
 
@@ -257,7 +201,6 @@ router.post("/approved", async (req, res) => {
     }
 
     const requestData = requestResults[0];
-
 
     const fetchMsOtp = `
       SELECT ms_otp
@@ -311,8 +254,7 @@ router.post("/approved", async (req, res) => {
         ms_second_sem_grade = ?
       WHERE ms_studentid = ?`;
 
-      console.log(updateQuery,'updatequery');
-      
+    console.log(updateQuery, "updatequery");
 
     const updateValues = [
       requestData.msr_image,
@@ -352,21 +294,20 @@ router.post("/approved", async (req, res) => {
       studentid,
     ];
 
-    console.log(updateValues,'updatevalues');
-    
+    console.log(updateValues, "updatevalues");
 
     await mysql.mysqlQueryPromise({ sql: updateQuery, values: updateValues });
 
     const qrData = `${studentid}-${requestOtp.ms_otp}`;
     const qrCodeImage = await QRCode.toDataURL(qrData);
 
-    console.log(qrData,'qrdata');
-    
+    console.log(qrData, "qrdata");
+
     const insertQRCodeQuery = `
       INSERT INTO student_qrcode (sq_studentid, sq_image, sq_createdate, sq_createby, sq_status)
       VALUES (?, ?, NOW(), ?, 'Active')`;
 
-    const insertQRCodeValues = [studentid, qrCodeImage, 'system'];
+    const insertQRCodeValues = [studentid, qrCodeImage, "system"];
 
     await mysql.mysqlQueryPromise({
       sql: insertQRCodeQuery,
@@ -398,10 +339,10 @@ router.post("/approved", async (req, res) => {
 
     // Send email notification
     let mailOptions = {
-    from: "ilsp.test.dev@gmail.com",
-    to: studentEmail,
-    subject: "Verified Application",
-    text: `Dear ${firstName} ${lastName},
+      from: "ilsp.test.dev@gmail.com",
+      to: studentEmail,
+      subject: "Verified Application",
+      text: `Dear ${firstName} ${lastName},
 
     We are pleased to inform you that your application has been successfully verified. Please find your Application ID and further instructions below.
 
@@ -464,7 +405,7 @@ router.get("/barranggaydistinct", (req, res) => {
 
 router.post("/export", async (req, res) => {
   try {
-    let barranggay = req.body.barranggay;
+    let month = req.body.barranggay;
     let schoolyear = req.body.schoolyear;
 
     let sql = `SELECT
@@ -498,7 +439,7 @@ router.post("/export", async (req, res) => {
       msr_registerdate
       FROM master_students_request
       INNER JOIN scholarship ON master_students_request.msr_scholarshipid = s_scholarship_id
-      WHERE msr_baranggay = '${barranggay}'
+	    WHERE DATE_FORMAT(msr_registerdate, '%M') = '${month}'
       AND msr_scholarshipid = '${schoolyear}'
       AND msr_status = 'Applied'`;
 
@@ -510,9 +451,8 @@ router.post("/export", async (req, res) => {
       }
 
       if (result.length > 0) {
-
         let s_name = result[0].s_name;
-        
+
         let workbook = new ExcelJS.Workbook();
         let worksheet = workbook.addWorksheet("Students");
         worksheet.columns = [
@@ -570,8 +510,14 @@ router.post("/export", async (req, res) => {
 
         const filename = `${s_name}_${barranggay}.xlsx`;
 
-        res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename=${filename}`
+        );
+        res.setHeader(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
 
         await workbook.xlsx.write(res);
         res.end();

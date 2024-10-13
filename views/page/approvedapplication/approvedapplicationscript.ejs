@@ -6,8 +6,9 @@
     $(document).ready(function () {
         LoadTable();
         searchTable();
-        LoadBarrangay();
+        //LoadBarrangay();
         LoadSchoolYear();
+        LoadPerMonth();
 
         $(document).on("keyup", "#myInput", function () {
             searchTable();
@@ -142,18 +143,40 @@
         }
 
 
-        function LoadBarrangay() {
+        // function LoadBarrangay() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "/pendingapplication/barranggaydistinct",
+        //         success: function (result) {
+        //             var data = result.data;
+        //             console.log(data);
+
+
+        //             $.each(data, function (key, item) {
+        //                 var options = new Option(item.baranggay, item.baranggay);
+        //                 $(options).html(item.baranggay);
+        //                 $("#selectBaranggay").append(options);
+        //             });
+        //         },
+        //         error: function (result) {
+        //             alert("error: " + result.data);
+        //         },
+        //     });
+        // }
+
+
+        function LoadPerMonth() {
             $.ajax({
                 type: "GET",
-                url: "/pendingapplication/barranggaydistinct",
+                url: "/approvedapplication/loadpermonth",
                 success: function (result) {
                     var data = result.data;
                     console.log(data);
 
 
                     $.each(data, function (key, item) {
-                        var options = new Option(item.baranggay, item.baranggay);
-                        $(options).html(item.baranggay);
+                        var options = new Option(item.register_month, item.register_month);
+                        $(options).html(item.register_month);
                         $("#selectBaranggay").append(options);
                     });
                 },
@@ -164,13 +187,13 @@
         }
 
         $(document).on("click", "#exportpendingapplication", function () {
-            let baranggay = $("#selectBaranggay").val();
+            let month = $("#selectBaranggay").val();
             let scholarship_id = $("#selectSchoolYear").val();
 
             let message = "";
 
-            if (!baranggay) {
-                message += "Baranggay is required. ";
+            if (!month) {
+                message += "Month is required. ";
             }
 
             if (!scholarship_id) {
@@ -184,7 +207,7 @@
                     type: "POST",
                     url: "/approvedapplication/export",
                     data: {
-                        barranggay: baranggay,
+                        month: month,
                         schoolyear: scholarship_id,
                     },
                     xhrFields: {
