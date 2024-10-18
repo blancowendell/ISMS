@@ -8,16 +8,11 @@
     LoadScholarships();
     checkSignupPageStatus();
 
-    // $(document).on("keydown", function (event) {
-    //   // Check if the Enter key is pressed
-    //   if (event.key === "Enter") {
-    //     // Trigger the button click
-    //     $("#signupBtn").click();
-    //   }
-    // });
-
-
-
+    $(document).on("keydown", function (event) {
+      if (event.key === "Enter") {
+        $("#signupBtn").click();
+      }
+    });
 
     function checkSignupPageStatus() {
       $.ajax({
@@ -26,7 +21,7 @@
         success: function (result) {
           console.log(result);
 
-          if (result.data && result.data[0].status === 'Active') {
+          if (result.data && result.data[0].status === "Active") {
             $("#signup").show();
           } else {
             $("#signup").hide();
@@ -34,7 +29,7 @@
         },
         error: function (err) {
           console.error("Error fetching signup page status:", err);
-        }
+        },
       });
     }
 
@@ -44,64 +39,72 @@
         url: "studentindex/getbulletin",
         success: function (result) {
           var data = result.data;
-          $('#announcement-container').empty();
+          $("#announcement-container").empty();
           $.each(data, function (key, item) {
-            var rowContainer = $('<div/>', {
-              'class': 'row gy-5',
-              'data-aos': 'fade-up',
-              'data-aos-delay': 100 * (key + 1)
-            }).appendTo('#announcement-container');
+            var rowContainer = $("<div/>", {
+              class: "row gy-5",
+              "data-aos": "fade-up",
+              "data-aos-delay": 100 * (key + 1),
+            }).appendTo("#announcement-container");
 
-            var imageContainer = $('<div/>', {
-              'class': 'col-xl-5 d-flex align-items-center'
+            var imageContainer = $("<div/>", {
+              class: "col-xl-5 d-flex align-items-center",
             }).appendTo(rowContainer);
-            $('<img/>', {
-              'id': 'announcement-image-' + key,
-              'src': 'data:image/jpg;base64,' + item.image,
-              'class': 'img-fluid',
-              'alt': item.title
+            $("<img/>", {
+              id: "announcement-image-" + key,
+              src: "data:image/jpg;base64," + item.image,
+              class: "img-fluid",
+              alt: item.title,
             }).appendTo(imageContainer);
-            var detailContainer = $('<div/>', {
-              'class': 'col-xl-7 d-flex align-items-center'
+            var detailContainer = $("<div/>", {
+              class: "col-xl-7 d-flex align-items-center",
             }).appendTo(rowContainer);
 
             // Create a div to hold the announcement title and description
-            var announcementDetail = $('<div/>', {
-              'class': 'row align-self-center gy-5'
+            var announcementDetail = $("<div/>", {
+              class: "row align-self-center gy-5",
             }).appendTo(detailContainer);
 
-            $('<h4/>', {
-              'text': item.title
+            $("<h4/>", {
+              text: item.title,
             }).appendTo(announcementDetail);
 
             // Render the description as HTML
-            $('<div/>', {
-              'html': item.description
+            $("<div/>", {
+              html: item.description,
             }).appendTo(announcementDetail);
           });
         },
         error: function (result) {
           alert("Error fetching announcements: " + result.msg);
-        }
+        },
+      });
+    }
+
+    function LoadScholarships() {
+      $.ajax({
+        type: "GET",
+        url: "/scholarship/loadscholarlandingpage",
+        success: function (result) {
+          var data = result.data;
+
+          $.each(data, function (key, item) {
+            var options = new Option(item.scholarship_id, item.scholarship_id);
+            $(options).html(item.name);
+            $("#scholarshipid").append(options);
+          });
+        },
+        error: function (result) {
+          alert("error: " + result.data);
+        },
       });
     }
 
     $(document).on("click", "#signupBtn", function () {
-      handleSignup();
-    });
-
-    $(document).on("keydown", function (event) {
-      // Check if the Enter key is pressed
-      if (event.key === "Enter") {
-        // Trigger the signup function
-        handleSignup();
-      }
-    });
-
-    function handleSignup() {
       let firstname = $("#firstname").val();
       let middlename = $("#middlename").val();
       let lastname = $("#lastname").val();
+      let preffix = $("#preffix").val();
       let date_of_birth = $("#birthday").val();
       let email = $("#email").val();
       let gender = $("#gender").val();
@@ -118,14 +121,13 @@
 
       // Validation checks
       if (firstname === "") message += "First Name ";
-      // if (middlename === "") message += "Middle Name ";
       if (lastname === "") message += "Last Name ";
       if (date_of_birth === "") message += "Date of Birth ";
       if (email === "") message += "Email ";
       if (gender === "") message += "Gender ";
       if (phone === "") message += "Phone ";
       if (institutionid === "") message += "Institution ";
-      if (institutionid === "others") message += "Others is not an Institution ";
+      if (institutionid === "others") message += "Others is not a Institution ";
       if (courseid === "") message += "Course ";
       if (courseid === "others") message += "Others is not a Course ";
       if (academic_status === "") message += "Academic Status ";
@@ -138,13 +140,13 @@
         swal("Validation Error", message, "error");
       } else {
         // Show a "please wait" dialog
-        const waitDialog = swal({
+        swal({
           title: "Please wait",
           text: "Processing your request...",
           icon: "info",
           buttons: false,
           closeOnClickOutside: false,
-          closeOnEsc: false
+          closeOnEsc: false,
         });
 
         $.ajax({
@@ -154,6 +156,7 @@
             firstname: firstname,
             middlename: middlename,
             lastname: lastname,
+            preffix: preffix,
             date_of_birth: date_of_birth,
             email: email,
             gender: gender,
@@ -177,513 +180,182 @@
                 "warning"
               );
             } else if (result.msg === "success") {
-              promptOTP(); // Call the OTP function
+              function promptOTP() {
+                return swal({
+                  title: "Enter OTP",
+                  content: {
+                    element: "input",
+                    attributes: {
+                      placeholder:
+                        "Check your Gmail Inbox for OTP sent to your email.",
+                      type: "text",
+                    },
+                  },
+                  buttons: {
+                    cancel: {
+                      text: "Cancel",
+                      value: "cancel",
+                      visible: true,
+                      closeModal: false,
+                    },
+                    confirm: {
+                      text: "Verify",
+                      closeModal: false,
+                    },
+                  },
+                })
+                  .then((otp) => {
+                    if (otp === "cancel") {
+                      return swal({
+                        title: "Are you sure?",
+                        text: "Do you really want to cancel the OTP verification?",
+                        icon: "warning",
+                        buttons: {
+                          cancel: "No",
+                          confirm: "Yes",
+                        },
+                        dangerMode: true,
+                      }).then((willCancel) => {
+                        if (willCancel) {
+                          swal.close(); // Close the dialog
+                          return Promise.reject("Cancelled");
+                        } else {
+                          return promptOTP(); // Reopen the OTP input dialog
+                        }
+                      });
+                    }
+
+                    if (!otp) {
+                      return swal(
+                        "No OTP entered",
+                        "Please enter the OTP sent to your email.",
+                        "error"
+                      ).then(() => promptOTP()); // Reopen the OTP input dialog
+                    }
+
+                    return $.ajax({
+                      type: "POST",
+                      url: "/landingpage/verify-otp",
+                      data: { email: $("#email").val(), otp: otp },
+                    });
+                  })
+                  .then((response) => {
+                    if (response && response.msg === "success") {
+                      return swal({
+                        title: "OTP Verified!",
+                        text: "Please check your Gmail Inbox both your OTP and Application ID. Click the provided link to complete your registration.",
+                        icon: "success",
+                      }).then(() => {
+                        // Send email with link to create username/password
+                        return $.ajax({
+                          type: "POST",
+                          url: "/landingpage/send-create-account-link",
+                          data: { email: $("#email").val() },
+                        });
+                      });
+                    } else {
+                      return swal(
+                        "Invalid OTP",
+                        "The OTP you entered is incorrect. Please try again.",
+                        "warning"
+                      ).then(() => promptOTP()); // Reopen the OTP input dialog
+                    }
+                  })
+                  .catch((err) => {
+                    if (err !== "Cancelled") {
+                      // Handle error if not cancelled
+                      swal(
+                        "Error",
+                        "Something went wrong. Please try again later.",
+                        "error"
+                      ).then(() => promptOTP()); // Reopen the OTP input dialog
+                    }
+                  });
+              }
+
+              promptOTP(); // Initial call to prompt for OTP
             } else {
               swal(
                 "Looks like you already have an account",
                 "Check your email for the OTP or provide a new email",
                 "warning"
-              ).then(() => {
-                promptOTP(); // Reopen OTP prompt if the user has an account
-              });
+              );
             }
           },
           error: function (err) {
             swal.close(); // Close the "please wait" dialog on error
-            swal("Error", "Something went wrong. Please try again later.", "error");
-          },
-        });
-      }
-    }
-
-    function promptOTP() {
-      return swal({
-        title: "Enter OTP",
-        content: {
-          element: "input",
-          attributes: {
-            placeholder: "Check your Gmail Inbox for OTP sent to your email.",
-            type: "text",
-          },
-        },
-        buttons: {
-          cancel: {
-            text: "Cancel",
-            value: "cancel",
-            visible: true,
-            closeModal: false,
-          },
-          confirm: {
-            text: "Verify",
-            closeModal: false,
-          },
-        },
-      })
-        .then((otp) => {
-          if (otp === "cancel") {
-            return swal({
-              title: "Do you really want to cancel the OTP verification?",
-              text: "If you cancel, you need to provide a new email address.",
-              icon: "warning",
-              buttons: {
-                cancel: "No",
-                confirm: "Yes",
-              },
-              dangerMode: true,
-            }).then((willCancel) => {
-              if (willCancel) {
-                swal.close(); // Close the dialog
-                return Promise.reject("Cancelled");
-              } else {
-                return promptOTP(); // Reopen the OTP input dialog
-              }
-            });
-          }
-
-          if (!otp) {
-            return swal(
-              "No OTP entered",
-              "Please enter the OTP sent to your email.",
-              "error"
-            ).then(() => promptOTP()); // Reopen the OTP input dialog
-          }
-
-          return $.ajax({
-            type: "POST",
-            url: "/landingpage/verify-otp",
-            data: { email: $("#email").val(), otp: otp },
-          });
-        })
-        .then((response) => {
-          if (response && response.msg === "success") {
-            return swal({
-              title: "OTP Verified!",
-              text: "Please check your Gmail Inbox for both your OTP and Application ID. Click the provided link to complete your registration.",
-              icon: "success",
-            }).then(() => {
-              // Send email with link to create username/password
-              return $.ajax({
-                type: "POST",
-                url: "/landingpage/send-create-account-link",
-                data: { email: $("#email").val() },
-              });
-            });
-          } else {
-            return swal(
-              "Invalid OTP",
-              "The OTP you entered is incorrect. Please try again.",
-              "warning"
-            ).then(() => promptOTP()); // Reopen the OTP input dialog
-          }
-        })
-        .catch((err) => {
-          if (err !== "Cancelled") {
-            // Handle error if not cancelled
             swal(
               "Error",
               "Something went wrong. Please try again later.",
               "error"
-            ).then(() => promptOTP()); // Reopen the OTP input dialog
-          }
+            );
+          },
         });
-    }
+      }
+    });
 
+    document.addEventListener("DOMContentLoaded", function () {
+      const chatbotButton = document.getElementById("chatbot-button");
+      const chatbotModal = document.getElementById("chatbot-modal");
+      const closeButton = document.getElementById("close-button");
 
-
-    // Trigger LoadCourses when an institution is selected
-    // $("#school").change(function () {
-    //   var institutionId = $(this).val(); // Get the selected institution ID
-    //   if (institutionId) {
-    //     LoadCourses(institutionId);
-    //   }
-    // });
-
-    // function LoadInstitutions() {
-    //   $.ajax({
-    //     type: "GET",
-    //     url: "/institutions/loadinstitutions",
-    //     success: function (result) {
-    //       var data = result.data;
-    //       $("#school").empty(); // Clear existing options
-
-    //       $.each(data, function (key, item) {
-    //         var options = new Option(item.institutionsid, item.institutionsid);
-    //         $(options).html(item.name);
-    //         $("#school").append(options);
-    //       });
-
-    //       // Add the "Others" option at the end
-    //       $("#school").append('<option value="others">Others</option>');
-    //     },
-    //     error: function (result) {
-    //       alert("error: " + result.data);
-    //     },
-    //   });
-    // }
-
-    // // Function to load courses based on selected institution
-    // function LoadCourses(institutionId) {
-    //   $.ajax({
-    //     type: "POST",
-    //     url: "/institutions/loadcourses",
-    //     data: { institutionsid: institutionId },
-    //     success: function (result) {
-    //       var data = result.data;
-    //       $("#course").empty(); // Clear existing options
-
-    //       $.each(data, function (key, item) {
-    //         var options = new Option(item.course_id, item.course_id);
-    //         $(options).html(item.name_code);
-    //         $("#course").append(options);
-    //       });
-
-    //       // Add the "Others" option at the end
-    //       $("#course").append('<option value="others">Others</option>');
-    //     },
-    //     error: function (result) {
-    //       alert("error: " + result.data);
-    //     },
-    //   });
-    // }
-
-    // // Handle institution dropdown change
-    // $("#school").change(function () {
-    //   var institutionId = $(this).val(); // Get the selected institution ID
-
-    //   if (institutionId === 'others') {
-    //     promptNewInstitutionAndCourse(); // Show swal for new institution and course
-    //   } else {
-    //     LoadCourses(institutionId); // Load courses for the selected institution
-    //   }
-    // });
-
-    // // Handle course dropdown change
-    // $("#course").change(function () {
-    //   var courseId = $(this).val(); // Get the selected course ID
-
-    //   if (courseId === 'others') {
-    //     promptNewInstitutionAndCourse(); // Show swal for new course if "Others" is selected
-    //   }
-    // });
-
-    // // Prompt for new institution and course using SweetAlert with custom content
-    // function promptNewInstitutionAndCourse() {
-    //   const content = document.createElement('div');
-    //   const inputInstitution = document.createElement('input');
-    //   const inputCourse = document.createElement('input');
-
-    //   inputInstitution.setAttribute('type', 'text');
-    //   inputInstitution.setAttribute('id', 'swal-input1');
-    //   inputInstitution.setAttribute('class', 'swal2-input');
-    //   inputInstitution.setAttribute('placeholder', 'Institution Name');
-
-    //   inputCourse.setAttribute('type', 'text');
-    //   inputCourse.setAttribute('id', 'swal-input2');
-    //   inputCourse.setAttribute('class', 'swal2-input');
-    //   inputCourse.setAttribute('placeholder', 'Course Name');
-
-    //   content.appendChild(inputInstitution);
-    //   content.appendChild(inputCourse);
-
-    //   swal({
-    //     title: "Add New Institution and Course",
-    //     content: content,
-    //     buttons: {
-    //       cancel: "Cancel",
-    //       confirm: "Save",
-    //     },
-    //   }).then(function (isConfirmed) {
-    //     if (isConfirmed) {
-    //       var newInstitutionName = document.getElementById('swal-input1').value;
-    //       var newCourseName = document.getElementById('swal-input2').value;
-
-    //       // Validate input
-    //       if (newInstitutionName && newCourseName) {
-    //         // Trigger the API to save the new institution and course
-    //         submitNewInstitutionAndCourse(newInstitutionName, newCourseName);
-    //       } else {
-    //         swal("Error", "Please enter both institution and course names.", "error");
-    //       }
-    //     }
-    //   });
-    // }
-
-    // // Function to submit new institution and course
-    // function submitNewInstitutionAndCourse(institutionName, courseName) {
-    //   $.ajax({
-    //     type: "POST",
-    //     url: "/landingpage/addInstitutionAndCourse",
-    //     data: {
-    //       institutionsname: institutionName,
-    //       coursename: courseName
-    //     },
-    //     success: function (result) {
-    //       swal("Success", "Institution and Course added successfully You May now select them", "success");
-    //       // Optionally, reload the institution dropdowns to include the new entry
-    //       LoadInstitutions();
-    //     },
-    //     error: function (result) {
-    //       swal("Error", result.msg, "error");
-    //     },
-    //   });
-    // }
-
-    function LoadScholarships() {
-      $.ajax({
-        type: "GET",
-        url: "/scholarship/loadscholarlandingpage",
-        success: function (result) {
-          var data = result.data;
-
-          $.each(data, function (key, item) {
-            var options = new Option(item.scholarship_id, item.scholarship_id);
-            $(options).html(item.name);
-            $("#scholarshipid").append(options);
-          });
-        },
-        error: function (result) {
-          alert("error: " + result.data);
-        },
-      });
-    }
-
-    // $(document).on("click", "#signupBtn", function () {
-    //   let firstname = $("#firstname").val();
-    //   let middlename = $("#middlename").val();
-    //   let lastname = $("#lastname").val();
-    //   let date_of_birth = $("#birthday").val();
-    //   let email = $("#email").val();
-    //   let gender = $("#gender").val();
-    //   let phone = $("#phoneno").val();
-    //   let institutionid = $("#school").val();
-    //   let courseid = $("#course").val();
-    //   let academic_status = $("#academic_status").val();
-    //   let yearlevel = $("#yearlevel").val();
-    //   let birthplace = $("#birthplace").val();
-    //   let age = $("#age").val();
-    //   let scholarshipid = $("#scholarshipid").val();
-
-    //   var message = "";
-
-    //   // Validation checks
-    //   if (firstname === "") message += "First Name ";
-    //   // if (middlename === "") message += "Middle Name ";
-    //   if (lastname === "") message += "Last Name ";
-    //   if (date_of_birth === "") message += "Date of Birth ";
-    //   if (email === "") message += "Email ";
-    //   if (gender === "") message += "Gender ";
-    //   if (phone === "") message += "Phone ";
-    //   if (institutionid === "") message += "Institution ";
-    //   if (institutionid === "others") message += "Others is not a Institution ";
-    //   if (courseid === "") message += "Course ";
-    //   if (courseid === "others") message += "Others is not a Course ";
-    //   if (academic_status === "") message += "Academic Status ";
-    //   if (yearlevel === "") message += "Year Level ";
-    //   if (birthplace === "") message += "Birth Place ";
-    //   if (age === "") message += "Age ";
-    //   if (scholarshipid === "") message += "Scholarship is required ";
-
-    //   if (message !== "") {
-    //     swal("Validation Error", message, "error");
-    //   } else {
-    //     // Show a "please wait" dialog
-    //     swal({
-    //       title: "Please wait",
-    //       text: "Processing your request...",
-    //       icon: "info",
-    //       buttons: false,
-    //       closeOnClickOutside: false,
-    //       closeOnEsc: false
-    //     });
-
-    //     $.ajax({
-    //       type: "POST",
-    //       url: "/landingpage/save",
-    //       data: {
-    //         firstname: firstname,
-    //         middlename: middlename,
-    //         lastname: lastname,
-    //         date_of_birth: date_of_birth,
-    //         email: email,
-    //         gender: gender,
-    //         phone: phone,
-    //         institutionid: institutionid,
-    //         courseid: courseid,
-    //         academic_status: academic_status,
-    //         yearlevel: yearlevel,
-    //         birthplace: birthplace,
-    //         age: age,
-    //         scholarshipid: scholarshipid,
-    //       },
-    //       success: function (result) {
-    //         // Close the "please wait" dialog
-    //         swal.close();
-
-    //         if (result.msg === "noscholarid") {
-    //           swal(
-    //             "Scholarship Error",
-    //             "Select a school year if there is no selection, maybe it's closed or full slots.",
-    //             "warning"
-    //           );
-    //         } else if (result.msg === "success") {
-    //           function promptOTP() {
-    //             return swal({
-    //               title: "Enter OTP",
-    //               content: {
-    //                 element: "input",
-    //                 attributes: {
-    //                   placeholder: "Check your Gmail Inbox for OTP sent to your email.",
-    //                   type: "text",
-    //                 },
-    //               },
-    //               buttons: {
-    //                 cancel: {
-    //                   text: "Cancel",
-    //                   value: "cancel",
-    //                   visible: true,
-    //                   closeModal: false,
-    //                 },
-    //                 confirm: {
-    //                   text: "Verify",
-    //                   closeModal: false,
-    //                 },
-    //               },
-    //             })
-    //               .then((otp) => {
-    //                 if (otp === "cancel") {
-    //                   return swal({
-    //                     title: "Are you sure?",
-    //                     text: "Do you really want to cancel the OTP verification?",
-    //                     icon: "warning",
-    //                     buttons: {
-    //                       cancel: "No",
-    //                       confirm: "Yes",
-    //                     },
-    //                     dangerMode: true,
-    //                   }).then((willCancel) => {
-    //                     if (willCancel) {
-    //                       swal.close(); // Close the dialog
-    //                       return Promise.reject("Cancelled");
-    //                     } else {
-    //                       return promptOTP(); // Reopen the OTP input dialog
-    //                     }
-    //                   });
-    //                 }
-
-    //                 if (!otp) {
-    //                   return swal(
-    //                     "No OTP entered",
-    //                     "Please enter the OTP sent to your email.",
-    //                     "error"
-    //                   ).then(() => promptOTP()); // Reopen the OTP input dialog
-    //                 }
-
-    //                 return $.ajax({
-    //                   type: "POST",
-    //                   url: "/landingpage/verify-otp",
-    //                   data: { email: $("#email").val(), otp: otp },
-    //                 });
-    //               })
-    //               .then((response) => {
-    //                 if (response && response.msg === "success") {
-    //                   return swal({
-    //                     title: "OTP Verified!",
-    //                     text: "Please check your Gmail Inbox both your OTP and Application ID. Click the provided link to complete your registration.",
-    //                     icon: "success",
-    //                   }).then(() => {
-    //                     // Send email with link to create username/password
-    //                     return $.ajax({
-    //                       type: "POST",
-    //                       url: "/landingpage/send-create-account-link",
-    //                       data: { email: $("#email").val() },
-    //                     });
-    //                   });
-    //                 } else {
-    //                   return swal(
-    //                     "Invalid OTP",
-    //                     "The OTP you entered is incorrect. Please try again.",
-    //                     "warning"
-    //                   ).then(() => promptOTP()); // Reopen the OTP input dialog
-    //                 }
-    //               })
-    //               .catch((err) => {
-    //                 if (err !== "Cancelled") {
-    //                   // Handle error if not cancelled
-    //                   swal(
-    //                     "Error",
-    //                     "Something went wrong. Please try again later.",
-    //                     "error"
-    //                   ).then(() => promptOTP()); // Reopen the OTP input dialog
-    //                 }
-    //               });
-    //           }
-
-    //           promptOTP(); // Initial call to prompt for OTP
-    //         } else {
-    //           swal(
-    //             "Looks like you already have an account",
-    //             "Check your email for the OTP or provide a new email",
-    //             "warning"
-    //           );
-    //         }
-    //       },
-    //       error: function (err) {
-    //         swal.close(); // Close the "please wait" dialog on error
-    //         swal("Error", "Something went wrong. Please try again later.", "error");
-    //       },
-    //     });
-    //   }
-    // });
-
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const chatbotButton = document.getElementById('chatbot-button');
-      const chatbotModal = document.getElementById('chatbot-modal');
-      const closeButton = document.getElementById('close-button');
-
-      chatbotButton.addEventListener('click', function () {
-        chatbotModal.style.display = 'block';
+      chatbotButton.addEventListener("click", function () {
+        chatbotModal.style.display = "block";
       });
 
-      closeButton.addEventListener('click', function () {
-        chatbotModal.style.display = 'none';
+      closeButton.addEventListener("click", function () {
+        chatbotModal.style.display = "none";
       });
 
       // Optional: Close the modal when clicking outside of it
-      window.addEventListener('click', function (event) {
+      window.addEventListener("click", function (event) {
         if (event.target === chatbotModal) {
-          chatbotModal.style.display = 'none';
+          chatbotModal.style.display = "none";
         }
       });
     });
 
-    $('#chatbotModal').on('shown.bs.modal', function () {
+    $("#chatbotModal").on("shown.bs.modal", function () {
       setTimeout(function () {
         // Display initial greeting with a wave animation
-        displayMessage("Chatbot", '<span class="wave">👋</span> Hi there! How can I assist you today?');
+        displayMessage(
+          "Chatbot",
+          '<span class="wave">👋</span> Hi there! How can I assist you today?'
+        );
 
         // Fetch and display frequent questions
         $.ajax({
-          url: 'landingpage/loadfrequentquestions',
-          type: 'GET',
+          url: "landingpage/loadfrequentquestions",
+          type: "GET",
           success: function (result) {
             if (result.msg === "success" && result.data.length > 0) {
-              let frequentQuestionsHtml = result.data.map(item => `<p><a href="#" class="frequent-question">${item.description}</a></p>`).join('');
-              $('#frequentQuestions').html('<strong>Frequently Asked Questions:</strong><br>' + frequentQuestionsHtml);
+              let frequentQuestionsHtml = result.data
+                .map(
+                  (item) =>
+                    `<p><a href="#" class="frequent-question">${item.description}</a></p>`
+                )
+                .join("");
+              $("#frequentQuestions").html(
+                "<strong>Frequently Asked Questions:</strong><br>" +
+                  frequentQuestionsHtml
+              );
             } else {
-              $('#frequentQuestions').html('<strong>No frequent questions available.</strong>');
+              $("#frequentQuestions").html(
+                "<strong>No frequent questions available.</strong>"
+              );
             }
           },
           error: function () {
-            $('#frequentQuestions').html('<strong>Error loading frequent questions.</strong>');
-          }
+            $("#frequentQuestions").html(
+              "<strong>Error loading frequent questions.</strong>"
+            );
+          },
         });
       }, 500); // Delay for animation effect
     });
 
     // Handle frequent question clicks
-    $(document).on('click', '.frequent-question', function (e) {
+    $(document).on("click", ".frequent-question", function (e) {
       e.preventDefault();
       let question = $(this).text();
 
@@ -698,12 +370,18 @@
           if (result.msg === "success" && result.data.length > 0) {
             displayMessage("Chatbot", result.data[0].description);
           } else {
-            displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
+            displayMessage(
+              "Chatbot",
+              "Sorry, I couldn't find an answer to your question."
+            );
           }
         },
         error: function () {
-          displayMessage("Chatbot", "There was an error processing your request.");
-        }
+          displayMessage(
+            "Chatbot",
+            "There was an error processing your request."
+          );
+        },
       });
     });
 
@@ -727,12 +405,18 @@
           if (result.msg === "success" && result.data.length > 0) {
             displayMessage("Chatbot", result.data[0].description);
           } else {
-            displayMessage("Chatbot", "Sorry, I couldn't find an answer to your question.");
+            displayMessage(
+              "Chatbot",
+              "Sorry, I couldn't find an answer to your question."
+            );
           }
         },
         error: function () {
-          displayMessage("Chatbot", "There was an error processing your request.");
-        }
+          displayMessage(
+            "Chatbot",
+            "There was an error processing your request."
+          );
+        },
       });
 
       $("#chatInput").val("").focus();
@@ -742,14 +426,17 @@
     function displayMessage(sender, message) {
       const chatBody = $("#chatBody");
 
-      let messageHtml = sender === "You" ? `
+      let messageHtml =
+        sender === "You"
+          ? `
       <div class="d-flex justify-content-end mb-2">
         <div class="d-flex flex-row justify-content-end">
           <div>
             <p class="small p-2 me-3 mb-3 text-white rounded-3 bg-primary">${message}</p>
           </div>
         </div>
-      </div>` : `
+      </div>`
+          : `
       <div class="d-flex justify-content-start mb-2">
         <div class="d-flex flex-row justify-content-start">
           <div>
@@ -763,11 +450,13 @@
     }
 
     $.ajax({
-      url: 'landingpage/frequentquestions',
-      type: 'GET',
+      url: "landingpage/frequentquestions",
+      type: "GET",
       success: function (result) {
         if (result.msg === "success" && result.data.length > 0) {
-          let faqItemsHtml = result.data.map(item => `
+          let faqItemsHtml = result.data
+            .map(
+              (item) => `
           <div class="faq-item" data-aos="fade-up">
             <div class="faq-question">
               <i class="faq-icon bi bi-question-circle"></i>
@@ -778,22 +467,26 @@
               <p>${item.answer}</p>
             </div>
           </div>
-        `).join('');
+        `
+            )
+            .join("");
 
-          $('#faqContainer').html(faqItemsHtml);
+          $("#faqContainer").html(faqItemsHtml);
           AOS.init();
         } else {
-          $('#faqContainer').html('<p>No frequent questions available.</p>');
+          $("#faqContainer").html("<p>No frequent questions available.</p>");
         }
       },
       error: function (err) {
-        $('#faqContainer').html('<p>Error loading frequent questions.</p>');
-        console.error('Error fetching FAQ data:', err);
-      }
+        $("#faqContainer").html("<p>Error loading frequent questions.</p>");
+        console.error("Error fetching FAQ data:", err);
+      },
     });
-    $(document).on('click', '.faq-question', function () {
-      $(this).next('.faq-answer').slideToggle();
-      $(this).find('.faq-toggle').toggleClass('bi-chevron-right bi-chevron-down');
+    $(document).on("click", ".faq-question", function () {
+      $(this).next(".faq-answer").slideToggle();
+      $(this)
+        .find(".faq-toggle")
+        .toggleClass("bi-chevron-right bi-chevron-down");
     });
   });
 </script>

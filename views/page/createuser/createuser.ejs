@@ -29,23 +29,36 @@
 
                   <div data-mdb-input-init class="form-outline mb-4">
                     <div class="input-group">
-                      <input type="password" class="form-control" id="password">
+                      <input type="password" class="form-control" id="password" placeholder="Enter password">
                       <button class="btn btn-ojt-pw toggle-password" type="button" data-target="#password">
                         <i class="fas fa-eye"></i>
                       </button>
                     </div>
                     <label class="form-label" for="password">Password</label>
+                    <!-- Password validation message -->
+                    <small id="passwordHelp" class="text-muted">
+                      Password must be at least 16 characters long, contain at least one uppercase letter, one number, and one special character.
+                    </small>
+                    <ul id="passwordValidation" class="list-unstyled text-muted">
+                      <li id="lengthCheck" class="text-danger">At least 16 characters</li>
+                      <li id="upperCheck" class="text-danger">At least one uppercase letter</li>
+                      <li id="numberCheck" class="text-danger">At least one number</li>
+                      <li id="specialCheck" class="text-danger">At least one special character</li>
+                    </ul>
                   </div>
                   
                   <div data-mdb-input-init class="form-outline mb-4">
                     <div class="input-group">
-                      <input type="password" class="form-control" id="confirmpassword">
+                      <input type="password" class="form-control" id="confirmpassword" placeholder="Confirm password">
                       <button class="btn btn-ojt-pw toggle-password" type="button" data-target="#confirmpassword">
                         <i class="fas fa-eye"></i>
                       </button>
                     </div>
                     <label class="form-label" for="confirmpassword">Confirm Password</label>
+                    <!-- Confirmation validation message -->
+                    <small id="confirmPasswordHelp" class="text-danger" style="display:none;">Passwords do not match!</small>
                   </div>
+                  
 
                   <div class="text-center pt-1 mb-5 pb-1">
                     <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" 

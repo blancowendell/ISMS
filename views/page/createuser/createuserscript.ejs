@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
   $(document).ready(function () {
     console.log("Initialize");
 
@@ -28,6 +28,8 @@
 
       if (passWord == "") {
         message += "Password is required. ";
+      } else if (!validatePassword(passWord)) {
+        message += "Password must be at least 16 characters long, contain at least one uppercase letter, one number, and one special character. ";
       }
 
       if (confirmPassWord == "") {
@@ -91,6 +93,165 @@
       } else {
         passwordInput.attr("type", "password");
         $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+      }
+    });
+
+    // Password validation function
+    function validatePassword(password) {
+      const minLength = 16;
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+      
+      return password.length >= minLength && hasUpperCase && hasNumber && hasSpecialChar;
+    }
+  });
+</script> -->
+
+<script>
+  $(document).ready(function () {
+    $("#password").on("input", function () {
+      const password = $(this).val();
+      validatePasswordFields(password);
+    });
+
+    // Show password confirmation feedback
+    $("#confirmpassword").on("input", function () {
+      const password = $("#password").val();
+      const confirmPassword = $(this).val();
+
+      if (confirmPassword === password) {
+        $("#confirmPasswordHelp").hide();
+      } else {
+        $("#confirmPasswordHelp").show();
+      }
+    });
+
+    // Toggle password visibility
+    $(".toggle-password").on("click", function () {
+      const targetSelector = $(this).data("target");
+      const passwordInput = $(targetSelector);
+      const passwordFieldType = passwordInput.attr("type");
+      if (passwordFieldType === "password") {
+        passwordInput.attr("type", "text");
+        $(this).find("i").removeClass("fa-eye").addClass("fa-eye-slash");
+      } else {
+        passwordInput.attr("type", "password");
+        $(this).find("i").removeClass("fa-eye-slash").addClass("fa-eye");
+      }
+    });
+
+    // Password validation function to update UI
+    function validatePasswordFields(password) {
+      const minLength = 16;
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasNumber = /[0-9]/.test(password);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+      // Update validation feedback
+      if (password.length >= minLength) {
+        $("#lengthCheck").removeClass("text-danger").addClass("text-success");
+      } else {
+        $("#lengthCheck").removeClass("text-success").addClass("text-danger");
+      }
+
+      if (hasUpperCase) {
+        $("#upperCheck").removeClass("text-danger").addClass("text-success");
+      } else {
+        $("#upperCheck").removeClass("text-success").addClass("text-danger");
+      }
+
+      if (hasNumber) {
+        $("#numberCheck").removeClass("text-danger").addClass("text-success");
+      } else {
+        $("#numberCheck").removeClass("text-success").addClass("text-danger");
+      }
+
+      if (hasSpecialChar) {
+        $("#specialCheck").removeClass("text-danger").addClass("text-success");
+      } else {
+        $("#specialCheck").removeClass("text-success").addClass("text-danger");
+      }
+
+      // Return the final validation status
+      return (
+        password.length >= minLength &&
+        hasUpperCase &&
+        hasNumber &&
+        hasSpecialChar
+      );
+    }
+
+    // Form submit validation
+    $(document).on("click", "#createbtn", function () {
+      let studentId = $("#studentid").val();
+      let userName = $("#username").val();
+      let passWord = $("#password").val();
+      let confirmPassWord = $("#confirmpassword").val();
+
+      var message = "";
+
+      // Form validation
+      if (studentId === "") {
+        message += "Student ID is required. ";
+      }
+
+      if (userName === "") {
+        message += "Username is required. ";
+      }
+
+      // Check password validation
+      if (passWord === "") {
+        message += "Password is required. ";
+      } else if (!validatePasswordFields(passWord)) {
+        message += "Password does not meet the required criteria. ";
+      }
+
+      if (confirmPassWord === "") {
+        message += "Confirm Password is required. ";
+      } else if (passWord !== confirmPassWord) {
+        message += "Passwords do not match. ";
+      }
+
+      if (message !== "") {
+        swal("Validation Error", message, "error");
+      } else {
+        // Ajax request to create user
+        $.ajax({
+          type: "POST",
+          url: "/createuser/save",
+          data: {
+            studentid: studentId,
+            username: userName,
+            password: passWord,
+          },
+          success: function (result) {
+            if (result.msg === "success") {
+              swal({
+                title: "Saved Successfully",
+                text: "Account created successfully!",
+                icon: "success",
+                button: "OK!",
+              }).then(() => {
+                window.location.href = "/login";
+              });
+            } else {
+              swal({
+                title: "Mukang Mag Kakilala na Tayo?",
+                text: "You already have an account!",
+                icon: "warning",
+                button: "OK!",
+              });
+            }
+          },
+          error: function () {
+            swal(
+              "Error",
+              "An error occurred while creating the account!",
+              "warning"
+            );
+          },
+        });
       }
     });
   });
